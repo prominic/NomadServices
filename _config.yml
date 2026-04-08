@@ -1,0 +1,131 @@
+# Basic Jekyll settings
+title: Nomad Services
+description: Documentation for Nomad Services
+baseurl: ''
+url: 'https://nomad.services'
+repository: prominic/NomadServices
+
+permalink: pretty
+
+# Include files from root directory instead of just _includes/
+includes_dir: '.'
+
+defaults:
+  - scope:
+      path: 'docs'
+      type: 'pages'
+    values:
+      layout: 'default'
+
+exclude:
+  - .sass-cache/
+  - .jekyll-cache/
+  - gemfiles/
+  - Gemfile
+  - Gemfile.lock
+  - node_modules/
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
+  - '*.gemspec'
+  - '*.gem'
+  - README.md
+
+# Theme settings
+theme: just-the-docs
+
+# Theme customization
+color_scheme: wider
+search_enabled: true
+
+# Aux links for header
+aux_links:
+  'View on GitHub':
+    - 'https://github.com/prominic/NomadServices'
+aux_links_new_tab: true
+
+# Footer content
+footer_content: 'Copyright &copy; 2025 prominic. All rights reserved.'
+
+# Back to top link
+back_to_top: true
+back_to_top_text: 'Back to top'
+
+# Footer last edited timestamp
+last_edit_timestamp: true
+last_edit_time_format: '%b %e %Y at %I:%M %p'
+
+# Footer "Edit this page on GitHub" link text
+gh_edit_link: true
+gh_edit_link_text: 'Edit this page on GitHub'
+gh_edit_repository: 'https://github.com/prominic/NomadServices'
+gh_edit_branch: 'main'
+gh_edit_source: docs
+gh_edit_view_mode: 'tree'
+
+liquid:
+  error_mode: strict
+  strict_filters: true
+
+# Markdown processor
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    block:
+      line_numbers: false
+
+# Sass
+sass:
+  style: compressed
+
+# Plugins
+plugins:
+  - jekyll-seo-tag
+  - jekyll-github-metadata
+  - jekyll-include-cache
+  - jekyll-sitemap
+
+# Enable or disable heading anchors
+heading_anchors: true
+
+# For copy button on code
+enable_copy_code_button: true
+
+# Enable Mermaid diagrams
+mermaid:
+  version: '9.4.3'
+
+# Callouts
+callouts_level: quiet
+callouts:
+  highlight:
+    color: yellow
+  important:
+    title: Important
+    color: blue
+  new:
+    title: New
+    color: green
+  note:
+    title: Note
+    color: purple
+  warning:
+    title: Warning
+    color: red
+
+# SEO
+lang: en-US
+author:
+  name: prominic
+  url: https://github.com/prominic
+
+compress_html:
+  clippings: all
+  comments: all
+  endings: all
+  startings: []
+  blanklines: false
+  profile: false

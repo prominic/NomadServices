@@ -1,0 +1,20 @@
+// Custom color scheme for wider layout with dark theme
+// Based on Just the Docs official method for wider content
+
+// Import dark theme first (official path from Just the Docs docs)
+@import "./color_schemes/dark";
+
+// Then override the width
+$content-width: 60rem; // Wider than default 50rem
+
+// Fix white borders on outline buttons
+.btn.btn-outline {
+  border: none !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: #7253ed !important;
+}
+
+.btn.btn-outline:hover {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  color: #7253ed !important;
+}
