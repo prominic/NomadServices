@@ -8,6 +8,13 @@ permalink: /
 
 <!-- markdownlint-disable MD033 MD013 -->
 
+<div style="background: linear-gradient(135deg, #6c5ce7 0%, #a855f7 50%, #6c5ce7 100%); margin: -2rem -2rem 2rem -2rem; padding: 1rem 2rem; text-align: center; position: relative; overflow: hidden;">
+  <div style="position: relative; z-index: 1;">
+    <span style="color: #ffffff; font-size: 1.1rem; font-weight: 600; letter-spacing: 0.02em;">&#127881; Try Nomad Services free for 30 days — No credit card required. No commitment. Cancel anytime.</span>
+    <a href="https://nomad-1.moonshine.team/Super.Human.Portal/js-release/index.html#/getting-started" style="display: inline-block; margin-left: 1.5rem; background: #e8c547; color: #0f0f23; font-weight: 700; padding: 6px 20px; border-radius: 20px; text-decoration: none; font-size: 0.95rem;">Start Free Trial &rarr;</a>
+  </div>
+</div>
+
 ## Nomad Services
 
 {: .fs-9 }
@@ -18,7 +25,7 @@ permalink: /
 Instantly deploy, preview, and validate your Domino NSF applications in a fully managed HCL Nomad environment. No servers. No setup. No friction.
 {: .fs-5 .fw-300 }
 
-[Start Free](https://nomad-1.moonshine.team/Super.Human.Portal/js-release/index.html#/getting-started){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+[Start Free Trial](https://nomad-1.moonshine.team/Super.Human.Portal/js-release/index.html#/getting-started){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
 [See the Platform](https://www.moonshine.dev/){: .btn .fs-5 .mb-4 .mb-md-0 }
 
 ---
@@ -208,12 +215,66 @@ Instantly deploy, preview, and validate your Domino NSF applications in a fully 
 
 ---
 
+<div style="text-align: center; padding: 2rem 0;">
+  <h2 style="font-size: 2rem; color: #e0e0f0;">Pricing</h2>
+  <p style="font-size: 1.1rem; color: #c8c8d8; max-width: 700px; margin: 0 auto;">
+    From free exploration to full-service modernization — choose the plan that fits your needs.
+  </p>
+</div>
+
+<div style="display: flex; gap: 1.5rem; flex-wrap: wrap; margin: 2rem 0; justify-content: center; align-items: stretch;">
+
+  <div style="flex: 1; min-width: 280px; max-width: 340px; padding: 2.5rem 2rem; background: linear-gradient(135deg, rgba(108,92,231,0.08) 0%, rgba(108,92,231,0.03) 100%); border: 1px solid #2a2a4a; border-radius: 12px; display: flex; flex-direction: column;">
+    <div style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; color: #9d8df1; margin-bottom: 0.5rem;">Starter</div>
+    <div style="font-size: 3rem; font-weight: 700; color: #e8c547; line-height: 1;">Free</div>
+    <div style="color: #9d8df1; font-size: 0.85rem; margin-top: 0.25rem;">30-day trial</div>
+    <p style="color: #a0a0b8; margin: 1rem 0; font-size: 0.95rem; flex-grow: 1;">Upload your NSF and preview it running in HCL Nomad on our cloud servers. No credit card required.</p>
+    <ul style="color: #c8c8d8; font-size: 0.9rem; padding-left: 1.2rem; margin-bottom: 1.5rem;">
+      <li>NSF upload and deployment</li>
+      <li>HCL Nomad web preview</li>
+      <li>Cross-platform testing</li>
+      <li>Community support</li>
+    </ul>
+    <a href="https://nomad-1.moonshine.team/Super.Human.Portal/js-release/index.html#/getting-started" class="btn btn-primary" style="text-align: center; width: 100%;">Start 30-Day Free Trial</a>
+  </div>
+
+  <div style="flex: 1; min-width: 280px; max-width: 340px; padding: 2.5rem 2rem; background: linear-gradient(135deg, rgba(108,92,231,0.15) 0%, rgba(168,85,247,0.08) 100%); border: 2px solid #6c5ce7; border-radius: 12px; display: flex; flex-direction: column; position: relative;">
+    <div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #6c5ce7; color: #fff; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; padding: 4px 16px; border-radius: 20px;">Popular</div>
+    <div style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; color: #9d8df1; margin-bottom: 0.5rem;">Security Audit</div>
+    <div style="font-size: 3rem; font-weight: 700; color: #e8c547; line-height: 1;">$200</div>
+    <p style="color: #a0a0b8; margin: 1rem 0; font-size: 0.95rem; flex-grow: 1;">Comprehensive security vulnerability assessment of your Domino NSF application by our expert team.</p>
+    <ul style="color: #c8c8d8; font-size: 0.9rem; padding-left: 1.2rem; margin-bottom: 1.5rem;">
+      <li>Full vulnerability scan</li>
+      <li>Security risk report</li>
+      <li>Remediation recommendations</li>
+      <li>Priority email support</li>
+    </ul>
+    <a href="https://www.moonshine.dev/" class="btn btn-primary" style="text-align: center; width: 100%;">Request Audit</a>
+  </div>
+
+  <div style="flex: 1; min-width: 280px; max-width: 340px; padding: 2.5rem 2rem; background: linear-gradient(135deg, rgba(232,197,71,0.08) 0%, rgba(232,197,71,0.03) 100%); border: 1px solid #2a2a4a; border-radius: 12px; display: flex; flex-direction: column;">
+    <div style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; color: #e8c547; margin-bottom: 0.5rem;">Enterprise</div>
+    <div style="font-size: 3rem; font-weight: 700; color: #e8c547; line-height: 1;">Custom</div>
+    <p style="color: #a0a0b8; margin: 1rem 0; font-size: 0.95rem; flex-grow: 1;">End-to-end modernization of your legacy Domino applications. Scope and pricing tailored to your environment.</p>
+    <ul style="color: #c8c8d8; font-size: 0.9rem; padding-left: 1.2rem; margin-bottom: 1.5rem;">
+      <li>Full application modernization</li>
+      <li>Architecture consulting</li>
+      <li>Migration planning &amp; execution</li>
+      <li>Dedicated support team</li>
+    </ul>
+    <a href="https://www.moonshine.dev/" class="btn" style="text-align: center; width: 100%; border: 1px solid #e8c547; color: #e8c547;">Contact Sales</a>
+  </div>
+
+</div>
+
+---
+
 <div style="text-align: center; padding: 3rem 0;">
   <h2 style="font-size: 2.2rem; color: #e8c547; margin-bottom: 1rem;">Ready to Modernize Your Domino Applications?</h2>
   <p style="font-size: 1.2rem; color: #c8c8d8; max-width: 600px; margin: 0 auto 2rem;">
-    Join organizations already using Nomad Services to accelerate their digital transformation. Get your NSF running in HCL Nomad today.
+    Start your free 30-day trial today — no credit card, no commitment. Upload your first NSF and see the results for yourself.
   </p>
-  <a href="https://nomad-1.moonshine.team/Super.Human.Portal/js-release/index.html#/getting-started" class="btn btn-primary fs-5" style="margin-right: 1rem;">Get Started Now</a>
+  <a href="https://nomad-1.moonshine.team/Super.Human.Portal/js-release/index.html#/getting-started" class="btn btn-primary fs-5" style="margin-right: 1rem;">Start Free Trial</a>
   <a href="https://www.moonshine.dev/" class="btn fs-5">Contact Us</a>
 </div>
 
