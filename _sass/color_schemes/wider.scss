@@ -1,5 +1,6 @@
 // Custom color scheme matching Moonshine.dev theme
-// Dark navy background, gold headings, purple accents
+// Dark navy background, gold hero, purple accents
+// Full-width landing page layout (no sidebar)
 
 // Import dark theme as base
 @import "./color_schemes/dark";
@@ -21,39 +22,83 @@ $base-button-color: #1a1a35;
 
 $border-color: #2a2a4a;
 
-// Wider content area
-$content-width: 60rem;
+// --- FULL-WIDTH LANDING PAGE: hide sidebar, expand content ---
 
-// --- Custom styles ---
+// Hide the sidebar completely
+.side-bar {
+  display: none !important;
+}
 
-// Purple gradient accent bar under header (matching Moonshine.dev)
+// Make main content full width
+.main {
+  margin-left: 0 !important;
+  max-width: 100% !important;
+
+  @media (min-width: 50rem) {
+    margin-left: 0 !important;
+  }
+
+  @media (min-width: 66rem) {
+    margin-left: 0 !important;
+  }
+}
+
+.main-content-wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.main-content {
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+// Hide the "This site uses Just the Docs" attribution
+.site-footer {
+  .site-footer-content + p,
+  a[href*="just-the-docs"] {
+    display: none !important;
+  }
+}
+
+// Also hide via the theme credit class
+.site-footer .fs-2 {
+  display: none !important;
+}
+
+// --- Purple gradient accent bar under header ---
 .main-header {
   border-bottom: 3px solid;
+  -webkit-border-image: linear-gradient(90deg, #6c5ce7, #a855f7, #6c5ce7) 1;
   border-image: linear-gradient(90deg, #6c5ce7, #a855f7, #6c5ce7) 1;
 }
 
-// Sidebar styling
-.side-bar {
-  background-color: $sidebar-color;
-  border-right: 1px solid $border-color;
+// --- Fix nav active/hover gradient (the white gradient issue) ---
+.nav-list .nav-list-item .nav-list-link:hover,
+.nav-list .nav-list-item .nav-list-link.active {
+  color: #ffffff !important;
+  background-image: none !important;
+  background-color: rgba(108, 92, 231, 0.15) !important;
 }
 
-// Main content background
+// --- Main content styling ---
 .main-content {
   background-color: $body-background-color;
 
-  // Most headings are clean white/light
   h1, h2, h3, h4, h5, h6 {
     color: $body-heading-color;
   }
 
-  // Only the hero title gets gold (uses .fs-9 class from Just the Docs)
+  // Only the hero title gets gold
   .fs-9 {
     color: #e8c547 !important;
   }
 }
 
-// Search input
+// --- Search input ---
 .search-input {
   background-color: $search-background-color;
   border-color: $border-color;
@@ -61,21 +106,14 @@ $content-width: 60rem;
 
   &:focus {
     border-color: #6c5ce7;
+    -webkit-box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.3);
     box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.3);
   }
 }
 
-// Navigation links
-.nav-list .nav-list-item a {
-  color: $body-text-color;
+// --- Buttons ---
 
-  &:hover, &.active {
-    color: #ffffff;
-    background-color: rgba(108, 92, 231, 0.15);
-  }
-}
-
-// Primary button (gold, matching Moonshine.dev CTAs)
+// Primary button (gold CTA)
 .btn-primary {
   background-color: $btn-primary-color !important;
   color: #0f0f23 !important;
@@ -88,7 +126,7 @@ $content-width: 60rem;
   }
 }
 
-// Outline button (purple accent)
+// Outline button (purple)
 .btn.btn-outline {
   border: 1px solid #6c5ce7 !important;
   background-color: transparent !important;
@@ -100,12 +138,11 @@ $content-width: 60rem;
   }
 }
 
-// Default button
 .btn {
   border-radius: 4px;
 }
 
-// Code blocks
+// --- Code blocks ---
 code {
   background-color: $code-background-color;
   border: 1px solid $border-color;
@@ -117,7 +154,7 @@ pre {
   border: 1px solid $border-color;
 }
 
-// Table styling
+// --- Tables ---
 table {
   background-color: $table-background-color;
 
@@ -132,7 +169,7 @@ table {
   }
 }
 
-// Footer
+// --- Footer ---
 .site-footer {
   border-top: 1px solid $border-color;
   color: #8888a0;
@@ -142,12 +179,12 @@ table {
   }
 }
 
-// Callout overrides to fit the dark theme
+// --- Callouts ---
 .callout {
   border-radius: 6px;
 }
 
-// Aux links (header right-side links)
+// --- Aux links (header right) ---
 .aux-nav .aux-nav-list-item a {
   color: #9d8df1;
 
@@ -156,12 +193,12 @@ table {
   }
 }
 
-// Breadcrumb
+// --- Breadcrumbs ---
 .breadcrumb-nav .breadcrumb-nav-list-item a {
   color: #9d8df1;
 }
 
-// Back to top
+// --- Back to top ---
 .back-to-top {
   color: #9d8df1;
 
@@ -170,8 +207,13 @@ table {
   }
 }
 
-// Selection highlight
+// --- Selection highlight ---
 ::selection {
+  background-color: rgba(108, 92, 231, 0.4);
+  color: #ffffff;
+}
+
+::-moz-selection {
   background-color: rgba(108, 92, 231, 0.4);
   color: #ffffff;
 }
