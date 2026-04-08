@@ -2,7 +2,7 @@
 title: Home
 layout: home
 nav_order: 1
-description: "Nomad Services — Upload your NSF and test it in HCL Nomad"
+description: "Nomad Services — Modernize your Domino applications instantly with HCL Nomad"
 permalink: /
 ---
 
@@ -10,49 +10,88 @@ permalink: /
 
 {: .fs-9 }
 
-Upload your NSF and see it running in HCL Nomad — instantly.
+Modernize your Domino applications — instantly.
 {: .fs-6 .fw-300 }
 
 [Get Started](https://nomad-1.moonshine.team/Super.Human.Portal/js-release/index.html#/getting-started){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
-[Learn More](#about){: .btn .fs-5 .mb-4 .mb-md-0 }
+[Explore Moonshine.dev](https://www.moonshine.dev/){: .btn .fs-5 .mb-4 .mb-md-0 }
 
 ---
 
-## About
-{: #about }
+## Zero Setup — Zero Infrastructure — Zero Wait
 
-**Nomad Services** is part of the [Moonshine.dev](https://www.moonshine.dev/) initiative by [Prominic.NET](https://www.prominic.net). It provides a fast, simple way to upload an NSF database and test it in [HCL Nomad](https://www.hcltechsw.com/nomad) on the moonshine.team servers — no local setup required.
-
-### How it works
-
-1. **Upload** your NSF file
-2. **Preview** your application running in HCL Nomad
-3. **Iterate** — make changes and re-upload to test again
-
-### Moonshine.dev tools
-
-Moonshine.dev is a rapid application development platform with tools for building apps across multiple platforms:
-
-- [**Canvas Editor**](https://app.moonshine.dev/public/file/serve/moonshine-dev-private/index.html) — Drag-and-drop WYSIWYG UI mockup designer
-- [**Form Builder**](https://app.moonshine.dev/public/file/serve/form-builder/index.html) — Quickly create professional forms with fields, validation, and components
-- [**AI Tooling**](https://app.moonshine.dev/public/file/serve/moonshine-dev-private/assets/ai/index.html) — Describe your UI in plain English and generate mockups
-- [**Domino Integration**](https://app.moonshine.dev/public/file/serve/domino-integration/index.html) — NoSQL database with REST API access and web testing interface
-
-Nomad Services focuses specifically on the Domino/Nomad testing workflow, giving you the fastest path from NSF to a running Nomad application.
+Upload your NSF and see it running in **HCL Nomad** on our cloud-hosted servers — in minutes, not months. No provisioning, no configuration, no hassle. Just drag, drop, and deploy.
 
 ---
 
-## Get started
+## Why Nomad Services?
 
-Ready to test your NSF in Nomad? Head over to the [Getting Started guide](https://nomad-1.moonshine.team/Super.Human.Portal/js-release/index.html#/getting-started) to begin.
+### Accelerate Digital Transformation
 
-Need help? [Contact the team](https://www.moonshine.dev/) for support, feature requests, or feedback.
+Stop waiting on lengthy deployment cycles. Nomad Services gives your team a **rapid prototyping** environment to modernize legacy NSF applications and validate them in HCL Nomad — before committing to a full rollout.
+
+### Cloud-Native, Enterprise-Ready
+
+Built on the [moonshine.team](https://moonshine.team) infrastructure, your applications run in a **secure, cloud-hosted** environment purpose-built for Domino workloads. No VPNs, no local installs, no IT tickets.
+
+### Cross-Platform, Mobile-First
+
+HCL Nomad delivers your Domino applications to **any device** — desktop, tablet, and mobile. See exactly how your NSF behaves on every platform without maintaining a single server.
+
+### Seamless Domino Integration
+
+Powered by [Moonshine.dev](https://www.moonshine.dev/), Nomad Services connects directly to the HCL Domino ecosystem. Upload your NSF, access your **NoSQL database via REST API**, and test with a fully integrated web interface.
 
 ---
 
-## About the project
+## How It Works
 
-Nomad Services is &copy; 2025 by [Prominic.NET](https://www.prominic.net).
+<!-- markdownlint-disable MD033 -->
+<div style="display: flex; gap: 2rem; flex-wrap: wrap; margin: 1.5rem 0;">
+  <div style="flex: 1; min-width: 200px; padding: 1.5rem; background: rgba(108, 92, 231, 0.08); border: 1px solid #2a2a4a; border-radius: 8px; text-align: center;">
+    <span style="font-size: 2rem;">1</span>
+    <h4 style="margin: 0.5rem 0;">Upload</h4>
+    <p>Drop your NSF file into the portal</p>
+  </div>
+  <div style="flex: 1; min-width: 200px; padding: 1.5rem; background: rgba(108, 92, 231, 0.08); border: 1px solid #2a2a4a; border-radius: 8px; text-align: center;">
+    <span style="font-size: 2rem;">2</span>
+    <h4 style="margin: 0.5rem 0;">Deploy</h4>
+    <p>We spin it up on HCL Nomad instantly</p>
+  </div>
+  <div style="flex: 1; min-width: 200px; padding: 1.5rem; background: rgba(108, 92, 231, 0.08); border: 1px solid #2a2a4a; border-radius: 8px; text-align: center;">
+    <span style="font-size: 2rem;">3</span>
+    <h4 style="margin: 0.5rem 0;">Test</h4>
+    <p>Preview on desktop, tablet, and mobile</p>
+  </div>
+  <div style="flex: 1; min-width: 200px; padding: 1.5rem; background: rgba(108, 92, 231, 0.08); border: 1px solid #2a2a4a; border-radius: 8px; text-align: center;">
+    <span style="font-size: 2rem;">4</span>
+    <h4 style="margin: 0.5rem 0;">Iterate</h4>
+    <p>Refine and re-deploy in seconds</p>
+  </div>
+</div>
+<!-- markdownlint-enable MD033 -->
+
+---
+
+## The Moonshine.dev Ecosystem
+
+Nomad Services is part of a complete **rapid application development** platform. Build, test, and deploy — all from one place.
+
+- [**Canvas Editor**](https://app.moonshine.dev/public/file/serve/moonshine-dev-private/index.html) — Drag-and-drop **WYSIWYG** UI mockup designer. Design once, deploy everywhere.
+- [**Form Builder**](https://app.moonshine.dev/public/file/serve/form-builder/index.html) — **Low-code** form creation with built-in validation, fields, and components.
+- [**AI Tooling**](https://app.moonshine.dev/public/file/serve/moonshine-dev-private/assets/ai/index.html) — Describe your UI in **plain English** and watch it come to life.
+- [**Domino Integration**](https://app.moonshine.dev/public/file/serve/domino-integration/index.html) — **NoSQL database** with REST API access and a web testing interface.
+
+---
+
+## Ready to Modernize?
+
+Your legacy Domino applications deserve a modern experience. Get your NSF running in HCL Nomad today — no infrastructure required.
+
+[Start Now](https://nomad-1.moonshine.team/Super.Human.Portal/js-release/index.html#/getting-started){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+[Contact Us](https://www.moonshine.dev/){: .btn .fs-5 .mb-4 .mb-md-0 }
+
+---
 
 <!-- markdownlint-disable MD033 -->
 <ul class="list-style-none">
