@@ -1,20 +1,176 @@
-// Custom color scheme for wider layout with dark theme
-// Based on Just the Docs official method for wider content
+// Custom color scheme matching Moonshine.dev theme
+// Dark navy background, gold headings, purple accents
 
-// Import dark theme first (official path from Just the Docs docs)
+// Import dark theme as base
 @import "./color_schemes/dark";
 
-// Then override the width
-$content-width: 60rem; // Wider than default 50rem
+// Override Just the Docs color variables to match Moonshine.dev
+$body-background-color: #0f0f23;
+$sidebar-color: #12122a;
+$body-text-color: #c8c8d8;
+$body-heading-color: #e8c547;
+$search-background-color: #1a1a35;
+$table-background-color: #1a1a35;
+$feedback-color: darken($body-heading-color, 3%);
+$code-background-color: #1a1a35;
+$search-result-preview-color: #c8c8d8;
 
-// Fix white borders on outline buttons
-.btn.btn-outline {
-  border: none !important;
-  background-color: rgba(255, 255, 255, 0.1) !important;
-  color: #7253ed !important;
+$link-color: #9d8df1;
+$btn-primary-color: #e8c547;
+$base-button-color: #1a1a35;
+
+$border-color: #2a2a4a;
+
+// Wider content area
+$content-width: 60rem;
+
+// --- Custom styles ---
+
+// Purple gradient accent bar under header (matching Moonshine.dev)
+.main-header {
+  border-bottom: 3px solid;
+  border-image: linear-gradient(90deg, #6c5ce7, #a855f7, #6c5ce7) 1;
 }
 
-.btn.btn-outline:hover {
-  background-color: rgba(255, 255, 255, 0.2) !important;
-  color: #7253ed !important;
+// Sidebar styling
+.side-bar {
+  background-color: $sidebar-color;
+  border-right: 1px solid $border-color;
+}
+
+// Main content background
+.main-content {
+  background-color: $body-background-color;
+
+  h1, h2, h3, h4, h5, h6 {
+    color: $body-heading-color;
+  }
+
+  // Gold links in headings
+  h1 a, h2 a, h3 a, h4 a {
+    color: $body-heading-color;
+  }
+}
+
+// Search input
+.search-input {
+  background-color: $search-background-color;
+  border-color: $border-color;
+  color: $body-text-color;
+
+  &:focus {
+    border-color: #6c5ce7;
+    box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.3);
+  }
+}
+
+// Navigation links
+.nav-list .nav-list-item a {
+  color: $body-text-color;
+
+  &:hover, &.active {
+    color: $body-heading-color;
+    background-color: rgba(108, 92, 231, 0.15);
+  }
+}
+
+// Primary button (gold, matching Moonshine.dev CTAs)
+.btn-primary {
+  background-color: $btn-primary-color !important;
+  color: #0f0f23 !important;
+  border-color: $btn-primary-color !important;
+  font-weight: 600;
+
+  &:hover {
+    background-color: darken(#e8c547, 8%) !important;
+    color: #0f0f23 !important;
+  }
+}
+
+// Outline button (purple accent)
+.btn.btn-outline {
+  border: 1px solid #6c5ce7 !important;
+  background-color: transparent !important;
+  color: #9d8df1 !important;
+
+  &:hover {
+    background-color: rgba(108, 92, 231, 0.2) !important;
+    color: #c4b5fd !important;
+  }
+}
+
+// Default button
+.btn {
+  border-radius: 4px;
+}
+
+// Code blocks
+code {
+  background-color: $code-background-color;
+  border: 1px solid $border-color;
+  color: #e8c547;
+}
+
+pre {
+  background-color: $code-background-color;
+  border: 1px solid $border-color;
+}
+
+// Table styling
+table {
+  background-color: $table-background-color;
+
+  th {
+    background-color: #1e1e38;
+    color: $body-heading-color;
+    border-color: $border-color;
+  }
+
+  td {
+    border-color: $border-color;
+  }
+}
+
+// Footer
+.site-footer {
+  border-top: 1px solid $border-color;
+  color: #8888a0;
+
+  a {
+    color: #9d8df1;
+  }
+}
+
+// Callout overrides to fit the dark theme
+.callout {
+  border-radius: 6px;
+}
+
+// Aux links (header right-side links)
+.aux-nav .aux-nav-list-item a {
+  color: #9d8df1;
+
+  &:hover {
+    color: $body-heading-color;
+  }
+}
+
+// Breadcrumb
+.breadcrumb-nav .breadcrumb-nav-list-item a {
+  color: #9d8df1;
+}
+
+// Back to top
+.back-to-top {
+  color: #9d8df1;
+
+  &:hover {
+    color: $body-heading-color;
+  }
+}
+
+// Selection highlight
+::selection {
+  background-color: rgba(108, 92, 231, 0.4);
+  color: #ffffff;
 }

@@ -1,6 +1,6 @@
 # Basic Jekyll settings
 title: Nomad Services
-description: Documentation for Nomad Services
+description: Upload your NSF and test it in HCL Nomad — powered by Moonshine.dev
 baseurl: ''
 url: 'https://nomad.services'
 repository: prominic/NomadServices
@@ -41,12 +41,14 @@ search_enabled: true
 
 # Aux links for header
 aux_links:
-  'View on GitHub':
+  'Moonshine.dev':
+    - 'https://www.moonshine.dev/'
+  'GitHub':
     - 'https://github.com/prominic/NomadServices'
 aux_links_new_tab: true
 
 # Footer content
-footer_content: 'Copyright &copy; 2025 prominic. All rights reserved.'
+footer_content: 'Copyright &copy; 2025 <a href="https://www.prominic.net">Prominic.NET</a>. Powered by <a href="https://www.moonshine.dev/">Moonshine.dev</a>.'
 
 # Back to top link
 back_to_top: true
@@ -119,8 +121,8 @@ callouts:
 # SEO
 lang: en-US
 author:
-  name: prominic
-  url: https://github.com/prominic
+  name: Prominic.NET
+  url: https://www.prominic.net
 
 compress_html:
   clippings: all

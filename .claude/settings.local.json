@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(ls -la /g/Projects/boxvault/_*)",
-      "Bash(cat .github/workflows/*.yml)"
+      "Bash(cat .github/workflows/*.yml)",
+      "WebFetch(domain:www.moonshine.dev)"
     ]
   }
 }
