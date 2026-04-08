@@ -56,16 +56,15 @@ $border-color: #2a2a4a;
   margin-right: auto;
 }
 
-// Hide the "This site uses Just the Docs" attribution
-.site-footer {
-  .site-footer-content + p,
-  a[href*="just-the-docs"] {
-    display: none !important;
-  }
+// Hide ALL "This site uses Just the Docs" attributions (sidebar + mobile footer)
+.side-bar .site-footer,
+.d-md-none.fs-2,
+.d-md-block.d-none.site-footer {
+  display: none !important;
 }
 
-// Also hide via the theme credit class
-.site-footer .fs-2 {
+// Hide any remaining Just the Docs links
+a[href*="just-the-docs"] {
   display: none !important;
 }
 

@@ -90,8 +90,8 @@ plugins:
   - jekyll-include-cache
   - jekyll-sitemap
 
-# Enable or disable heading anchors
-heading_anchors: true
+# Disable heading anchors — they break inline HTML cards with nested <a> tags
+heading_anchors: false
 
 # For copy button on code
 enable_copy_code_button: true

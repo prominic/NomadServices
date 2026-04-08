@@ -96,7 +96,7 @@ Instantly deploy, preview, and validate your Domino NSF applications in a fully 
 </div>
 
 <div style="margin: 2rem 0; border: 1px solid #2a2a4a; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.4);">
-  <img src="assets/images/welcome.png" alt="Domino Online Editor — Browser-based Domino development environment with Agent Development, Database Management, Multi-Server Support, and Version Control" style="width: 100%; display: block;">
+  <img src="/docs/assets/images/welcome.png" alt="Domino Online Editor — Browser-based Domino development environment with Agent Development, Database Management, Multi-Server Support, and Version Control" style="width: 100%; display: block;">
 </div>
 
 <div style="display: flex; gap: 2rem; flex-wrap: wrap; margin: 2rem 0; justify-content: center;">
@@ -132,7 +132,7 @@ Instantly deploy, preview, and validate your Domino NSF applications in a fully 
 </div>
 
 <div style="margin: 0 0 2rem; border: 1px solid #2a2a4a; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.4);">
-  <img src="assets/images/demo.png" alt="Domino Online Editor — ID File management interface for secure multi-server access" style="width: 100%; display: block;">
+  <img src="/docs/assets/images/demo.png" alt="Domino Online Editor — ID File management interface for secure multi-server access" style="width: 100%; display: block;">
 </div>
 
 ---
@@ -180,25 +180,29 @@ Instantly deploy, preview, and validate your Domino NSF applications in a fully 
 
 <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; margin: 2rem 0; justify-content: center;">
 
-  <a href="https://app.moonshine.dev/public/file/serve/moonshine-dev-private/index.html" style="flex: 1; min-width: 220px; max-width: 270px; padding: 2rem 1.5rem; background: linear-gradient(135deg, rgba(108,92,231,0.12) 0%, rgba(168,85,247,0.06) 100%); border: 1px solid #2a2a4a; border-radius: 12px; text-decoration: none; transition: border-color 0.2s, transform 0.2s;" onmouseover="this.style.borderColor='#6c5ce7';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#2a2a4a';this.style.transform='translateY(0)'">
+  <div style="flex: 1; min-width: 220px; max-width: 270px; padding: 2rem 1.5rem; background: linear-gradient(135deg, rgba(108,92,231,0.12) 0%, rgba(168,85,247,0.06) 100%); border: 1px solid #2a2a4a; border-radius: 12px;">
     <h4 style="color: #e8c547; margin-top: 0;">Canvas Editor</h4>
     <p style="color: #c8c8d8; font-size: 0.95rem;">Drag-and-drop <strong>WYSIWYG</strong> UI designer. Build mockups visually and deploy to any platform.</p>
-  </a>
+    <a href="https://app.moonshine.dev/public/file/serve/moonshine-dev-private/index.html" style="color: #9d8df1; font-size: 0.9rem;">Try Now &rarr;</a>
+  </div>
 
-  <a href="https://app.moonshine.dev/public/file/serve/form-builder/index.html" style="flex: 1; min-width: 220px; max-width: 270px; padding: 2rem 1.5rem; background: linear-gradient(135deg, rgba(108,92,231,0.12) 0%, rgba(168,85,247,0.06) 100%); border: 1px solid #2a2a4a; border-radius: 12px; text-decoration: none; transition: border-color 0.2s, transform 0.2s;" onmouseover="this.style.borderColor='#6c5ce7';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#2a2a4a';this.style.transform='translateY(0)'">
+  <div style="flex: 1; min-width: 220px; max-width: 270px; padding: 2rem 1.5rem; background: linear-gradient(135deg, rgba(108,92,231,0.12) 0%, rgba(168,85,247,0.06) 100%); border: 1px solid #2a2a4a; border-radius: 12px;">
     <h4 style="color: #e8c547; margin-top: 0;">Form Builder</h4>
     <p style="color: #c8c8d8; font-size: 0.95rem;"><strong>Low-code</strong> form creation with built-in validation, fields, and components.</p>
-  </a>
+    <a href="https://app.moonshine.dev/public/file/serve/form-builder/index.html" style="color: #9d8df1; font-size: 0.9rem;">Try Now &rarr;</a>
+  </div>
 
-  <a href="https://app.moonshine.dev/public/file/serve/moonshine-dev-private/assets/ai/index.html" style="flex: 1; min-width: 220px; max-width: 270px; padding: 2rem 1.5rem; background: linear-gradient(135deg, rgba(108,92,231,0.12) 0%, rgba(168,85,247,0.06) 100%); border: 1px solid #2a2a4a; border-radius: 12px; text-decoration: none; transition: border-color 0.2s, transform 0.2s;" onmouseover="this.style.borderColor='#6c5ce7';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#2a2a4a';this.style.transform='translateY(0)'">
+  <div style="flex: 1; min-width: 220px; max-width: 270px; padding: 2rem 1.5rem; background: linear-gradient(135deg, rgba(108,92,231,0.12) 0%, rgba(168,85,247,0.06) 100%); border: 1px solid #2a2a4a; border-radius: 12px;">
     <h4 style="color: #e8c547; margin-top: 0;">AI Tooling</h4>
     <p style="color: #c8c8d8; font-size: 0.95rem;">Describe your UI in <strong>plain English</strong> and watch AI generate your mockup instantly.</p>
-  </a>
+    <a href="https://app.moonshine.dev/public/file/serve/moonshine-dev-private/assets/ai/index.html" style="color: #9d8df1; font-size: 0.9rem;">Try Now &rarr;</a>
+  </div>
 
-  <a href="https://app.moonshine.dev/public/file/serve/domino-integration/index.html" style="flex: 1; min-width: 220px; max-width: 270px; padding: 2rem 1.5rem; background: linear-gradient(135deg, rgba(108,92,231,0.12) 0%, rgba(168,85,247,0.06) 100%); border: 1px solid #2a2a4a; border-radius: 12px; text-decoration: none; transition: border-color 0.2s, transform 0.2s;" onmouseover="this.style.borderColor='#6c5ce7';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#2a2a4a';this.style.transform='translateY(0)'">
+  <div style="flex: 1; min-width: 220px; max-width: 270px; padding: 2rem 1.5rem; background: linear-gradient(135deg, rgba(108,92,231,0.12) 0%, rgba(168,85,247,0.06) 100%); border: 1px solid #2a2a4a; border-radius: 12px;">
     <h4 style="color: #e8c547; margin-top: 0;">Domino Integration</h4>
     <p style="color: #c8c8d8; font-size: 0.95rem;"><strong>NoSQL database</strong> with REST API access and a complete web testing interface.</p>
-  </a>
+    <a href="https://app.moonshine.dev/public/file/serve/domino-integration/index.html" style="color: #9d8df1; font-size: 0.9rem;">Try Now &rarr;</a>
+  </div>
 
 </div>
 
