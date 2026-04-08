@@ -19,11 +19,34 @@ permalink: /
 
 {: .fs-9 }
 
-**Your Domino Database — In a Browser, Right in Front of You.**
-{: .fs-6 .fw-300 }
+<div style="min-height: 4.5rem;">
+  <strong id="hero-tagline" class="fs-6 fw-300" style="transition: opacity 0.6s ease; opacity: 1; display: block;"></strong>
+</div>
 
-Upload your NSF and instantly see it running in HCL Nomad — no servers, no setup, no waiting. Cloud-powered Domino testing in seconds, not months.
-{: .fs-5 .fw-300 }
+<p class="fs-5 fw-300" style="margin-top: 0.5rem;">Upload your NSF and instantly see it running in HCL Nomad — no servers, no setup, no waiting.</p>
+
+<script>
+(function() {
+  var phrases = [
+    "Your Domino Database — In a Browser, Right in Front of You.",
+    "Cloud-Powered HCL Nomad Testing — In Seconds, Not Months.",
+    "Modernize Legacy Domino — Without Rewriting a Single Line.",
+    "From NSF to Live Application — In Under 60 Seconds.",
+    "Enterprise Domino, Meet the Modern Web."
+  ];
+  var el = document.getElementById('hero-tagline');
+  var i = 0;
+  el.textContent = phrases[0];
+  setInterval(function() {
+    el.style.opacity = '0';
+    setTimeout(function() {
+      i = (i + 1) % phrases.length;
+      el.textContent = phrases[i];
+      el.style.opacity = '1';
+    }, 600);
+  }, 4000);
+})();
+</script>
 
 [Start Free Trial](https://nomad-1.moonshine.team/Super.Human.Portal/js-release/index.html#/getting-started){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
 [See the Platform](https://www.moonshine.dev/){: .btn .fs-5 .mb-4 .mb-md-0 }
