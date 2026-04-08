@@ -19,10 +19,10 @@ permalink: /
 
 {: .fs-9 }
 
-**Cloud-Powered HCL Nomad Testing — In Seconds, Not Months.**
+**Your Domino Database — In a Browser, Right in Front of You.**
 {: .fs-6 .fw-300 }
 
-Instantly deploy, preview, and validate your Domino NSF applications in a fully managed HCL Nomad environment. No servers. No setup. No friction.
+Upload your NSF and instantly see it running in HCL Nomad — no servers, no setup, no waiting. Cloud-powered Domino testing in seconds, not months.
 {: .fs-5 .fw-300 }
 
 [Start Free Trial](https://nomad-1.moonshine.team/Super.Human.Portal/js-release/index.html#/getting-started){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
