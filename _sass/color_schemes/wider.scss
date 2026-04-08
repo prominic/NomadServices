@@ -8,7 +8,7 @@
 $body-background-color: #0f0f23;
 $sidebar-color: #12122a;
 $body-text-color: #c8c8d8;
-$body-heading-color: #e8c547;
+$body-heading-color: #e0e0f0;
 $search-background-color: #1a1a35;
 $table-background-color: #1a1a35;
 $feedback-color: darken($body-heading-color, 3%);
@@ -42,13 +42,14 @@ $content-width: 60rem;
 .main-content {
   background-color: $body-background-color;
 
+  // Most headings are clean white/light
   h1, h2, h3, h4, h5, h6 {
     color: $body-heading-color;
   }
 
-  // Gold links in headings
-  h1 a, h2 a, h3 a, h4 a {
-    color: $body-heading-color;
+  // Only the hero title gets gold (uses .fs-9 class from Just the Docs)
+  .fs-9 {
+    color: #e8c547 !important;
   }
 }
 
@@ -69,7 +70,7 @@ $content-width: 60rem;
   color: $body-text-color;
 
   &:hover, &.active {
-    color: $body-heading-color;
+    color: #ffffff;
     background-color: rgba(108, 92, 231, 0.15);
   }
 }
