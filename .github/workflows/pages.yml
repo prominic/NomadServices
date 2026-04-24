@@ -2,7 +2,7 @@ name: Publish Documentation
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "develop"]
   workflow_dispatch:
 
 permissions:
@@ -22,8 +22,10 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
+      - name: Checkout main
         uses: actions/checkout@v6
+        with:
+          ref: main
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
@@ -35,9 +37,23 @@ jobs:
         id: pages
         uses: actions/configure-pages@v5
 
-      - name: Build with Jekyll
+      - name: Build main branch
         run: |
-          bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
+          bundle exec jekyll build --destination _site --baseurl "${{ steps.pages.outputs.base_path }}"
+        env:
+          JEKYLL_ENV: production
+
+      - name: Checkout develop into subdirectory
+        if: github.ref == 'refs/heads/develop'
+        uses: actions/checkout@v6
+        with:
+          ref: develop
+          path: develop-src
+
+      - name: Build develop branch into /develop subfolder
+        if: github.ref == 'refs/heads/develop'
+        run: |
+          bundle exec jekyll build --source develop-src --destination _site/develop --baseurl "${{ steps.pages.outputs.base_path }}/develop"
         env:
           JEKYLL_ENV: production
 
