@@ -26,11 +26,7 @@ permalink: /
 ## Nomad Services
 {: .fs-9 style="text-align: center; font-weight: 800; font-size: 4rem; margin-bottom: 0.25rem;" }
 
-<div style="min-height: 4.5rem;">
-  <strong id="hero-tagline" class="fs-6 fw-300" style="transition: opacity 0.6s ease; opacity: 1; display: block;"></strong>
-</div>
-
-<p class="fs-5 fw-300" style="margin-top: 0.5rem; text-align: center;">Upload your NSF and get a full migration viability report in seconds - before you ever create an account.</p>
+<p class="fs-5 fw-300" style="margin-top: 5.0rem; text-align: center;">Upload your NSF and get a full migration viability report in seconds - before you ever create an account.</p>
 
 <!-- ============================================================ -->
 <!-- DUAL-ENTRY HERO WIDGET                                        -->
@@ -118,31 +114,6 @@ permalink: /
 </div>
 
 <script>
-/* Rotating hero tagline */
-(function() {
-  var phrases = [
-    "Your Domino Database - In a Browser, Right in Front of You.",
-    "Cloud-Powered HCL Nomad Testing - In Seconds, Not Months.",
-    "Modernize Legacy Domino - Without Rewriting a Single Line.",
-    "From NSF to Live Application - In Under 60 Seconds.",
-    "Enterprise Domino, Meet the Modern Web."
-  ];
-  var el = document.getElementById('hero-tagline');
-  if (!el) return;
-  var prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  el.textContent = phrases[0];
-  if (prefersReducedMotion) return;
-  var i = 0;
-  setInterval(function() {
-    el.style.opacity = '0';
-    setTimeout(function() {
-      i = (i + 1) % phrases.length;
-      el.textContent = phrases[i];
-      el.style.opacity = '1';
-    }, 600);
-  }, 4000);
-})();
-
 /* Dropzone + sample DB analysis flow */
 (function() {
   var dropzone = document.getElementById('upload-dropzone');
@@ -311,10 +282,6 @@ permalink: /
   </p>
 </div>
 
-<div style="margin: 2rem 0; border: 1px solid #2a2a4a; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.4);">
-  <img src="{{ '/assets/images/welcome.png' | relative_url }}" alt="Domino Online Editor - Browser-based Domino development environment with Agent Development, Database Management, Multi-Server Support, and Version Control" style="width: 100%; display: block;">
-</div>
-
 <div style="display: flex; gap: 2rem; flex-wrap: wrap; margin: 2rem 0; justify-content: center;">
 
   <div style="flex: 1; min-width: 250px; max-width: 280px; padding: 2rem; background: linear-gradient(135deg, rgba(76,175,80,0.1) 0%, rgba(76,175,80,0.03) 100%); border: 1px solid #2a2a4a; border-radius: 12px; text-align: center;">
@@ -345,10 +312,6 @@ permalink: /
 
 <div style="text-align: center; padding: 1rem 0 0;">
   <p style="font-size: 1.1rem; color: #9d8df1; margin-bottom: 1rem;">Secure ID file management - connect to any Domino server from your browser</p>
-</div>
-
-<div style="margin: 0 0 2rem; border: 1px solid #2a2a4a; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.4);">
-  <img src="{{ '/assets/images/demo.png' | relative_url }}" alt="Domino Online Editor - ID File management interface for secure multi-server access" style="width: 100%; display: block;">
 </div>
 
 ---
