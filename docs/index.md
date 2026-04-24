@@ -110,7 +110,7 @@ permalink: /
     </div>
 
     <div style="text-align: center; padding-top: 0.5rem;">
-      <a href="https://nomad-1.moonshine.team/Super.Human.Portal/js-release/index.html#/getting-started" class="btn btn-primary fs-5">Sign in to see it running live &rarr;</a>
+      <a href="https://app.moonshine.dev/public/file/serve/domino-integration/index.html" target="_blank" rel="noopener" class="btn btn-primary fs-5">Sign in to see it running live &rarr;</a>
       <p style="color: #6a6a7c; font-size: 0.85rem; margin-top: 0.75rem;">Free for 30 days. No credit card required.</p>
     </div>
   </div>
@@ -118,7 +118,7 @@ permalink: /
 </div>
 
 <script>
-// Rotating hero tagline
+/* Rotating hero tagline */
 (function() {
   var phrases = [
     "Your Domino Database - In a Browser, Right in Front of You.",
@@ -143,7 +143,7 @@ permalink: /
   }, 4000);
 })();
 
-// Dropzone + sample DB analysis flow
+/* Dropzone + sample DB analysis flow */
 (function() {
   var dropzone = document.getElementById('upload-dropzone');
   var fileInput = document.getElementById('nsf-file-input');
@@ -204,7 +204,6 @@ permalink: /
     reportPanel.style.display = 'none';
     progressBar.style.width = '0%';
     results.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    // Progress animation
     setTimeout(function() { progressBar.style.width = '35%'; loadingSub.textContent = 'Parsing forms, views, agents...'; }, 200);
     setTimeout(function() { progressBar.style.width = '70%'; loadingSub.textContent = 'Checking migration blockers...'; }, 1100);
     setTimeout(function() { progressBar.style.width = '100%'; loadingSub.textContent = 'Scoring viability...'; }, 1900);
@@ -215,14 +214,11 @@ permalink: /
   }
 
   function handleUserFile(file) {
-    // TODO(backend): POST the file to /api/analyze, then populate the report
-    // panel from the server's response. For now we show the mock report so the
-    // UX flow can be reviewed end-to-end.
+    /* TODO(backend): POST the file to /api/analyze, then populate the report panel from the server's response. Showing the mock report for now so the UX flow can be reviewed end-to-end. */
     showLoading(file.name + ' (' + formatSize(file.size) + ')', 'Your NSF');
   }
 
   function runSampleAnalysis() {
-    // Sample data is precomputed and safe to show as-is.
     showLoading('CRM.nsf - Customer Relationship Management', 'Sample analysis');
   }
 })();
