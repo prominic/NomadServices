@@ -48,12 +48,12 @@ permalink: /
     <input type="file" id="nsf-file-input" accept=".nsf" style="display: none;" aria-hidden="true">
   </div>
 
-  <div style="text-align: center; margin-top: 1.5rem; font-size: 1rem; color: #c8c8d8;">
-    Don't have an NSF handy?
-    <a href="#analysis-results" id="sample-db-link" style="color: #e8c547; font-weight: 600; margin: 0 0.4rem;">Try with our sample database &rarr;</a>
-    <span style="color: #6a6a7c;">|</span>
-    <a href="#demo-video" style="color: #9d8df1; margin: 0 0.4rem;">Watch the 60-second demo &rarr;</a>
-  </div>
+  <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.5rem; font-size: 1rem; color: #c8c8d8;">
+  <span>Don't have an NSF handy?</span>
+  <a href="#analysis-results" id="sample-db-link" style="display: inline-block; padding: 8px 20px; background: rgba(255,255,255,0.04); color: #ffffff; border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: background 0.2s ease, border-color 0.2s ease;" onmouseover="this.style.background='rgba(255,255,255,0.10)'; this.style.borderColor='rgba(255,255,255,0.45)';" onmouseout="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(255,255,255,0.25)';">Try with our sample database &rarr;</a>
+  <span style="color: #6a6a7c;">|</span>
+  <a href="#demo-video" style="color: #9d8df1;">Watch the 60-second demo &rarr;</a>
+</div>
 
   <div style="text-align: center; margin-top: 1rem; font-size: 0.85rem; color: #6a6a7c;">
     &#128274; Analyzed and deleted within 15 minutes &middot; Never stored &middot; TLS encrypted in transit
