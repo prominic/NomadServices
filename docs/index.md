@@ -14,7 +14,25 @@ permalink: /
   The goal is to let the user experience value before the sign-in wall.
   TODOs around wiring the dropzone to a real analysis endpoint are
   flagged "TODO(backend)" below.
+
+  Section <h2> elements ALL carry an explicit id="..." attribute. This is
+  what makes the just-the-docs lunr search results deep-link into the
+  correct section on click. Kramdown only auto-generates ids on
+  markdown-syntax headings (## ...); these are raw HTML headings, so the
+  ids must be hand-written. If you add a new <h2> section, give it an id.
 -->
+
+<style>
+/*
+  Smooth scrolling for in-page anchor jumps (search-result clicks,
+  "Try it now" banner link, "Analyze an NSF now" CTA, etc.).
+  Falls back to instant scroll for users with prefers-reduced-motion.
+*/
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+</style>
 
 <div style="background: linear-gradient(135deg, #6c5ce7 0%, #a855f7 50%, #6c5ce7 100%); margin: -2rem -2rem 2rem -2rem; padding: 1rem 2rem; text-align: center; position: relative; overflow: hidden;">
   <div style="position: relative; z-index: 1;">
@@ -198,7 +216,7 @@ permalink: /
 ---
 
 <div style="text-align: center; padding: 2rem 0;">
-  <h2 style="font-size: 2rem; color: #e0e0f0;">Accelerate Your Domino Modernization</h2>
+  <h2 id="accelerate-your-domino-modernization" style="font-size: 2rem; color: #e0e0f0;">Accelerate Your Domino Modernization</h2>
   <p style="font-size: 1.2rem; color: #c8c8d8; max-width: 800px; margin: 0 auto;">
     Legacy applications shouldn't hold your organization back. Nomad Services bridges the gap between your existing Domino investments and the modern, mobile-first experiences your users demand.
   </p>
@@ -228,7 +246,7 @@ permalink: /
 ---
 
 <div style="text-align: center; padding: 2rem 0;">
-  <h2 style="font-size: 2rem; color: #e0e0f0;">How It Works</h2>
+  <h2 id="how-it-works" style="font-size: 2rem; color: #e0e0f0;">How It Works</h2>
   <p style="font-size: 1.1rem; color: #9d8df1;">From NSF to live application in four simple steps</p>
 </div>
 
@@ -262,8 +280,8 @@ permalink: /
 
 ---
 
-<div id="demo-video" style="text-align: center; padding: 2rem 0;">
-  <h2 style="font-size: 2rem; color: #e0e0f0;">Prefer to Watch First?</h2>
+<div style="text-align: center; padding: 2rem 0;">
+  <h2 id="demo-video" style="font-size: 2rem; color: #e0e0f0;">Prefer to Watch First?</h2>
   <p style="font-size: 1.1rem; color: #c8c8d8; max-width: 700px; margin: 0 auto 1.5rem;">
     A 60-second tour of what happens between drop and live-in-Nomad.
   </p>
@@ -276,7 +294,7 @@ permalink: /
 ---
 
 <div style="text-align: center; padding: 2rem 0;">
-  <h2 style="font-size: 2rem; color: #e8c547;">Domino Online Editor</h2>
+  <h2 id="domino-online-editor" style="font-size: 2rem; color: #e8c547;">Domino Online Editor</h2>
   <p style="font-size: 1.2rem; color: #c8c8d8; max-width: 800px; margin: 0 auto;">
     A complete <strong>browser-based environment</strong> for building, managing, and deploying Domino applications across your entire infrastructure. No Notes client required.
   </p>
@@ -317,7 +335,7 @@ permalink: /
 ---
 
 <div style="text-align: center; padding: 2rem 0;">
-  <h2 style="font-size: 2rem; color: #e0e0f0;">Built for the Enterprise</h2>
+  <h2 id="built-for-the-enterprise" style="font-size: 2rem; color: #e0e0f0;">Built for the Enterprise</h2>
 </div>
 
 <div style="display: flex; gap: 3rem; flex-wrap: wrap; margin: 1rem 0 2rem; justify-content: center;">
@@ -351,7 +369,7 @@ permalink: /
 ---
 
 <div style="text-align: center; padding: 2rem 0;">
-  <h2 style="font-size: 2rem; color: #e0e0f0;">The Moonshine.dev Platform</h2>
+  <h2 id="moonshine-platform" style="font-size: 2rem; color: #e0e0f0;">The Moonshine.dev Platform</h2>
   <p style="font-size: 1.1rem; color: #c8c8d8; max-width: 700px; margin: 0 auto;">
     Nomad Services is part of a complete <strong>rapid application development</strong> ecosystem. Build, test, and deploy - all from one platform.
   </p>
@@ -388,7 +406,7 @@ permalink: /
 ---
 
 <div style="text-align: center; padding: 2rem 0;">
-  <h2 style="font-size: 2rem; color: #e0e0f0;">Pricing</h2>
+  <h2 id="pricing" style="font-size: 2rem; color: #e0e0f0;">Pricing</h2>
   <p style="font-size: 1.1rem; color: #c8c8d8; max-width: 700px; margin: 0 auto;">
     From free exploration to full-service modernization - choose the plan that fits your needs.
   </p>
@@ -442,7 +460,7 @@ permalink: /
 ---
 
 <div style="text-align: center; padding: 3rem 0;">
-  <h2 style="font-size: 2.2rem; color: #e8c547; margin-bottom: 1rem;">Ready to See What's Really in Your NSF?</h2>
+  <h2 id="final-cta" style="font-size: 2.2rem; color: #e8c547; margin-bottom: 1rem;">Ready to See What's Really in Your NSF?</h2>
   <p style="font-size: 1.2rem; color: #c8c8d8; max-width: 600px; margin: 0 auto 2rem;">
     Drop a file or try our sample - get your migration viability report in seconds. No credit card, no signup, nothing to cancel.
   </p>

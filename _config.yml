@@ -43,8 +43,8 @@ search_enabled: true
 aux_links:
   'Moonshine.dev':
     - 'https://www.moonshine.dev/'
-  'GitHub':
-    - 'https://github.com/prominic/NomadServices'
+  'Blog':
+    - 'https://www.moonshine.dev/blog'
 aux_links_new_tab: true
 
 # Footer content
@@ -59,7 +59,7 @@ last_edit_timestamp: true
 last_edit_time_format: '%b %e %Y at %I:%M %p'
 
 # Footer "Edit this page on GitHub" link text
-gh_edit_link: true
+gh_edit_link: false
 gh_edit_link_text: 'Edit this page on GitHub'
 gh_edit_repository: 'https://github.com/prominic/NomadServices'
 gh_edit_branch: 'main'
