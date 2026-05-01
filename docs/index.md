@@ -2,7 +2,7 @@
 title: Home
 layout: home
 nav_order: 1
-description: "Nomad Services - See your HCL Domino NSF analyzed for migration viability in seconds. No signup required for the preview."
+description: "Nomad.Services - See your HCL Domino NSF analyzed for migration viability in seconds. No signup required for the preview."
 permalink: /
 ---
 
@@ -41,7 +41,7 @@ html { scroll-behavior: smooth; }
   </div>
 </div>
 
-## Nomad Services
+## Nomad.Services
 {: .fs-9 style="text-align: center; font-weight: 800; font-size: 4rem; margin-bottom: 0.25rem;" }
 
 <p class="fs-5 fw-300" style="margin-top: 5.0rem; text-align: center;">Upload your NSF and get a full migration viability report in seconds - before you ever create an account.</p>
@@ -218,7 +218,7 @@ html { scroll-behavior: smooth; }
 <div style="text-align: center; padding: 2rem 0;">
   <h2 id="accelerate-your-domino-modernization" style="font-size: 2rem; color: #e0e0f0;">Accelerate Your Domino Modernization</h2>
   <p style="font-size: 1.2rem; color: #c8c8d8; max-width: 800px; margin: 0 auto;">
-    Legacy applications shouldn't hold your organization back. Nomad Services bridges the gap between your existing Domino investments and the modern, mobile-first experiences your users demand.
+    Legacy applications shouldn't hold your organization back. Nomad.Services bridges the gap between your existing Domino investments and the modern, mobile-first experiences your users demand.
   </p>
 </div>
 
@@ -371,7 +371,7 @@ html { scroll-behavior: smooth; }
 <div style="text-align: center; padding: 2rem 0;">
   <h2 id="moonshine-platform" style="font-size: 2rem; color: #e0e0f0;">The Moonshine.dev Platform</h2>
   <p style="font-size: 1.1rem; color: #c8c8d8; max-width: 700px; margin: 0 auto;">
-    Nomad Services is part of a complete <strong>rapid application development</strong> ecosystem. Build, test, and deploy - all from one platform.
+    Nomad.Services is part of a complete <strong>rapid application development</strong> ecosystem. Build, test, and deploy - all from one platform.
   </p>
 </div>
 

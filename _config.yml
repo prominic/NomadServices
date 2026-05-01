@@ -1,5 +1,5 @@
 # Basic Jekyll settings
-title: Nomad Services
+title: Nomad.Services
 description: Upload your NSF and test it in HCL Nomad — powered by Moonshine.dev
 baseurl: ''
 url: 'https://nomad.services'
