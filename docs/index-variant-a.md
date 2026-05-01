@@ -625,8 +625,8 @@ body.ns-launching-active #marketing-view ~ h2 {
       <p class="ns-action-sub">Sign in and we'll launch your file live in HCL Nomad in your browser. The free trial unlocks everything.</p>
 
       <div class="ns-button-row">
-        <a href="https://app.moonshine.dev/public/file/serve/domino-integration/index.html?intent=signup" class="ns-btn ns-btn-primary" id="btn-signup">I'm new here, create my account</a>
-        <a href="https://app.moonshine.dev/public/file/serve/domino-integration/index.html?intent=login" class="ns-btn ns-btn-secondary" id="btn-login">I already have an account, sign in</a>
+        <a href="https://auth.moonshine.dev/registration" class="ns-btn ns-btn-primary" id="btn-signup">I'm new here, create my account</a>
+        <a href="https://auth.moonshine.dev/login" class="ns-btn ns-btn-secondary" id="btn-login">I already have an account, sign in</a>
       </div>
 
       <p class="ns-reassurance">30-day free trial &middot; No credit card &middot; Cancel anytime</p>

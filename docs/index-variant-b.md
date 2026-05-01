@@ -627,7 +627,7 @@ body.ns-launching-active #marketing-view ~ h2 {
 
       <p class="ns-alt-link">
         Already have an account?
-        <a href="https://app.moonshine.dev/public/file/serve/domino-integration/index.html?intent=login" id="alt-signin">Sign in</a>
+        <a href="https://auth.moonshine.dev/login" id="alt-signin">Sign in</a>
       </p>
 
       <button type="button" class="ns-exit-link" id="exit-link">Not now, just exploring</button>
