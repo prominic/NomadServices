@@ -41,12 +41,12 @@ html { scroll-behavior: smooth; }
 /* navigating, so the theme header and footer remain in place.  */
 /* ============================================================ */
 .ns-launching-wrap {
-  max-width: 720px;
   margin: 1rem auto 3rem;
   padding: 0 1rem;
-  /* Keep theme footer near the viewport bottom while the launching view is short.
-     Once content reveals (file card + action panel), the wrap grows past this
-     min-height naturally and the page scrolls. */
+  /* No inner max-width — defers to the parent .main-content-wrap
+     (1200px from the wider color scheme), so analytical card, file
+     card, stepper and action panel match the marketing content width.
+     The progress strip pins itself narrow via its own max-width below. */
   min-height: calc(100vh - 18.5rem);
 }
 .ns-progress-strip {
@@ -54,7 +54,8 @@ html { scroll-behavior: smooth; }
   border: 1px solid #2a2a4a;
   border-radius: 12px;
   padding: 1.5rem 1.5rem 1.25rem;
-  margin-bottom: 2rem;
+  margin: 0 auto 2rem;
+  max-width: 720px;
   text-align: center;
 }
 .ns-progress-status {
@@ -177,7 +178,156 @@ html { scroll-behavior: smooth; }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Narrow viewport: shrink stepper */
+/* Fade-out for stage transitions (preparing -> analyzing -> results). */
+.ns-fade-out { animation: ns-fade-out 0.3s ease-out forwards; }
+@keyframes ns-fade-out {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-8px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ns-fade-out { animation: none !important; opacity: 0 !important; }
+}
+
+/* ============================================================ */
+/* Stage layout. The launching wrap contains three stages:       */
+/*   #stage-preparing  - "Preparing your file" (NSF drop only)   */
+/*   #stage-analyzing  - "Analyzing your NSF" (NSF + sample DB)  */
+/*   #stage-results    - analytical card (+ optional post-cta)  */
+/* Progress stages are vertically centered in the available      */
+/* viewport space (between theme header and footer). The results */
+/* stage centers similarly only when no post-content is shown    */
+/* (the sample-DB path), so the analytical block fills the page. */
+/* ============================================================ */
+.ns-stage { width: 100%; }
+.ns-stage-centered {
+  min-height: calc(100vh - 18.5rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ns-stage-centered > .ns-progress-strip {
+  width: 100%;
+  margin-bottom: 0;
+}
+#stage-results.ns-mode-results-only {
+  min-height: calc(100vh - 18.5rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+#stage-results.ns-mode-results-only > .ns-analysis-report {
+  margin-bottom: 0;
+}
+
+/* ============================================================ */
+/* Shared analytical report card — used by all three flows.      */
+/* (Lifted from the old inline #analysis-report block in the     */
+/* marketing view, which is now removed.)                        */
+/* ============================================================ */
+.ns-analysis-report {
+  padding: 2rem;
+  background: linear-gradient(135deg, rgba(76,175,80,0.08) 0%, rgba(76,175,80,0.02) 100%);
+  border: 1px solid #43a047;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+}
+.ns-analysis-status {
+  color: #9d8df1; text-transform: uppercase; letter-spacing: 0.1em;
+  font-size: 0.85rem; margin-bottom: 0.5rem;
+}
+.ns-analysis-title {
+  color: #e8c547; margin: 0 0 1.5rem; font-size: 1.5rem;
+}
+.ns-analysis-stats {
+  display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1.5rem;
+}
+.ns-stat { flex: 1; min-width: 120px; text-align: center; }
+.ns-stat-num {
+  font-size: 2.5rem; font-weight: 700; color: #e8c547; line-height: 1;
+}
+.ns-stat-num-good { color: #66bb6a; }
+.ns-stat-label {
+  font-size: 0.9rem; color: #a0a0b8; margin-top: 0.25rem;
+}
+.ns-analysis-callout {
+  padding: 1rem; background: rgba(67,160,71,0.1);
+  border-left: 3px solid #43a047; border-radius: 4px;
+  margin-bottom: 1.5rem;
+}
+.ns-analysis-callout strong { color: #66bb6a; }
+.ns-analysis-callout span { color: #c8c8d8; }
+.ns-analysis-cta { text-align: center; padding-top: 0.5rem; }
+.ns-analysis-cta-sub {
+  color: #6a6a7c; font-size: 0.85rem; margin-top: 0.75rem;
+}
+
+/* Confidence-building text shown above conversion CTAs in NSF flows. */
+.ns-confidence-text {
+  text-align: center; color: #c8c8d8;
+  font-size: 1.1rem; margin: 1.5rem auto;
+  line-height: 1.4;
+}
+.ns-confidence-text strong { color: #e8c547; font-weight: 700; }
+
+/* "What you unlock" value-prop card — sits between the confidence  */
+/* line and the stepper. This is the answer to "what's actually     */
+/* behind the sign-up wall?" — keeping it concrete is what moves    */
+/* the conversion needle.                                            */
+.ns-unlock-card {
+  background: linear-gradient(135deg, rgba(108,92,231,0.10) 0%, rgba(168,85,247,0.04) 100%);
+  border: 1px solid #6c5ce7;
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  margin-bottom: 2rem;
+}
+.ns-unlock-headline {
+  color: #e8c547;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin: 0 0 1.25rem;
+  text-align: center;
+}
+.ns-unlock-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 0.75rem 2rem;
+}
+.ns-unlock-list li {
+  color: #c8c8d8;
+  font-size: 0.95rem;
+  padding-left: 1.75rem;
+  position: relative;
+  line-height: 1.4;
+}
+.ns-unlock-list li::before {
+  content: "\2713";
+  position: absolute;
+  left: 0;
+  top: -1px;
+  color: #66bb6a;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+/* Privacy reassurance strip — footer of #post-content, addresses   */
+/* the "what happened to my file?" worry at the choice point.       */
+.ns-privacy-strip {
+  text-align: center;
+  color: #8888a0;
+  font-size: 0.85rem;
+  margin: 2rem auto 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(42,42,74,0.6);
+  max-width: 720px;
+}
+.ns-privacy-strip span { white-space: nowrap; }
+.ns-privacy-strip .ns-privacy-sep { color: #4a4a64; margin: 0 0.5rem; }
+
 /* ============================================================ */
 /* Belt-and-suspenders hide rules for launching mode.            */
 /* When body has .ns-launching-active, we hide:                 */
@@ -261,60 +411,9 @@ body.ns-launching-active #marketing-view ~ h2 {
 
 </div>
 
-<!-- ============================================================ -->
-<!-- INLINE ANALYSIS PROGRESS + RESULTS CARD                      -->
-<!-- Hidden by default; shown after drop or sample click.          -->
-<!-- TODO(backend): replace mock data with real API response.     -->
-<!-- ============================================================ -->
-
-<div id="analysis-results" style="display: none; margin: 2rem 0;">
-
-  <div id="analysis-loading" style="padding: 2rem; background: rgba(108,92,231,0.08); border: 1px solid #2a2a4a; border-radius: 12px; text-align: center;">
-    <div style="font-size: 1.1rem; color: #c8c8d8; margin-bottom: 1rem;" id="analysis-loading-text">Analyzing your NSF&hellip;</div>
-    <div style="height: 6px; background: rgba(108,92,231,0.15); border-radius: 3px; overflow: hidden; max-width: 400px; margin: 0 auto;">
-      <div id="analysis-progress-bar" style="height: 100%; width: 0%; background: linear-gradient(90deg, #6c5ce7, #a855f7); transition: width 0.4s ease;"></div>
-    </div>
-    <div style="font-size: 0.85rem; color: #6a6a7c; margin-top: 0.75rem;" id="analysis-loading-sub">Parsing forms, views, agents&hellip;</div>
-  </div>
-
-  <div id="analysis-report" style="display: none; padding: 2rem; background: linear-gradient(135deg, rgba(76,175,80,0.08) 0%, rgba(76,175,80,0.02) 100%); border: 1px solid #43a047; border-radius: 12px;">
-    <div id="analysis-status" style="color: #9d8df1; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.85rem; margin-bottom: 0.5rem;">Sample analysis</div>
-    <h3 id="analysis-title" style="color: #e8c547; margin: 0 0 1.5rem; font-size: 1.5rem;">CRM.nsf &mdash; Customer Relationship Management</h3>
-
-    <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
-      <div style="flex: 1; min-width: 120px; text-align: center;">
-        <div style="font-size: 2.5rem; font-weight: 700; color: #e8c547; line-height: 1;">42</div>
-        <div style="font-size: 0.9rem; color: #a0a0b8; margin-top: 0.25rem;">Forms</div>
-      </div>
-      <div style="flex: 1; min-width: 120px; text-align: center;">
-        <div style="font-size: 2.5rem; font-weight: 700; color: #e8c547; line-height: 1;">17</div>
-        <div style="font-size: 0.9rem; color: #a0a0b8; margin-top: 0.25rem;">Views</div>
-      </div>
-      <div style="flex: 1; min-width: 120px; text-align: center;">
-        <div style="font-size: 2.5rem; font-weight: 700; color: #e8c547; line-height: 1;">8</div>
-        <div style="font-size: 0.9rem; color: #a0a0b8; margin-top: 0.25rem;">Agents</div>
-      </div>
-      <div style="flex: 1; min-width: 120px; text-align: center;">
-        <div style="font-size: 2.5rem; font-weight: 700; color: #66bb6a; line-height: 1;">A</div>
-        <div style="font-size: 0.9rem; color: #a0a0b8; margin-top: 0.25rem;">Viability</div>
-      </div>
-    </div>
-
-    <div style="padding: 1rem; background: rgba(67,160,71,0.1); border-left: 3px solid #43a047; border-radius: 4px; margin-bottom: 1.5rem;">
-      <strong style="color: #66bb6a;">&check; Ready to migrate.</strong>
-      <span style="color: #c8c8d8;">No blockers detected. Standard LotusScript and Formula patterns throughout. Estimated Nomad rendering time: under 30 seconds.</span>
-    </div>
-
-    <div style="text-align: center; padding-top: 0.5rem;">
-      <a href="https://app.moonshine.dev/public/file/serve/domino-integration/index.html" target="_blank" rel="noopener" class="btn btn-primary fs-5">Sign in to see it running live &rarr;</a>
-      <p style="color: #6a6a7c; font-size: 0.85rem; margin-top: 0.75rem;">Free for 30 days. No credit card required.</p>
-    </div>
-  </div>
-
-</div>
-
-<!-- Note: dropzone, sample, and view-switching logic is handled by the
-     unified script at the bottom of this file. -->
+<!-- Note: dropzone and sample-DB clicks now route through the launching
+     view (see #launching-view below). The old inline analysis card was
+     removed when the analytical block became shared across flows. -->
 
 
 ---
@@ -583,56 +682,140 @@ body.ns-launching-active #marketing-view ~ h2 {
 <!-- show this view. The theme header and footer stay in place.    -->
 <!-- ============================================================ -->
 <div id="launching-view" style="display: none;" markdown="0">
-  <div class="ns-launching-wrap">    <div class="ns-progress-strip" id="progress-strip">
-      <div class="ns-progress-status">Preparing your file</div>
-      <div class="ns-progress-title" id="progress-title">Loading&hellip;</div>
-      <div class="ns-progress-track">
-        <div class="ns-progress-bar" id="progress-bar"></div>
-      </div>
-      <div class="ns-progress-sub" id="progress-sub">Securing your upload&hellip;</div>
-    </div>
+  <div class="ns-launching-wrap">
 
-    <div class="ns-step-card ns-fade-in" id="step-card" style="display: none;">
-      <div class="ns-stepper">
-        <div class="ns-step is-done">
-          <div class="ns-step-circle" aria-label="Step 1, completed">&check;</div>
-          <div class="ns-step-label">Uploaded</div>
+    <!-- Stage 1: Preparing your file (real NSF drop only) -->
+    <div class="ns-stage ns-stage-centered" id="stage-preparing" style="display: none;">
+      <div class="ns-progress-strip">
+        <div class="ns-progress-status">Preparing your file</div>
+        <div class="ns-progress-title" id="prep-title">Loading&hellip;</div>
+        <div class="ns-progress-track">
+          <div class="ns-progress-bar" id="prep-bar"></div>
         </div>
-        <div class="ns-step-bar is-done"></div>
-        <div class="ns-step is-active">
-          <div class="ns-step-circle" aria-current="step" aria-label="Step 2, current">2</div>
-          <div class="ns-step-label">Sign in</div>
+        <div class="ns-progress-sub" id="prep-sub">Securing your upload&hellip;</div>
+      </div>
+    </div>
+
+    <!-- Stage 2: Analyzing your NSF (both NSF and sample-DB paths) -->
+    <div class="ns-stage ns-stage-centered" id="stage-analyzing" style="display: none;">
+      <div class="ns-progress-strip">
+        <div class="ns-progress-status">Analyzing your NSF</div>
+        <div class="ns-progress-title" id="analyze-title">Reading database structure&hellip;</div>
+        <div class="ns-progress-track">
+          <div class="ns-progress-bar" id="analyze-bar"></div>
         </div>
-        <div class="ns-step-bar"></div>
-        <div class="ns-step">
-          <div class="ns-step-circle" aria-label="Step 3, pending">3</div>
-          <div class="ns-step-label">Run live in Nomad</div>
+        <div class="ns-progress-sub" id="analyze-sub">Parsing forms, views, agents&hellip;</div>
+      </div>
+    </div>
+
+    <!-- Stage 3: Results — analytical card (shared) + post-content for NSF flow -->
+    <div class="ns-stage" id="stage-results" style="display: none;">
+
+      <div class="ns-analysis-report ns-fade-in" id="analysis-report-card">
+        <div class="ns-analysis-status" id="analysis-report-status">Sample analysis</div>
+        <h3 class="ns-analysis-title" id="analysis-report-title">CRM.nsf &mdash; Customer Relationship Management</h3>
+
+        <div class="ns-analysis-stats">
+          <div class="ns-stat">
+            <div class="ns-stat-num">42</div>
+            <div class="ns-stat-label">Forms</div>
+          </div>
+          <div class="ns-stat">
+            <div class="ns-stat-num">17</div>
+            <div class="ns-stat-label">Views</div>
+          </div>
+          <div class="ns-stat">
+            <div class="ns-stat-num">8</div>
+            <div class="ns-stat-label">Agents</div>
+          </div>
+          <div class="ns-stat">
+            <div class="ns-stat-num ns-stat-num-good">A</div>
+            <div class="ns-stat-label">Viability</div>
+          </div>
+        </div>
+
+        <div class="ns-analysis-callout">
+          <strong>&check; Ready to migrate.</strong>
+          <span>No blockers detected. Standard LotusScript and Formula patterns throughout. Estimated Nomad rendering time: under 30 seconds.</span>
+        </div>
+
+        <div class="ns-analysis-cta" id="analysis-cta">
+          <a href="https://app.moonshine.dev/public/file/serve/domino-integration/index.html" target="_blank" rel="noopener" class="btn btn-primary fs-5">Sign in to see it running live &rarr;</a>
+          <p class="ns-analysis-cta-sub">Free for 30 days. No credit card required.</p>
         </div>
       </div>
-    </div>
 
-    <div class="ns-file-card ns-fade-in" id="file-card" style="display: none; animation-delay: 0.1s;">
-      <div class="ns-file-icon" aria-hidden="true">&#128196;</div>
-      <div class="ns-file-meta">
-        <div class="ns-file-name" id="file-name">your-file.nsf</div>
-        <div class="ns-file-size" id="file-size">&mdash;</div>
-      </div>
-      <div class="ns-file-status">&check; Ready</div>
-    </div>
+      <!-- Post-content: shown only when a real NSF was dropped -->
+      <div id="post-content" style="display: none;">
 
-    <div class="ns-action-panel ns-fade-in" id="action-panel" style="display: none; animation-delay: 0.2s;">
-      <h2 class="ns-action-headline">You're almost there</h2>
-      <p class="ns-action-sub">Sign in and we'll launch your file live in HCL Nomad in your browser. The free trial unlocks everything.</p>
+        <p class="ns-confidence-text ns-fade-in">
+          Your <strong id="confidence-filename">your file</strong> scored <strong>A for viability</strong> &mdash; no migration blockers found. Create an account to unlock the full breakdown.
+        </p>
 
-      <div class="ns-button-row">
-        <a href="https://auth.moonshine.dev/registration" class="ns-btn ns-btn-primary" id="btn-signup">I'm new here, create my account</a>
-        <a href="https://auth.moonshine.dev/login" class="ns-btn ns-btn-secondary" id="btn-login">I already have an account, sign in</a>
-      </div>
+        <div class="ns-unlock-card ns-fade-in" style="animation-delay: 0.05s;">
+          <div class="ns-unlock-headline">What you unlock with an account</div>
+          <ul class="ns-unlock-list">
+            <li>Per-form &amp; per-view risk flags</li>
+            <li>LotusScript &amp; Formula complexity scores</li>
+            <li>Live HCL Nomad preview in your browser</li>
+            <li>Downloadable PDF migration report</li>
+            <li>Prioritized migration roadmap</li>
+          </ul>
+        </div>
 
-      <p class="ns-reassurance">30-day free trial &middot; No credit card &middot; Cancel anytime</p>
+        <div class="ns-step-card ns-fade-in" style="animation-delay: 0.1s;">
+          <div class="ns-stepper">
+            <div class="ns-step is-done">
+              <div class="ns-step-circle" aria-label="Step 1, completed">&check;</div>
+              <div class="ns-step-label">Uploaded</div>
+            </div>
+            <div class="ns-step-bar is-done"></div>
+            <div class="ns-step is-active">
+              <div class="ns-step-circle" aria-current="step" aria-label="Step 2, current">2</div>
+              <div class="ns-step-label">Sign in</div>
+            </div>
+            <div class="ns-step-bar"></div>
+            <div class="ns-step">
+              <div class="ns-step-circle" aria-label="Step 3, pending">3</div>
+              <div class="ns-step-label">Run live in Nomad</div>
+            </div>
+          </div>
+        </div>
 
-      <button type="button" class="ns-exit-link" id="exit-link">Not now, just exploring</button>
-    </div>
+        <div class="ns-file-card ns-fade-in" style="animation-delay: 0.2s;">
+          <div class="ns-file-icon" aria-hidden="true">&#128196;</div>
+          <div class="ns-file-meta">
+            <div class="ns-file-name" id="file-name">your-file.nsf</div>
+            <div class="ns-file-size" id="file-size">&mdash;</div>
+          </div>
+          <div class="ns-file-status">&check; Ready</div>
+        </div>
+
+        <div class="ns-action-panel ns-fade-in" style="animation-delay: 0.3s;">
+          <h2 class="ns-action-headline">You're almost there</h2>
+          <p class="ns-action-sub">Sign in and we'll launch your file live in HCL Nomad in your browser. The free trial unlocks everything.</p>
+
+          <div class="ns-button-row">
+            <a href="https://auth.moonshine.dev/registration" class="ns-btn ns-btn-primary" id="btn-signup">I'm new here, create my account</a>
+            <a href="https://auth.moonshine.dev/login" class="ns-btn ns-btn-secondary" id="btn-login">I already have an account, sign in</a>
+          </div>
+
+          <p class="ns-reassurance">30-day free trial &middot; No credit card &middot; Cancel anytime</p>
+
+          <button type="button" class="ns-exit-link" id="exit-link">Not now, just exploring</button>
+        </div>
+
+        <div class="ns-privacy-strip ns-fade-in" style="animation-delay: 0.4s;">
+          <span>&#128274; File analyzed and deleted within 15 minutes</span>
+          <span class="ns-privacy-sep">&middot;</span>
+          <span>Never stored</span>
+          <span class="ns-privacy-sep">&middot;</span>
+          <span>TLS encrypted in transit</span>
+        </div>
+
+      </div><!-- /#post-content -->
+
+    </div><!-- /#stage-results -->
 
   </div>
 </div><!-- /#launching-view -->
@@ -645,63 +828,84 @@ body.ns-launching-active #marketing-view ~ h2 {
 /* The page has two views in the DOM:                            */
 /*   - #marketing-view   shown by default                        */
 /*   - #launching-view   hidden by default                       */
-/* When the user drops or picks a file we use history.pushState  */
-/* to change the URL to /launching/ and toggle visibility. We do */
-/* NOT actually navigate, so the file stays in JS memory and the */
-/* theme header/footer remain rendered above and below.          */
 /*                                                               */
-/* See docs/FUNNEL.md (or the comparison doc shipped alongside   */
-/* this file) for context on why we picked pushState (Option 2)  */
-/* over IndexedDB (Option 1) and over a real upload-then-navigate*/
-/* token flow (Option 3).                                        */
+/* Both the NSF-drop path and the sample-DB path push the URL    */
+/* to /launching/ (no real navigation; theme header/footer stay  */
+/* in place) and run a staged sequence inside the launching      */
+/* view:                                                         */
+/*   NSF drop : preparing -> analyzing -> results+post-content   */
+/*   Sample DB:              analyzing -> results (no post-cta) */
+/*                                                               */
+/* Each progress stage is vertically centered in the available   */
+/* viewport space and fades out before the next stage fades in.  */
+/* The shared analytical card lives in #stage-results; the file  */
+/* card, stepper and sign-in CTAs live in #post-content and are  */
+/* shown only for the real NSF-drop path.                        */
 /* ============================================================ */
 (function() {
-  /* The actual File object lives here while the launching view is
-     active. It's intentionally not persisted across page reloads — if
-     the user refreshes /launching/ we treat it as a deep-link without
-     a file and bring them back to the marketing view. */
+  /* The File object lives here while the launching view is active.
+     Not persisted across reloads — refreshing /launching/ takes the
+     user back to the marketing view. */
   var pendingFile = null;
+  var pendingMode = null;  /* 'file' | 'sample' | null */
+
+  /* Track stage timers so we can cancel them if the user exits the
+     launching view mid-animation (back button, exit link, etc.). */
+  var stageTimers = [];
+  function clearTimers() {
+    while (stageTimers.length) clearTimeout(stageTimers.pop());
+  }
+  function schedule(fn, delay) {
+    var id = setTimeout(fn, delay);
+    stageTimers.push(id);
+    return id;
+  }
 
   /* Marketing-view elements */
   var dropzone = document.getElementById('upload-dropzone');
   var fileInput = document.getElementById('nsf-file-input');
   var sampleLink = document.getElementById('sample-db-link');
-  var results = document.getElementById('analysis-results');
-  var loadingPanel = document.getElementById('analysis-loading');
-  var loadingSub = document.getElementById('analysis-loading-sub');
-  var sampleProgressBar = document.getElementById('analysis-progress-bar');
-  var reportPanel = document.getElementById('analysis-report');
-  var analysisStatus = document.getElementById('analysis-status');
-  var analysisTitle = document.getElementById('analysis-title');
 
   /* View containers */
   var marketingView = document.getElementById('marketing-view');
   var launchingView = document.getElementById('launching-view');
 
-  /* Launching-view elements */
-  var progressTitle = document.getElementById('progress-title');
-  var progressBar = document.getElementById('progress-bar');
-  var progressSub = document.getElementById('progress-sub');
+  /* Launching-view stages */
+  var stagePreparing = document.getElementById('stage-preparing');
+  var stageAnalyzing = document.getElementById('stage-analyzing');
+  var stageResults = document.getElementById('stage-results');
+
+  /* Preparing-stage elements */
+  var prepTitle = document.getElementById('prep-title');
+  var prepBar = document.getElementById('prep-bar');
+  var prepSub = document.getElementById('prep-sub');
+
+  /* Analyzing-stage elements */
+  var analyzeTitle = document.getElementById('analyze-title');
+  var analyzeBar = document.getElementById('analyze-bar');
+  var analyzeSub = document.getElementById('analyze-sub');
+
+  /* Results-stage elements */
+  var analysisCta = document.getElementById('analysis-cta');
+  var analysisReportStatus = document.getElementById('analysis-report-status');
+  var analysisReportTitle = document.getElementById('analysis-report-title');
+  var postContent = document.getElementById('post-content');
   var fileNameEl = document.getElementById('file-name');
   var fileSizeEl = document.getElementById('file-size');
-  var stepCard = document.getElementById('step-card');
-  var fileCard = document.getElementById('file-card');
-  var actionPanel = document.getElementById('action-panel');
+  var confidenceFilename = document.getElementById('confidence-filename');
   var exitLink = document.getElementById('exit-link');
 
   if (!dropzone || !fileInput || !marketingView || !launchingView) return;
 
-  /* On page load: if URL is /launching/ but we don't have a file in
-     memory (i.e. user refreshed or deep-linked), quietly correct the
-     URL to / and show the marketing view. The launching view requires
-     a file reference that only lives in memory across pushState. */
+  /* On page load: if URL is /launching/ but we have no active mode
+     (refresh, deep link), correct the URL to / and show marketing. */
   (function bootstrapView() {
     var path = window.location.pathname;
     var atLaunching = /\/launching\/?$/.test(path);
     if (atLaunching) {
       try {
         history.replaceState({ view: 'marketing' }, '', '{{ "/" | relative_url }}');
-      } catch (_) { /* replaceState unsupported, ignore */ }
+      } catch (_) {}
     } else {
       try {
         history.replaceState({ view: 'marketing' }, '', window.location.href);
@@ -743,7 +947,7 @@ body.ns-launching-active #marketing-view ~ h2 {
   }
   if (exitLink) {
     exitLink.addEventListener('click', function() {
-      /* Triggers popstate which calls showMarketingView. */
+      /* history.back triggers popstate -> showMarketingView. */
       history.back();
     });
   }
@@ -751,24 +955,28 @@ body.ns-launching-active #marketing-view ~ h2 {
   /* Browser back/forward buttons */
   window.addEventListener('popstate', function(e) {
     var state = (e && e.state) || {};
-    if (state.view === 'launching' && pendingFile) {
-      showLaunchingView({ animate: false });
+    if (state.view === 'launching' && pendingMode === 'file' && pendingFile) {
+      runFullFlow();
+    } else if (state.view === 'launching' && pendingMode === 'sample') {
+      runAnalyzingThenResults(false);
     } else {
+      /* If we land on /launching/ with no mode (forward navigation
+         after exit), repair the URL to /. */
+      if (/\/launching\/?$/.test(window.location.pathname)) {
+        try { history.replaceState({ view: 'marketing' }, '', '{{ "/" | relative_url }}'); } catch (_) {}
+      }
       showMarketingView({ scroll: false });
     }
   });
 
-  /* --- View switching ---
-     We don't rely on a single wrapper div anymore (kramdown's behavior
-     with raw HTML wrappers can be inconsistent across Jekyll setups).
-     Instead we add/remove a class on <body>, and the CSS above hides the
-     marketing content and the analysis-results card while we're in
-     launching mode. */
+  /* --- View switching --- */
   function showMarketingView(opts) {
     opts = opts || {};
+    clearTimers();
     pendingFile = null;
+    pendingMode = null;
     document.body.classList.remove('ns-launching-active');
-    if (results) results.style.display = 'none';
+    resetStages();
     if (launchingView) launchingView.style.display = 'none';
     if (marketingView) marketingView.style.display = '';
     if (opts.scroll !== false) {
@@ -776,99 +984,158 @@ body.ns-launching-active #marketing-view ~ h2 {
     }
   }
 
-  function showLaunchingView(opts) {
-    opts = opts || {};
+  function showLaunchingView() {
     document.body.classList.add('ns-launching-active');
-    /* Hide the inline sample analysis panel too, in case it was visible
-       from a previous sample-DB click. */
-    if (results) results.style.display = 'none';
     if (marketingView) marketingView.style.display = 'none';
     if (launchingView) launchingView.style.display = '';
     try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (_) { window.scrollTo(0, 0); }
-    if (opts.animate !== false) runLaunchingAnimation();
   }
 
-  /* --- User upload path --- */
-  function handleUserFile(file) {
-    pendingFile = file;
-    var label = file.name + ' (' + formatSize(file.size) + ')';
-    /* Prime visible content BEFORE swapping views, so the launching
-       view paints with correct values from frame 1. */
-    if (fileNameEl) fileNameEl.textContent = file.name;
-    if (fileSizeEl) fileSizeEl.textContent = formatSize(file.size);
-    if (progressTitle) progressTitle.textContent = 'Preparing ' + file.name + '...';
-    /* Reset reveal state in case the user comes back here twice. */
-    if (stepCard) stepCard.style.display = 'none';
-    if (fileCard) fileCard.style.display = 'none';
-    if (actionPanel) actionPanel.style.display = 'none';
-    if (progressBar) progressBar.style.width = '0%';
-    if (progressSub) progressSub.textContent = 'Securing your upload...';
+  function resetStages() {
+    [stagePreparing, stageAnalyzing, stageResults].forEach(function(el) {
+      if (!el) return;
+      el.style.display = 'none';
+      el.classList.remove('ns-fade-out', 'ns-fade-in');
+    });
+    if (stageResults) stageResults.classList.remove('ns-mode-results-only');
+    if (prepBar) prepBar.style.width = '0%';
+    if (analyzeBar) analyzeBar.style.width = '0%';
+    if (postContent) postContent.style.display = 'none';
+    if (analysisCta) analysisCta.style.display = '';
+  }
 
-    /* pushState to /launching/ — URL changes, no navigation. */
+  function pushStateToLaunching() {
     var launchingPath = '{{ "/launching/" | relative_url }}';
     try {
       history.pushState({ view: 'launching' }, '', launchingPath);
-    } catch (_) {
-      /* If pushState fails, still show the launching view in place. */
-    }
-    showLaunchingView({ animate: true });
+    } catch (_) {}
   }
 
-  function runLaunchingAnimation() {
-    /* Honest preparation copy, no fake "analyzing forms/views". The
-       sequence is intentionally short; the user shouldn't be made to
-       wait, just feel that the system did something. */
-    setTimeout(function() {
-      if (progressBar) progressBar.style.width = '40%';
-      if (progressSub) progressSub.textContent = 'Verifying file integrity...';
-    }, 250);
-    setTimeout(function() {
-      if (progressBar) progressBar.style.width = '85%';
-      if (progressSub) progressSub.textContent = 'Almost ready...';
-    }, 950);
-    setTimeout(function() {
-      if (progressBar) progressBar.style.width = '100%';
-    }, 1500);
-    setTimeout(function() {
-      if (progressSub) progressSub.textContent = 'Done.';
-      if (stepCard) stepCard.style.display = 'block';
-      if (fileCard) fileCard.style.display = 'flex';
-      if (actionPanel) actionPanel.style.display = 'block';
-    }, 1800);
+  /* --- NSF drop / pick path --- */
+  function handleUserFile(file) {
+    pendingFile = file;
+    pendingMode = 'file';
+    /* Prime visible content BEFORE swapping views. */
+    if (fileNameEl) fileNameEl.textContent = file.name;
+    if (fileSizeEl) fileSizeEl.textContent = formatSize(file.size);
+    if (confidenceFilename) confidenceFilename.textContent = file.name;
+    if (analysisReportStatus) analysisReportStatus.textContent = 'Analysis report';
+    if (analysisReportTitle) analysisReportTitle.textContent = file.name + ' — analysis report';
+    if (prepTitle) prepTitle.textContent = 'Preparing ' + file.name + '…';
+
+    pushStateToLaunching();
+    showLaunchingView();
+    runFullFlow();
   }
 
-  /* --- Sample-DB path (unchanged behavior — fake stats are fine for
-         the canonical sample) --- */
+  function runFullFlow() {
+    resetStages();
+    runPreparingStage(function() {
+      runAnalyzingStage(function() {
+        showResultsStage(true);
+      });
+    });
+  }
+
+  /* --- Sample-DB path --- */
   function runSampleAnalysis() {
-    showSampleLoading('CRM.nsf - Customer Relationship Management', 'Sample analysis');
+    pendingFile = null;
+    pendingMode = 'sample';
+    if (analysisReportStatus) analysisReportStatus.textContent = 'Sample analysis';
+    if (analysisReportTitle) analysisReportTitle.textContent = 'CRM.nsf — Customer Relationship Management';
+
+    pushStateToLaunching();
+    showLaunchingView();
+    runAnalyzingThenResults(false);
   }
 
-  function showSampleLoading(title, statusLabel) {
-    if (!results) return;
-    if (analysisStatus) analysisStatus.textContent = statusLabel;
-    if (analysisTitle) analysisTitle.textContent = title;
-    results.style.display = 'block';
-    if (loadingPanel) loadingPanel.style.display = 'block';
-    if (reportPanel) reportPanel.style.display = 'none';
-    if (sampleProgressBar) sampleProgressBar.style.width = '0%';
-    if (loadingSub) loadingSub.textContent = 'Parsing forms, views, agents...';
-    results.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    setTimeout(function() {
-      if (sampleProgressBar) sampleProgressBar.style.width = '35%';
-      if (loadingSub) loadingSub.textContent = 'Parsing forms, views, agents...';
-    }, 200);
-    setTimeout(function() {
-      if (sampleProgressBar) sampleProgressBar.style.width = '70%';
-      if (loadingSub) loadingSub.textContent = 'Checking migration blockers...';
-    }, 1100);
-    setTimeout(function() {
-      if (sampleProgressBar) sampleProgressBar.style.width = '100%';
-      if (loadingSub) loadingSub.textContent = 'Scoring viability...';
+  function runAnalyzingThenResults(withPostContent) {
+    resetStages();
+    runAnalyzingStage(function() {
+      showResultsStage(withPostContent);
+    });
+  }
+
+  /* --- Stage runners --- */
+  function runPreparingStage(onDone) {
+    if (!stagePreparing) { if (onDone) onDone(); return; }
+    stagePreparing.style.display = '';
+    stagePreparing.classList.remove('ns-fade-out');
+    stagePreparing.classList.add('ns-fade-in');
+    if (prepBar) prepBar.style.width = '0%';
+    if (prepSub) prepSub.textContent = 'Securing your upload…';
+
+    schedule(function() {
+      if (prepBar) prepBar.style.width = '40%';
+      if (prepSub) prepSub.textContent = 'Verifying file integrity…';
+    }, 300);
+    schedule(function() {
+      if (prepBar) prepBar.style.width = '85%';
+      if (prepSub) prepSub.textContent = 'Almost ready…';
+    }, 1000);
+    schedule(function() {
+      if (prepBar) prepBar.style.width = '100%';
+      if (prepSub) prepSub.textContent = 'Done.';
+    }, 1500);
+    schedule(function() {
+      stagePreparing.classList.remove('ns-fade-in');
+      stagePreparing.classList.add('ns-fade-out');
+      schedule(function() {
+        stagePreparing.style.display = 'none';
+        stagePreparing.classList.remove('ns-fade-out');
+        if (onDone) onDone();
+      }, 350);
     }, 1900);
-    setTimeout(function() {
-      if (loadingPanel) loadingPanel.style.display = 'none';
-      if (reportPanel) reportPanel.style.display = 'block';
-    }, 2500);
+  }
+
+  function runAnalyzingStage(onDone) {
+    if (!stageAnalyzing) { if (onDone) onDone(); return; }
+    stageAnalyzing.style.display = '';
+    stageAnalyzing.classList.remove('ns-fade-out');
+    stageAnalyzing.classList.add('ns-fade-in');
+    if (analyzeBar) analyzeBar.style.width = '0%';
+    if (analyzeTitle) analyzeTitle.textContent = 'Reading database structure…';
+    if (analyzeSub) analyzeSub.textContent = 'Parsing forms, views, agents…';
+
+    schedule(function() {
+      if (analyzeBar) analyzeBar.style.width = '35%';
+      if (analyzeSub) analyzeSub.textContent = 'Parsing forms, views, agents…';
+    }, 300);
+    schedule(function() {
+      if (analyzeBar) analyzeBar.style.width = '70%';
+      if (analyzeSub) analyzeSub.textContent = 'Checking migration blockers…';
+    }, 1100);
+    schedule(function() {
+      if (analyzeBar) analyzeBar.style.width = '100%';
+      if (analyzeSub) analyzeSub.textContent = 'Scoring viability…';
+    }, 1900);
+    schedule(function() {
+      stageAnalyzing.classList.remove('ns-fade-in');
+      stageAnalyzing.classList.add('ns-fade-out');
+      schedule(function() {
+        stageAnalyzing.style.display = 'none';
+        stageAnalyzing.classList.remove('ns-fade-out');
+        if (onDone) onDone();
+      }, 350);
+    }, 2400);
+  }
+
+  function showResultsStage(withPostContent) {
+    if (!stageResults) return;
+    stageResults.style.display = '';
+    stageResults.classList.remove('ns-fade-out');
+    stageResults.classList.add('ns-fade-in');
+    /* Hide the analytical block's standalone CTA when post-content
+       is also showing — avoids two redundant sign-in CTAs. */
+    if (analysisCta) {
+      analysisCta.style.display = withPostContent ? 'none' : '';
+    }
+    if (postContent) {
+      postContent.style.display = withPostContent ? 'block' : 'none';
+    }
+    /* Sample-DB-only mode: stretch results stage so the analytical
+       block fills the available page height. */
+    stageResults.classList.toggle('ns-mode-results-only', !withPostContent);
   }
 
   function formatSize(bytes) {

@@ -41,11 +41,11 @@ html { scroll-behavior: smooth; }
 /* navigating, so the theme header and footer remain in place.  */
 /* ============================================================ */
 .ns-launching-wrap {
-  max-width: 640px;
   margin: 1rem auto 3rem;
-  /* Keep theme footer near the viewport bottom while the launching view is short.
-     Once content reveals (file card + action panel), the wrap grows past this
-     min-height naturally and the page scrolls. */
+  /* No inner max-width — defers to the parent .main-content-wrap
+     (1200px from the wider color scheme), so analytical card, file
+     card and email panel match the marketing content width. The
+     progress strip pins itself narrow via its own max-width below. */
   min-height: calc(100vh - 18.5rem);
   padding: 0 1rem;
 }
@@ -54,7 +54,8 @@ html { scroll-behavior: smooth; }
   border: 1px solid #2a2a4a;
   border-radius: 12px;
   padding: 1.5rem 1.5rem 1.25rem;
-  margin-bottom: 2rem;
+  margin: 0 auto 2rem;
+  max-width: 640px;
   text-align: center;
 }
 .ns-progress-status {
@@ -202,6 +203,152 @@ html { scroll-behavior: smooth; }
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* Fade-out for stage transitions (preparing -> analyzing -> results). */
+.ns-fade-out { animation: ns-fade-out 0.3s ease-out forwards; }
+@keyframes ns-fade-out {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-8px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ns-fade-out { animation: none !important; opacity: 0 !important; }
+}
+
+/* ============================================================ */
+/* Stage layout. The launching wrap contains three stages:       */
+/*   #stage-preparing  - "Preparing your file" (NSF drop only)   */
+/*   #stage-analyzing  - "Analyzing your NSF" (NSF + sample DB)  */
+/*   #stage-results    - analytical card (+ optional post-cta)  */
+/* See variant-a for full notes.                                 */
+/* ============================================================ */
+.ns-stage { width: 100%; }
+.ns-stage-centered {
+  min-height: calc(100vh - 18.5rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ns-stage-centered > .ns-progress-strip {
+  width: 100%;
+  margin-bottom: 0;
+}
+#stage-results.ns-mode-results-only {
+  min-height: calc(100vh - 18.5rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+#stage-results.ns-mode-results-only > .ns-analysis-report {
+  margin-bottom: 0;
+}
+
+/* ============================================================ */
+/* Shared analytical report card — used by all three flows.      */
+/* (Lifted from the old inline #analysis-report block in the     */
+/* marketing view, which is now removed.)                        */
+/* ============================================================ */
+.ns-analysis-report {
+  padding: 2rem;
+  background: linear-gradient(135deg, rgba(76,175,80,0.08) 0%, rgba(76,175,80,0.02) 100%);
+  border: 1px solid #43a047;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+}
+.ns-analysis-status {
+  color: #9d8df1; text-transform: uppercase; letter-spacing: 0.1em;
+  font-size: 0.85rem; margin-bottom: 0.5rem;
+}
+.ns-analysis-title {
+  color: #e8c547; margin: 0 0 1.5rem; font-size: 1.5rem;
+}
+.ns-analysis-stats {
+  display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1.5rem;
+}
+.ns-stat { flex: 1; min-width: 120px; text-align: center; }
+.ns-stat-num {
+  font-size: 2.5rem; font-weight: 700; color: #e8c547; line-height: 1;
+}
+.ns-stat-num-good { color: #66bb6a; }
+.ns-stat-label {
+  font-size: 0.9rem; color: #a0a0b8; margin-top: 0.25rem;
+}
+.ns-analysis-callout {
+  padding: 1rem; background: rgba(67,160,71,0.1);
+  border-left: 3px solid #43a047; border-radius: 4px;
+  margin-bottom: 1.5rem;
+}
+.ns-analysis-callout strong { color: #66bb6a; }
+.ns-analysis-callout span { color: #c8c8d8; }
+.ns-analysis-cta { text-align: center; padding-top: 0.5rem; }
+.ns-analysis-cta-sub {
+  color: #6a6a7c; font-size: 0.85rem; margin-top: 0.75rem;
+}
+
+/* Confidence-building text shown above conversion CTAs in NSF flows. */
+.ns-confidence-text {
+  text-align: center; color: #c8c8d8;
+  font-size: 1.1rem; margin: 1.5rem auto;
+  line-height: 1.4;
+}
+.ns-confidence-text strong { color: #e8c547; font-weight: 700; }
+
+/* "What you unlock" value-prop card — sits between the confidence  */
+/* line and the email form. Answers "what's actually behind the     */
+/* sign-up wall?" — biggest conversion lever on this screen.        */
+.ns-unlock-card {
+  background: linear-gradient(135deg, rgba(108,92,231,0.10) 0%, rgba(168,85,247,0.04) 100%);
+  border: 1px solid #6c5ce7;
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  margin-bottom: 2rem;
+}
+.ns-unlock-headline {
+  color: #e8c547;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin: 0 0 1.25rem;
+  text-align: center;
+}
+.ns-unlock-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 0.75rem 2rem;
+}
+.ns-unlock-list li {
+  color: #c8c8d8;
+  font-size: 0.95rem;
+  padding-left: 1.75rem;
+  position: relative;
+  line-height: 1.4;
+}
+.ns-unlock-list li::before {
+  content: "\2713";
+  position: absolute;
+  left: 0;
+  top: -1px;
+  color: #66bb6a;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+/* Privacy reassurance strip — footer of #post-content, addresses   */
+/* the "what happened to my file?" worry at the choice point.       */
+.ns-privacy-strip {
+  text-align: center;
+  color: #8888a0;
+  font-size: 0.85rem;
+  margin: 2rem auto 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(42,42,74,0.6);
+  max-width: 720px;
+}
+.ns-privacy-strip span { white-space: nowrap; }
+.ns-privacy-strip .ns-privacy-sep { color: #4a4a64; margin: 0 0.5rem; }
+
 /* ============================================================ */
 /* Belt-and-suspenders hide rules for launching mode.            */
 /* See Variant A comment for details.                            */
@@ -275,60 +422,9 @@ body.ns-launching-active #marketing-view ~ h2 {
 
 </div>
 
-<!-- ============================================================ -->
-<!-- INLINE ANALYSIS PROGRESS + RESULTS CARD                      -->
-<!-- Hidden by default; shown after drop or sample click.          -->
-<!-- TODO(backend): replace mock data with real API response.     -->
-<!-- ============================================================ -->
-
-<div id="analysis-results" style="display: none; margin: 2rem 0;">
-
-  <div id="analysis-loading" style="padding: 2rem; background: rgba(108,92,231,0.08); border: 1px solid #2a2a4a; border-radius: 12px; text-align: center;">
-    <div style="font-size: 1.1rem; color: #c8c8d8; margin-bottom: 1rem;" id="analysis-loading-text">Analyzing your NSF&hellip;</div>
-    <div style="height: 6px; background: rgba(108,92,231,0.15); border-radius: 3px; overflow: hidden; max-width: 400px; margin: 0 auto;">
-      <div id="analysis-progress-bar" style="height: 100%; width: 0%; background: linear-gradient(90deg, #6c5ce7, #a855f7); transition: width 0.4s ease;"></div>
-    </div>
-    <div style="font-size: 0.85rem; color: #6a6a7c; margin-top: 0.75rem;" id="analysis-loading-sub">Parsing forms, views, agents&hellip;</div>
-  </div>
-
-  <div id="analysis-report" style="display: none; padding: 2rem; background: linear-gradient(135deg, rgba(76,175,80,0.08) 0%, rgba(76,175,80,0.02) 100%); border: 1px solid #43a047; border-radius: 12px;">
-    <div id="analysis-status" style="color: #9d8df1; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.85rem; margin-bottom: 0.5rem;">Sample analysis</div>
-    <h3 id="analysis-title" style="color: #e8c547; margin: 0 0 1.5rem; font-size: 1.5rem;">CRM.nsf &mdash; Customer Relationship Management</h3>
-
-    <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
-      <div style="flex: 1; min-width: 120px; text-align: center;">
-        <div style="font-size: 2.5rem; font-weight: 700; color: #e8c547; line-height: 1;">42</div>
-        <div style="font-size: 0.9rem; color: #a0a0b8; margin-top: 0.25rem;">Forms</div>
-      </div>
-      <div style="flex: 1; min-width: 120px; text-align: center;">
-        <div style="font-size: 2.5rem; font-weight: 700; color: #e8c547; line-height: 1;">17</div>
-        <div style="font-size: 0.9rem; color: #a0a0b8; margin-top: 0.25rem;">Views</div>
-      </div>
-      <div style="flex: 1; min-width: 120px; text-align: center;">
-        <div style="font-size: 2.5rem; font-weight: 700; color: #e8c547; line-height: 1;">8</div>
-        <div style="font-size: 0.9rem; color: #a0a0b8; margin-top: 0.25rem;">Agents</div>
-      </div>
-      <div style="flex: 1; min-width: 120px; text-align: center;">
-        <div style="font-size: 2.5rem; font-weight: 700; color: #66bb6a; line-height: 1;">A</div>
-        <div style="font-size: 0.9rem; color: #a0a0b8; margin-top: 0.25rem;">Viability</div>
-      </div>
-    </div>
-
-    <div style="padding: 1rem; background: rgba(67,160,71,0.1); border-left: 3px solid #43a047; border-radius: 4px; margin-bottom: 1.5rem;">
-      <strong style="color: #66bb6a;">&check; Ready to migrate.</strong>
-      <span style="color: #c8c8d8;">No blockers detected. Standard LotusScript and Formula patterns throughout. Estimated Nomad rendering time: under 30 seconds.</span>
-    </div>
-
-    <div style="text-align: center; padding-top: 0.5rem;">
-      <a href="https://app.moonshine.dev/public/file/serve/domino-integration/index.html" target="_blank" rel="noopener" class="btn btn-primary fs-5">Sign in to see it running live &rarr;</a>
-      <p style="color: #6a6a7c; font-size: 0.85rem; margin-top: 0.75rem;">Free for 30 days. No credit card required.</p>
-    </div>
-  </div>
-
-</div>
-
-<!-- Note: dropzone, sample, and view-switching logic is handled by the
-     unified script at the bottom of this file. -->
+<!-- Note: dropzone and sample-DB clicks now route through the launching
+     view (see #launching-view below). The old inline analysis card was
+     removed when the analytical block became shared across flows. -->
 
 
 ---
@@ -597,53 +693,137 @@ body.ns-launching-active #marketing-view ~ h2 {
 <!-- prominent file card serves as the visual anchor instead.      -->
 <!-- ============================================================ -->
 <div id="launching-view" style="display: none;" markdown="0">
-  <div class="ns-launching-wrap">    <div class="ns-progress-strip" id="progress-strip">
-      <div class="ns-progress-status">Preparing your file</div>
-      <div class="ns-progress-title" id="progress-title">Loading&hellip;</div>
-      <div class="ns-progress-track">
-        <div class="ns-progress-bar" id="progress-bar"></div>
+  <div class="ns-launching-wrap">
+
+    <!-- Stage 1: Preparing your file (real NSF drop only) -->
+    <div class="ns-stage ns-stage-centered" id="stage-preparing" style="display: none;">
+      <div class="ns-progress-strip">
+        <div class="ns-progress-status">Preparing your file</div>
+        <div class="ns-progress-title" id="prep-title">Loading&hellip;</div>
+        <div class="ns-progress-track">
+          <div class="ns-progress-bar" id="prep-bar"></div>
+        </div>
+        <div class="ns-progress-sub" id="prep-sub">Securing your upload&hellip;</div>
       </div>
-      <div class="ns-progress-sub" id="progress-sub">Securing your upload&hellip;</div>
     </div>
 
-    <div class="ns-file-card ns-fade-in" id="file-card" style="display: none;">
-      <div class="ns-file-icon" aria-hidden="true">&#128196;</div>
-      <div class="ns-file-meta">
-        <div class="ns-file-name" id="file-name">your-file.nsf</div>
-        <div class="ns-file-size" id="file-size">&mdash;</div>
+    <!-- Stage 2: Analyzing your NSF (both NSF and sample-DB paths) -->
+    <div class="ns-stage ns-stage-centered" id="stage-analyzing" style="display: none;">
+      <div class="ns-progress-strip">
+        <div class="ns-progress-status">Analyzing your NSF</div>
+        <div class="ns-progress-title" id="analyze-title">Reading database structure&hellip;</div>
+        <div class="ns-progress-track">
+          <div class="ns-progress-bar" id="analyze-bar"></div>
+        </div>
+        <div class="ns-progress-sub" id="analyze-sub">Parsing forms, views, agents&hellip;</div>
       </div>
-      <div class="ns-file-status">&check; Ready</div>
     </div>
 
-    <div class="ns-action-panel ns-fade-in" id="action-panel" style="display: none; animation-delay: 0.1s;">
-      <h2 class="ns-action-headline">You're almost there</h2>
-      <p class="ns-action-sub">Enter your email and we'll send a sign-in link to launch your file in HCL Nomad.</p>
+    <!-- Stage 3: Results — analytical card (shared) + post-content for NSF flow -->
+    <div class="ns-stage" id="stage-results" style="display: none;">
 
-      <form class="ns-email-form" id="email-form" novalidate>
-        <input type="email" class="ns-email-input" id="email-input" required placeholder="you@company.com" autocomplete="email" aria-label="Your email address">
-        <button type="submit" class="ns-btn ns-btn-primary" id="email-submit">Continue with email</button>
-      </form>
-      <p class="ns-form-hint">We'll send a magic link. No password to remember.</p>
+      <div class="ns-analysis-report ns-fade-in" id="analysis-report-card">
+        <div class="ns-analysis-status" id="analysis-report-status">Sample analysis</div>
+        <h3 class="ns-analysis-title" id="analysis-report-title">CRM.nsf &mdash; Customer Relationship Management</h3>
 
-      <p class="ns-alt-link">
-        Already have an account?
-        <a href="https://auth.moonshine.dev/login" id="alt-signin">Sign in</a>
-      </p>
+        <div class="ns-analysis-stats">
+          <div class="ns-stat">
+            <div class="ns-stat-num">42</div>
+            <div class="ns-stat-label">Forms</div>
+          </div>
+          <div class="ns-stat">
+            <div class="ns-stat-num">17</div>
+            <div class="ns-stat-label">Views</div>
+          </div>
+          <div class="ns-stat">
+            <div class="ns-stat-num">8</div>
+            <div class="ns-stat-label">Agents</div>
+          </div>
+          <div class="ns-stat">
+            <div class="ns-stat-num ns-stat-num-good">A</div>
+            <div class="ns-stat-label">Viability</div>
+          </div>
+        </div>
 
-      <button type="button" class="ns-exit-link" id="exit-link">Not now, just exploring</button>
-    </div>
+        <div class="ns-analysis-callout">
+          <strong>&check; Ready to migrate.</strong>
+          <span>No blockers detected. Standard LotusScript and Formula patterns throughout. Estimated Nomad rendering time: under 30 seconds.</span>
+        </div>
 
-    <div class="ns-confirmation-card" id="confirmation-card" style="display: none;">
-      <div class="ns-confirmation-icon" aria-hidden="true">&#9993;&#65039;</div>
-      <h2 class="ns-confirmation-headline">Check your inbox</h2>
-      <p class="ns-confirmation-body">
-        A sign-in link is on its way to <span class="ns-confirmation-email" id="confirmation-email">you@example.com</span>.
-        Open it to launch your file in HCL Nomad.
-      </p>
-      <p class="ns-confirmation-hint">Don't see it in a minute or two? Check your spam folder.</p>
-      <button type="button" class="ns-confirmation-action" id="back-home">Back to home</button>
-      <button type="button" class="ns-try-again" id="try-again">Wrong email? Try again</button>
-    </div>
+        <div class="ns-analysis-cta" id="analysis-cta">
+          <a href="https://app.moonshine.dev/public/file/serve/domino-integration/index.html" target="_blank" rel="noopener" class="btn btn-primary fs-5">Sign in to see it running live &rarr;</a>
+          <p class="ns-analysis-cta-sub">Free for 30 days. No credit card required.</p>
+        </div>
+      </div>
+
+      <!-- Post-content: shown only when a real NSF was dropped (variant-b: email-first) -->
+      <div id="post-content" style="display: none;">
+
+        <p class="ns-confidence-text ns-fade-in">
+          Your <strong id="confidence-filename">your file</strong> scored <strong>A for viability</strong> &mdash; no migration blockers found. Create an account to unlock the full breakdown.
+        </p>
+
+        <div class="ns-unlock-card ns-fade-in" style="animation-delay: 0.05s;">
+          <div class="ns-unlock-headline">What you unlock with an account</div>
+          <ul class="ns-unlock-list">
+            <li>Per-form &amp; per-view risk flags</li>
+            <li>LotusScript &amp; Formula complexity scores</li>
+            <li>Live HCL Nomad preview in your browser</li>
+            <li>Downloadable PDF migration report</li>
+            <li>Prioritized migration roadmap</li>
+          </ul>
+        </div>
+
+        <div class="ns-file-card ns-fade-in" style="animation-delay: 0.1s;">
+          <div class="ns-file-icon" aria-hidden="true">&#128196;</div>
+          <div class="ns-file-meta">
+            <div class="ns-file-name" id="file-name">your-file.nsf</div>
+            <div class="ns-file-size" id="file-size">&mdash;</div>
+          </div>
+          <div class="ns-file-status">&check; Ready</div>
+        </div>
+
+        <div class="ns-action-panel ns-fade-in" id="action-panel" style="animation-delay: 0.2s;">
+          <h2 class="ns-action-headline">You're almost there</h2>
+          <p class="ns-action-sub">Enter your email and we'll send a sign-in link to launch your file in HCL Nomad.</p>
+
+          <form class="ns-email-form" id="email-form" novalidate>
+            <input type="email" class="ns-email-input" id="email-input" required placeholder="you@company.com" autocomplete="email" aria-label="Your email address">
+            <button type="submit" class="ns-btn ns-btn-primary" id="email-submit">Continue with email</button>
+          </form>
+          <p class="ns-form-hint">We'll send a magic link. No password to remember.</p>
+
+          <p class="ns-alt-link">
+            Already have an account?
+            <a href="https://auth.moonshine.dev/login" id="alt-signin">Sign in</a>
+          </p>
+
+          <button type="button" class="ns-exit-link" id="exit-link">Not now, just exploring</button>
+        </div>
+
+        <div class="ns-confirmation-card" id="confirmation-card" style="display: none;">
+          <div class="ns-confirmation-icon" aria-hidden="true">&#9993;&#65039;</div>
+          <h2 class="ns-confirmation-headline">Check your inbox</h2>
+          <p class="ns-confirmation-body">
+            A sign-in link is on its way to <span class="ns-confirmation-email" id="confirmation-email">you@example.com</span>.
+            Open it to launch your file in HCL Nomad.
+          </p>
+          <p class="ns-confirmation-hint">Don't see it in a minute or two? Check your spam folder.</p>
+          <button type="button" class="ns-confirmation-action" id="back-home">Back to home</button>
+          <button type="button" class="ns-try-again" id="try-again">Wrong email? Try again</button>
+        </div>
+
+        <div class="ns-privacy-strip ns-fade-in" style="animation-delay: 0.4s;">
+          <span>&#128274; File analyzed and deleted within 15 minutes</span>
+          <span class="ns-privacy-sep">&middot;</span>
+          <span>Never stored</span>
+          <span class="ns-privacy-sep">&middot;</span>
+          <span>TLS encrypted in transit</span>
+        </div>
+
+      </div><!-- /#post-content -->
+
+    </div><!-- /#stage-results -->
 
   </div>
 </div><!-- /#launching-view -->
@@ -653,51 +833,62 @@ body.ns-launching-active #marketing-view ~ h2 {
 /* ============================================================ */
 /* Unified script: dropzone, sample-DB, and view switching.     */
 /*                                                               */
-/* The page has two views in the DOM:                            */
-/*   - #marketing-view   shown by default                        */
-/*   - #launching-view   hidden by default                       */
-/* When the user drops or picks a file we use history.pushState  */
-/* to change the URL to /launching/ and toggle visibility. We do */
-/* NOT actually navigate, so the file stays in JS memory and the */
-/* theme header/footer remain rendered above and below.          */
-/*                                                               */
-/* In Variant B, the launching view also has an email form and a */
-/* post-submit confirmation panel. Submitting the form swaps     */
-/* content within the launching view (no pushState — it's still  */
-/* one logical interstitial). The browser back button always     */
-/* exits the launching view, regardless of which inner panel is  */
-/* showing.                                                      */
+/* See variant-a for the shared design notes. Variant B differs */
+/* in the post-content shown after the analytical card: an      */
+/* email-magic-link form and post-submit confirmation panel,    */
+/* both swapped within the same launching view (no pushState).  */
 /* ============================================================ */
 (function() {
-  /* The actual File object lives here while the launching view is
-     active. It's intentionally not persisted across page reloads — if
-     the user refreshes /launching/ we treat it as a deep-link without
-     a file and bring them back to the marketing view. */
+  /* The File object lives here while the launching view is active.
+     Not persisted across reloads — refreshing /launching/ takes the
+     user back to the marketing view. */
   var pendingFile = null;
+  var pendingMode = null;  /* 'file' | 'sample' | null */
+
+  /* Track stage timers so we can cancel them if the user exits the
+     launching view mid-animation (back button, exit link, etc.). */
+  var stageTimers = [];
+  function clearTimers() {
+    while (stageTimers.length) clearTimeout(stageTimers.pop());
+  }
+  function schedule(fn, delay) {
+    var id = setTimeout(fn, delay);
+    stageTimers.push(id);
+    return id;
+  }
 
   /* Marketing-view elements */
   var dropzone = document.getElementById('upload-dropzone');
   var fileInput = document.getElementById('nsf-file-input');
   var sampleLink = document.getElementById('sample-db-link');
-  var results = document.getElementById('analysis-results');
-  var loadingPanel = document.getElementById('analysis-loading');
-  var loadingSub = document.getElementById('analysis-loading-sub');
-  var sampleProgressBar = document.getElementById('analysis-progress-bar');
-  var reportPanel = document.getElementById('analysis-report');
-  var analysisStatus = document.getElementById('analysis-status');
-  var analysisTitle = document.getElementById('analysis-title');
 
   /* View containers */
   var marketingView = document.getElementById('marketing-view');
   var launchingView = document.getElementById('launching-view');
 
-  /* Launching-view elements */
-  var progressTitle = document.getElementById('progress-title');
-  var progressBar = document.getElementById('progress-bar');
-  var progressSub = document.getElementById('progress-sub');
+  /* Launching-view stages */
+  var stagePreparing = document.getElementById('stage-preparing');
+  var stageAnalyzing = document.getElementById('stage-analyzing');
+  var stageResults = document.getElementById('stage-results');
+
+  /* Preparing-stage elements */
+  var prepTitle = document.getElementById('prep-title');
+  var prepBar = document.getElementById('prep-bar');
+  var prepSub = document.getElementById('prep-sub');
+
+  /* Analyzing-stage elements */
+  var analyzeTitle = document.getElementById('analyze-title');
+  var analyzeBar = document.getElementById('analyze-bar');
+  var analyzeSub = document.getElementById('analyze-sub');
+
+  /* Results-stage elements */
+  var analysisCta = document.getElementById('analysis-cta');
+  var analysisReportStatus = document.getElementById('analysis-report-status');
+  var analysisReportTitle = document.getElementById('analysis-report-title');
+  var postContent = document.getElementById('post-content');
   var fileNameEl = document.getElementById('file-name');
   var fileSizeEl = document.getElementById('file-size');
-  var fileCard = document.getElementById('file-card');
+  var confidenceFilename = document.getElementById('confidence-filename');
   var actionPanel = document.getElementById('action-panel');
   var exitLink = document.getElementById('exit-link');
   var emailForm = document.getElementById('email-form');
@@ -710,8 +901,8 @@ body.ns-launching-active #marketing-view ~ h2 {
 
   if (!dropzone || !fileInput || !marketingView || !launchingView) return;
 
-  /* On page load: if URL is /launching/ but we don't have a file in
-     memory, quietly correct the URL to / and show the marketing view. */
+  /* On page load: if URL is /launching/ but we have no active mode
+     (refresh, deep link), correct the URL to / and show marketing. */
   (function bootstrapView() {
     var path = window.location.pathname;
     var atLaunching = /\/launching\/?$/.test(path);
@@ -767,8 +958,8 @@ body.ns-launching-active #marketing-view ~ h2 {
   if (tryAgain) {
     tryAgain.addEventListener('click', function() {
       /* Stay in launching view, swap inner panel back to email form. */
-      confirmationCard.style.display = 'none';
-      actionPanel.style.display = 'block';
+      if (confirmationCard) confirmationCard.style.display = 'none';
+      if (actionPanel) actionPanel.style.display = 'block';
       setTimeout(function() {
         try { emailInput.focus(); emailInput.select(); } catch (_) {}
       }, 50);
@@ -784,32 +975,37 @@ body.ns-launching-active #marketing-view ~ h2 {
   /* Browser back/forward buttons */
   window.addEventListener('popstate', function(e) {
     var state = (e && e.state) || {};
-    if (state.view === 'launching' && pendingFile) {
-      showLaunchingView({ animate: false });
+    if (state.view === 'launching' && pendingMode === 'file' && pendingFile) {
+      runFullFlow();
+    } else if (state.view === 'launching' && pendingMode === 'sample') {
+      runAnalyzingThenResults(false);
     } else {
+      /* If we land on /launching/ with no mode (forward navigation
+         after exit), repair the URL to /. */
+      if (/\/launching\/?$/.test(window.location.pathname)) {
+        try { history.replaceState({ view: 'marketing' }, '', '{{ "/" | relative_url }}'); } catch (_) {}
+      }
       showMarketingView({ scroll: false });
     }
   });
 
-  /* --- View switching ---
-     We don't rely on a single wrapper div anymore (kramdown's behavior
-     with raw HTML wrappers can be inconsistent across Jekyll setups).
-     Instead we add/remove a class on <body>, and the CSS above hides the
-     marketing content and the analysis-results card while we're in
-     launching mode. */
+  /* --- View switching --- */
   function showMarketingView(opts) {
     opts = opts || {};
+    clearTimers();
     pendingFile = null;
+    pendingMode = null;
     document.body.classList.remove('ns-launching-active');
-    /* Reset launching view's inner state so a fresh visit starts clean. */
-    if (confirmationCard) confirmationCard.style.display = 'none';
-    if (actionPanel) actionPanel.style.display = 'none';
-    if (fileCard) fileCard.style.display = 'none';
+    resetStages();
+    /* Reset email-form state so a fresh visit starts clean. */
     if (emailInput) {
       emailInput.value = '';
       emailInput.classList.remove('is-invalid');
     }
-    if (results) results.style.display = 'none';
+    if (emailSubmit) {
+      emailSubmit.disabled = false;
+      emailSubmit.textContent = 'Continue with email';
+    }
     if (launchingView) launchingView.style.display = 'none';
     if (marketingView) marketingView.style.display = '';
     if (opts.scroll !== false) {
@@ -817,60 +1013,175 @@ body.ns-launching-active #marketing-view ~ h2 {
     }
   }
 
-  function showLaunchingView(opts) {
-    opts = opts || {};
+  function showLaunchingView() {
     document.body.classList.add('ns-launching-active');
-    if (results) results.style.display = 'none';
     if (marketingView) marketingView.style.display = 'none';
     if (launchingView) launchingView.style.display = '';
     try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (_) { window.scrollTo(0, 0); }
-    if (opts.animate !== false) runLaunchingAnimation();
   }
 
-  /* --- User upload path --- */
-  function handleUserFile(file) {
-    pendingFile = file;
-    /* Prime visible content BEFORE swapping views. */
-    if (fileNameEl) fileNameEl.textContent = file.name;
-    if (fileSizeEl) fileSizeEl.textContent = formatSize(file.size);
-    if (progressTitle) progressTitle.textContent = 'Preparing ' + file.name + '...';
-    /* Reset reveal state in case the user comes back here. */
-    if (fileCard) fileCard.style.display = 'none';
-    if (actionPanel) actionPanel.style.display = 'none';
+  function resetStages() {
+    [stagePreparing, stageAnalyzing, stageResults].forEach(function(el) {
+      if (!el) return;
+      el.style.display = 'none';
+      el.classList.remove('ns-fade-out', 'ns-fade-in');
+    });
+    if (stageResults) stageResults.classList.remove('ns-mode-results-only');
+    if (prepBar) prepBar.style.width = '0%';
+    if (analyzeBar) analyzeBar.style.width = '0%';
+    if (postContent) postContent.style.display = 'none';
+    if (analysisCta) analysisCta.style.display = '';
+    /* Make sure the email form is the visible inner panel of post-content
+       and the confirmation card is hidden, in case a previous flow ended
+       on the confirmation. */
+    if (actionPanel) actionPanel.style.display = '';
     if (confirmationCard) confirmationCard.style.display = 'none';
-    if (progressBar) progressBar.style.width = '0%';
-    if (progressSub) progressSub.textContent = 'Securing your upload...';
+  }
 
+  function pushStateToLaunching() {
     var launchingPath = '{{ "/launching/" | relative_url }}';
     try {
       history.pushState({ view: 'launching' }, '', launchingPath);
     } catch (_) {}
-    showLaunchingView({ animate: true });
   }
 
-  function runLaunchingAnimation() {
-    setTimeout(function() {
-      if (progressBar) progressBar.style.width = '40%';
-      if (progressSub) progressSub.textContent = 'Verifying file integrity...';
-    }, 250);
-    setTimeout(function() {
-      if (progressBar) progressBar.style.width = '85%';
-      if (progressSub) progressSub.textContent = 'Almost ready...';
-    }, 950);
-    setTimeout(function() {
-      if (progressBar) progressBar.style.width = '100%';
+  /* --- NSF drop / pick path --- */
+  function handleUserFile(file) {
+    pendingFile = file;
+    pendingMode = 'file';
+    /* Prime visible content BEFORE swapping views. */
+    if (fileNameEl) fileNameEl.textContent = file.name;
+    if (fileSizeEl) fileSizeEl.textContent = formatSize(file.size);
+    if (confidenceFilename) confidenceFilename.textContent = file.name;
+    if (analysisReportStatus) analysisReportStatus.textContent = 'Analysis report';
+    if (analysisReportTitle) analysisReportTitle.textContent = file.name + ' — analysis report';
+    if (prepTitle) prepTitle.textContent = 'Preparing ' + file.name + '…';
+
+    pushStateToLaunching();
+    showLaunchingView();
+    runFullFlow();
+  }
+
+  function runFullFlow() {
+    resetStages();
+    runPreparingStage(function() {
+      runAnalyzingStage(function() {
+        showResultsStage(true);
+        /* Focus the email input so keyboard users can start typing.
+           preventScroll keeps the viewport at the top of the results
+           stage — without it, browsers scroll the input into view and
+           skip the user past the analytical card. */
+        schedule(function() {
+          try { emailInput.focus({ preventScroll: true }); } catch (_) {}
+        }, 300);
+      });
+    });
+  }
+
+  /* --- Sample-DB path --- */
+  function runSampleAnalysis() {
+    pendingFile = null;
+    pendingMode = 'sample';
+    if (analysisReportStatus) analysisReportStatus.textContent = 'Sample analysis';
+    if (analysisReportTitle) analysisReportTitle.textContent = 'CRM.nsf — Customer Relationship Management';
+
+    pushStateToLaunching();
+    showLaunchingView();
+    runAnalyzingThenResults(false);
+  }
+
+  function runAnalyzingThenResults(withPostContent) {
+    resetStages();
+    runAnalyzingStage(function() {
+      showResultsStage(withPostContent);
+    });
+  }
+
+  /* --- Stage runners --- */
+  function runPreparingStage(onDone) {
+    if (!stagePreparing) { if (onDone) onDone(); return; }
+    stagePreparing.style.display = '';
+    stagePreparing.classList.remove('ns-fade-out');
+    stagePreparing.classList.add('ns-fade-in');
+    if (prepBar) prepBar.style.width = '0%';
+    if (prepSub) prepSub.textContent = 'Securing your upload…';
+
+    schedule(function() {
+      if (prepBar) prepBar.style.width = '40%';
+      if (prepSub) prepSub.textContent = 'Verifying file integrity…';
+    }, 300);
+    schedule(function() {
+      if (prepBar) prepBar.style.width = '85%';
+      if (prepSub) prepSub.textContent = 'Almost ready…';
+    }, 1000);
+    schedule(function() {
+      if (prepBar) prepBar.style.width = '100%';
+      if (prepSub) prepSub.textContent = 'Done.';
     }, 1500);
-    setTimeout(function() {
-      if (progressSub) progressSub.textContent = 'Done.';
-      if (fileCard) fileCard.style.display = 'flex';
-      if (actionPanel) actionPanel.style.display = 'block';
-      /* Focus the email input so keyboard users can start typing. */
-      setTimeout(function() { try { emailInput.focus(); } catch (_) {} }, 300);
-    }, 1800);
+    schedule(function() {
+      stagePreparing.classList.remove('ns-fade-in');
+      stagePreparing.classList.add('ns-fade-out');
+      schedule(function() {
+        stagePreparing.style.display = 'none';
+        stagePreparing.classList.remove('ns-fade-out');
+        if (onDone) onDone();
+      }, 350);
+    }, 1900);
+  }
+
+  function runAnalyzingStage(onDone) {
+    if (!stageAnalyzing) { if (onDone) onDone(); return; }
+    stageAnalyzing.style.display = '';
+    stageAnalyzing.classList.remove('ns-fade-out');
+    stageAnalyzing.classList.add('ns-fade-in');
+    if (analyzeBar) analyzeBar.style.width = '0%';
+    if (analyzeTitle) analyzeTitle.textContent = 'Reading database structure…';
+    if (analyzeSub) analyzeSub.textContent = 'Parsing forms, views, agents…';
+
+    schedule(function() {
+      if (analyzeBar) analyzeBar.style.width = '35%';
+      if (analyzeSub) analyzeSub.textContent = 'Parsing forms, views, agents…';
+    }, 300);
+    schedule(function() {
+      if (analyzeBar) analyzeBar.style.width = '70%';
+      if (analyzeSub) analyzeSub.textContent = 'Checking migration blockers…';
+    }, 1100);
+    schedule(function() {
+      if (analyzeBar) analyzeBar.style.width = '100%';
+      if (analyzeSub) analyzeSub.textContent = 'Scoring viability…';
+    }, 1900);
+    schedule(function() {
+      stageAnalyzing.classList.remove('ns-fade-in');
+      stageAnalyzing.classList.add('ns-fade-out');
+      schedule(function() {
+        stageAnalyzing.style.display = 'none';
+        stageAnalyzing.classList.remove('ns-fade-out');
+        if (onDone) onDone();
+      }, 350);
+    }, 2400);
+  }
+
+  function showResultsStage(withPostContent) {
+    if (!stageResults) return;
+    stageResults.style.display = '';
+    stageResults.classList.remove('ns-fade-out');
+    stageResults.classList.add('ns-fade-in');
+    /* Hide the analytical block's standalone CTA when post-content
+       is also showing — avoids two redundant sign-in CTAs. */
+    if (analysisCta) {
+      analysisCta.style.display = withPostContent ? 'none' : '';
+    }
+    if (postContent) {
+      postContent.style.display = withPostContent ? 'block' : 'none';
+    }
+    /* Sample-DB-only mode: stretch results stage so the analytical
+       block fills the available page height. */
+    stageResults.classList.toggle('ns-mode-results-only', !withPostContent);
   }
 
   /* --- Email form handling --- */
   function handleEmailSubmit() {
+    if (!emailInput || !emailSubmit) return;
     var email = (emailInput.value || '').trim();
     /* Lightweight shape-check; real validation is server-side. */
     if (!email || email.indexOf('@') < 1 || email.indexOf('.') < email.indexOf('@')) {
@@ -880,54 +1191,20 @@ body.ns-launching-active #marketing-view ~ h2 {
     }
     emailInput.classList.remove('is-invalid');
     emailSubmit.disabled = true;
-    emailSubmit.textContent = 'Sending...';
+    emailSubmit.textContent = 'Sending…';
     /*
-      TODO(backend): POST email to /api/magic-link, then transition to the
-      confirmation panel only on success. On failure show inline error
-      copy and re-enable the submit button. For now we simulate a brief
-      delay so the UX flow can be reviewed end-to-end.
+      TODO(backend): POST email to /api/magic-link, then transition to
+      the confirmation panel only on success. On failure show inline
+      error copy and re-enable the submit button. For now we simulate a
+      brief delay so the UX flow can be reviewed end-to-end.
     */
-    setTimeout(function() {
+    schedule(function() {
       emailSubmit.disabled = false;
       emailSubmit.textContent = 'Continue with email';
-      confirmationEmail.textContent = email;
-      actionPanel.style.display = 'none';
-      confirmationCard.style.display = 'block';
+      if (confirmationEmail) confirmationEmail.textContent = email;
+      if (actionPanel) actionPanel.style.display = 'none';
+      if (confirmationCard) confirmationCard.style.display = 'block';
     }, 700);
-  }
-
-  /* --- Sample-DB path (unchanged behavior — fake stats are fine for
-         the canonical sample) --- */
-  function runSampleAnalysis() {
-    showSampleLoading('CRM.nsf - Customer Relationship Management', 'Sample analysis');
-  }
-
-  function showSampleLoading(title, statusLabel) {
-    if (!results) return;
-    if (analysisStatus) analysisStatus.textContent = statusLabel;
-    if (analysisTitle) analysisTitle.textContent = title;
-    results.style.display = 'block';
-    if (loadingPanel) loadingPanel.style.display = 'block';
-    if (reportPanel) reportPanel.style.display = 'none';
-    if (sampleProgressBar) sampleProgressBar.style.width = '0%';
-    if (loadingSub) loadingSub.textContent = 'Parsing forms, views, agents...';
-    results.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    setTimeout(function() {
-      if (sampleProgressBar) sampleProgressBar.style.width = '35%';
-      if (loadingSub) loadingSub.textContent = 'Parsing forms, views, agents...';
-    }, 200);
-    setTimeout(function() {
-      if (sampleProgressBar) sampleProgressBar.style.width = '70%';
-      if (loadingSub) loadingSub.textContent = 'Checking migration blockers...';
-    }, 1100);
-    setTimeout(function() {
-      if (sampleProgressBar) sampleProgressBar.style.width = '100%';
-      if (loadingSub) loadingSub.textContent = 'Scoring viability...';
-    }, 1900);
-    setTimeout(function() {
-      if (loadingPanel) loadingPanel.style.display = 'none';
-      if (reportPanel) reportPanel.style.display = 'block';
-    }, 2500);
   }
 
   function formatSize(bytes) {
