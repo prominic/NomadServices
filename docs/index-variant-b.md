@@ -381,7 +381,7 @@ body.ns-launching-active #marketing-view ~ h2 {
 <div style="background: linear-gradient(135deg, #6c5ce7 0%, #a855f7 50%, #6c5ce7 100%); margin: -2rem -2rem 2rem -2rem; padding: 1rem 2rem; text-align: center; position: relative; overflow: hidden;">
   <div style="position: relative; z-index: 1;">
     <span style="color: #ffffff; font-size: 1.1rem; font-weight: 600; letter-spacing: 0.02em;">&#128640; See your NSF analyzed in seconds - free preview, no signup required.</span>
-    <a href="#upload-dropzone" style="display: inline-block; margin-left: 1.5rem; background: #e8c547; color: #0f0f23; font-weight: 700; padding: 6px 20px; border-radius: 20px; text-decoration: none; font-size: 0.95rem;">Try it now &darr;</a>
+    <a href="#upload-dropzone" id="try-it-now-banner" style="display: inline-block; margin-left: 1.5rem; background: #e8c547; color: #0f0f23; font-weight: 700; padding: 6px 20px; border-radius: 20px; text-decoration: none; font-size: 0.95rem;">Try it now &darr;</a>
   </div>
 </div>
 
@@ -1211,6 +1211,56 @@ body.ns-launching-active #marketing-view ~ h2 {
     if (bytes < 1024) return bytes + ' bytes';
     if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
     return (bytes / 1048576).toFixed(1) + ' MB';
+  }
+})();
+</script>
+
+<!-- ============================================================ -->
+<!-- TEMP: CORS sandbox bound to the "Try it now" banner button.   -->
+<!-- Click the button -> two cross-origin fetches run in parallel: -->
+<!--   1. https://example.com/    (no CORS header, expect failure) -->
+<!--   2. https://api.github.com/zen  (CORS allowed, expect ok)   -->
+<!-- Open DevTools console + Network tab before clicking. To       -->
+<!-- remove: delete this <script> block and the id="try-it-now-    -->
+<!-- banner" attribute on the banner link above.                   -->
+<!-- ============================================================ -->
+<script>
+(function() {
+  var btn = document.getElementById('try-it-now-banner');
+  if (!btn) return;
+
+  btn.addEventListener('click', function(e) {
+    e.preventDefault();
+    console.log('%c[CORS test] click', 'font-weight:bold;color:#9d8df1');
+    runFetch('https://example.com/',         'no Access-Control-Allow-Origin header (expect CORS block)');
+    runFetch('https://api.github.com/zen',   'CORS-friendly endpoint (expect success)');
+    runFetch('https://staging.startcloud.com/public/file/serve/moonshine-dev-private/resources/config.json',   'staging.startcloud.com endpoint (test success)');
+  });
+
+  function runFetch(url, label) {
+    var tag = '[' + url + ']';
+    console.log(tag, 'starting -', label);
+    fetch(url)
+      .then(function(response) {
+        console.log(tag, '%cSUCCESS', 'color:#66bb6a;font-weight:bold',
+          '- HTTP ' + response.status + ' ' + response.statusText);
+        console.log(tag, 'response.type =', response.type, '(should be "basic" or "cors")');
+        var headers = {};
+        response.headers.forEach(function(v, k) { headers[k] = v; });
+        console.log(tag, 'visible headers:', headers);
+        return response.text();
+      })
+      .then(function(body) {
+        console.log(tag, 'body (first 300 chars):',
+          body.length > 300 ? body.substring(0, 300) + '... [truncated]' : body);
+      })
+      .catch(function(err) {
+        console.warn(tag, '%cFAILED', 'color:#e57373;font-weight:bold',
+          '-', err.name + ': ' + err.message);
+        console.warn(tag, 'fetch() rejects with an opaque TypeError on CORS blocks.',
+          'Check the Network tab for the actual request/response and the browser-emitted',
+          'CORS reason (e.g. "No \'Access-Control-Allow-Origin\' header").');
+      });
   }
 })();
 </script>
