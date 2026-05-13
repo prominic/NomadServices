@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Nomad.services">
+  <title>Nomad.services</title>
+
+  <defs>
+    <!-- Diagonal half clip-paths. Diagonal runs from (200,0) to (0,200). -->
+    <clipPath id="blueHalf">
+      <polygon points="0,0 200,0 0,200"/>
+    </clipPath>
+    <clipPath id="grayHalf">
+      <polygon points="200,0 200,200 0,200"/>
+    </clipPath>
+
+    <!-- 12-tooth gear silhouette: outer perimeter + inner hole (evenodd). -->
+    <!-- Tip radius 92, root radius 75, hole radius 55. -->
+    <path id="gear" d="M 174.08 88.27 L 191.65 91.98 L 191.65 108.02 L 174.08 111.73 A 75 75 0 0 1 170.02 126.88 L 183.38 138.88 L 175.36 152.77 L 158.29 147.20 A 75 75 0 0 1 147.20 158.29 L 152.77 175.36 L 138.88 183.38 L 126.88 170.02 A 75 75 0 0 1 111.73 174.08 L 108.02 191.65 L 91.98 191.65 L 88.27 174.08 A 75 75 0 0 1 73.12 170.02 L 61.12 183.38 L 47.23 175.36 L 52.80 158.29 A 75 75 0 0 1 41.71 147.20 L 24.64 152.77 L 16.62 138.88 L 29.98 126.88 A 75 75 0 0 1 25.92 111.73 L 8.35 108.02 L 8.35 91.98 L 25.92 88.27 A 75 75 0 0 1 29.98 73.12 L 16.62 61.12 L 24.64 47.23 L 41.71 52.80 A 75 75 0 0 1 52.80 41.71 L 47.23 24.64 L 61.12 16.62 L 73.12 29.98 A 75 75 0 0 1 88.27 25.92 L 91.98 8.35 L 108.02 8.35 L 111.73 25.92 A 75 75 0 0 1 126.88 29.98 L 138.88 16.62 L 152.77 24.64 L 147.20 41.71 A 75 75 0 0 1 158.29 52.80 L 175.36 47.23 L 183.38 61.12 L 170.02 73.12 A 75 75 0 0 1 174.08 88.27 Z M 155 100 A 55 55 0 1 0 45 100 A 55 55 0 1 0 155 100 Z"/>
+  </defs>
+
+  <!-- Blue upper-left half of gear -->
+  <use href="#gear" fill="#1E90FF" fill-rule="evenodd" clip-path="url(#blueHalf)"/>
+
+  <!-- Gray lower-right half of gear -->
+  <use href="#gear" fill="#A8A8A8" fill-rule="evenodd" clip-path="url(#grayHalf)"/>
+
+  <!-- Geometric N glyph inside the hole. Bars 10 wide, diagonal V-thickness 12. -->
+  <path d="M 78 75 L 88 75 L 112 113 L 112 75 L 122 75 L 122 125 L 112 125 L 88 87 L 88 125 L 78 125 Z"
+        fill="#1E90FF"/>
+</svg>
