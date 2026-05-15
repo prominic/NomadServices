@@ -349,6 +349,26 @@ html { scroll-behavior: smooth; }
 .ns-privacy-strip span { white-space: nowrap; }
 .ns-privacy-strip .ns-privacy-sep { color: #4a4a64; margin: 0 0.5rem; }
 
+/* Inline validation error shown below the dropzone when the file the
+   user dropped/picked is rejected by client-side checks (extension,
+   size, name sanity, magic bytes). UX guardrail only — the server
+   must still validate. */
+.ns-validation-error {
+  margin: 1rem auto 0;
+  max-width: 720px;
+  padding: 0.9rem 1.25rem;
+  background: rgba(229,115,115,0.10);
+  border: 1px solid #e57373;
+  border-radius: 8px;
+  color: #f8bbbb;
+  text-align: left;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+.ns-validation-error strong { color: #ff8a80; display: block; margin-bottom: 0.25rem; }
+.ns-validation-error ul { margin: 0.25rem 0 0; padding-left: 1.25rem; }
+.ns-validation-error li { margin-bottom: 0.15rem; }
+
 /* ============================================================ */
 /* Belt-and-suspenders hide rules for launching mode.            */
 /* See Variant A comment for details.                            */
@@ -407,6 +427,11 @@ body.ns-launching-active #marketing-view ~ h2 {
       or <span style="color: #e8c547; text-decoration: underline;">click to choose a file</span> &middot; free preview, no signup
     </div>
     <input type="file" id="nsf-file-input" accept=".nsf" style="display: none;" aria-hidden="true">
+  </div>
+
+  <div id="ns-validation-error" class="ns-validation-error" style="display: none;" role="alert">
+    <strong>Can't accept this file:</strong>
+    <ul id="ns-validation-error-list"></ul>
   </div>
 
   <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.5rem; font-size: 1rem; color: #c8c8d8;">
@@ -936,12 +961,44 @@ body.ns-launching-active #marketing-view ~ h2 {
     e.preventDefault();
     dropzone.style.borderColor = '#6c5ce7';
     dropzone.style.background = 'linear-gradient(135deg, rgba(108,92,231,0.12) 0%, rgba(168,85,247,0.06) 100%)';
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      handleUserFile(e.dataTransfer.files[0]);
+
+    /* Single-file enforcement: reject multi-file drops and directory
+       drops up-front. stopImmediatePropagation also blocks the
+       upload-test block's drop handler from running on the same event. */
+    var files = (e.dataTransfer && e.dataTransfer.files) || [];
+    var items = (e.dataTransfer && e.dataTransfer.items) || null;
+    if (items && items.length === 1 && typeof items[0].webkitGetAsEntry === 'function') {
+      var entry = items[0].webkitGetAsEntry();
+      if (entry && entry.isDirectory) {
+        e.stopImmediatePropagation();
+        showValidationError([{ code: 'DIR',
+          message: 'Folders are not supported — drop a single .nsf file.' }]);
+        return;
+      }
     }
+    if (files.length === 0) {
+      e.stopImmediatePropagation();
+      showValidationError([{ code: 'NO_FILE',
+        message: 'No file was dropped. Drop a single .nsf file from your computer.' }]);
+      return;
+    }
+    if (files.length > 1) {
+      e.stopImmediatePropagation();
+      showValidationError([{ code: 'MULTI',
+        message: 'Only one file at a time, please. (' + files.length + ' files were dropped.)' }]);
+      return;
+    }
+    handleUserFile(files[0]);
   });
   fileInput.addEventListener('change', function(e) {
-    if (e.target.files.length > 0) handleUserFile(e.target.files[0]);
+    /* The input element has no `multiple` attribute, so the browser
+       already enforces single-file here. Defensive check anyway. */
+    if (e.target.files && e.target.files.length === 1) {
+      handleUserFile(e.target.files[0]);
+    } else if (e.target.files && e.target.files.length > 1) {
+      showValidationError([{ code: 'MULTI',
+        message: 'Only one file at a time, please.' }]);
+    }
   });
   if (sampleLink) {
     sampleLink.addEventListener('click', function(e) {
@@ -1047,6 +1104,21 @@ body.ns-launching-active #marketing-view ~ h2 {
 
   /* --- NSF drop / pick path --- */
   function handleUserFile(file) {
+    /* Client-side validation gate. Promise resolves with
+       { ok, errors }. If invalid we show inline + console errors and
+       skip the visual flow entirely. NOT a security boundary — server
+       must validate independently. */
+    validateUpload(file).then(function(result) {
+      if (!result.ok) {
+        showValidationError(result.errors);
+        return;
+      }
+      clearValidationError();
+      proceedWithFile(file);
+    });
+  }
+
+  function proceedWithFile(file) {
     pendingFile = file;
     pendingMode = 'file';
     /* Prime visible content BEFORE swapping views. */
@@ -1061,6 +1133,129 @@ body.ns-launching-active #marketing-view ~ h2 {
     showLaunchingView();
     runFullFlow();
   }
+
+  /* ---------- client-side validation ---------- */
+
+  /* Per-file memoized Promise so the main flow and the upload-test
+     block can both await the same result without re-reading the file. */
+  var validationCache = (typeof WeakMap === 'function') ? new WeakMap() : null;
+
+  function validateUpload(file) {
+    if (validationCache && validationCache.has(file)) return validationCache.get(file);
+    var promise = doValidate(file);
+    if (validationCache) validationCache.set(file, promise);
+    return promise;
+  }
+
+  function doValidate(file) {
+    var errors = [];
+
+    /* 1. Extension whitelist (case-insensitive). */
+    var nameLower = (file.name || '').toLowerCase();
+    if (!/\.nsf$/.test(nameLower)) {
+      errors.push({
+        code: 'EXT',
+        message: 'File must have a .nsf extension. Got: "' + (file.name || '(no name)') + '".'
+      });
+    }
+
+    /* 2. Size bounds — NSF header alone is bigger than a few KB; cap
+          at 100 MB to keep the public upload light. Adjust both bounds
+          if your backend allows more. */
+    var MIN_BYTES = 4 * 1024;
+    var MAX_BYTES = 100 * 1024 * 1024;
+    if (file.size < MIN_BYTES) {
+      errors.push({
+        code: 'SIZE_MIN',
+        message: 'File is too small (' + file.size + ' bytes). Real NSFs are at least 4 KB.'
+      });
+    }
+    if (file.size > MAX_BYTES) {
+      errors.push({
+        code: 'SIZE_MAX',
+        message: 'File is too large (' + (file.size / 1024 / 1024).toFixed(1) + ' MB). Max is 100 MB.'
+      });
+    }
+
+    /* 3. Filename sanity — length, path separators, traversal markers,
+          control characters. */
+    var name = file.name || '';
+    if (name.length > 255) {
+      errors.push({ code: 'NAME_LEN',    message: 'Filename is longer than 255 characters.' });
+    }
+    if (/[\\\/]/.test(name)) {
+      errors.push({ code: 'NAME_PATH',   message: 'Filename contains a path separator (\\ or /).' });
+    }
+    if (name.indexOf('..') !== -1) {
+      errors.push({ code: 'NAME_DOTDOT', message: 'Filename contains "..".' });
+    }
+    if (/[\x00-\x1F\x7F]/.test(name)) {
+      errors.push({ code: 'NAME_CTRL',   message: 'Filename contains control or non-printable characters.' });
+    }
+
+    /* If any sync check failed, skip the async magic-byte read. */
+    if (errors.length > 0) {
+      return Promise.resolve({ ok: false, errors: errors });
+    }
+
+    /* 5. Magic-byte check — best-effort heuristic. NSF files start with
+          0x1A (ASCII SUB). Verify with a known-good NSF and tighten the
+          check if needed. We always log the hex of the first 32 bytes
+          so you can confirm what real files look like. */
+    return new Promise(function(resolve) {
+      var reader = new FileReader();
+      reader.onload = function() {
+        var buf = new Uint8Array(reader.result);
+        var hex = Array.prototype.map.call(buf, function(b) {
+          return ('0' + b.toString(16)).slice(-2);
+        }).join(' ');
+        console.log('[validation] first ' + buf.length + ' bytes of "' + file.name + '" (hex):', hex);
+        if (buf[0] !== 0x1A) {
+          errors.push({
+            code: 'MAGIC',
+            message: 'File header does not start with the expected NSF signature (0x1A). First byte was 0x' + ('0' + buf[0].toString(16)).slice(-2) + '.'
+          });
+        }
+        resolve({ ok: errors.length === 0, errors: errors });
+      };
+      reader.onerror = function() {
+        errors.push({ code: 'READ', message: 'Could not read the file header for inspection.' });
+        resolve({ ok: false, errors: errors });
+      };
+      reader.readAsArrayBuffer(file.slice(0, 32));
+    });
+  }
+
+  function showValidationError(errors) {
+    console.warn('[validation] rejected — ' + errors.length + ' error(s):');
+    errors.forEach(function(e) {
+      console.warn('[validation]   ' + e.code + ': ' + e.message);
+    });
+    var el = document.getElementById('ns-validation-error');
+    var list = document.getElementById('ns-validation-error-list');
+    if (!el || !list) return;
+    list.innerHTML = '';
+    errors.forEach(function(e) {
+      var li = document.createElement('li');
+      li.textContent = e.message;
+      list.appendChild(li);
+    });
+    el.style.display = 'block';
+    /* Scroll the dropzone area into view in case the user dropped while
+       scrolled away. */
+    try {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } catch (_) {}
+  }
+
+  function clearValidationError() {
+    var el = document.getElementById('ns-validation-error');
+    if (el) el.style.display = 'none';
+  }
+
+  /* Expose for the upload-test block (and anything else) to consult
+     the same cached decision. */
+  window.__nsValidate = validateUpload;
 
   function runFullFlow() {
     resetStages();
@@ -1261,6 +1456,184 @@ body.ns-launching-active #marketing-view ~ h2 {
           'Check the Network tab for the actual request/response and the browser-emitted',
           'CORS reason (e.g. "No \'Access-Control-Allow-Origin\' header").');
       });
+  }
+})();
+</script>
+
+<!-- ============================================================ -->
+<!-- TEMP: cross-origin public-upload test wired to the dropzone.  -->
+<!-- When the user drops or picks an NSF, we POST it (in parallel  -->
+<!-- with the existing UI flow) to                                 -->
+<!--   https://staging.startcloud.com/public/file/upload           -->
+<!-- and log the full request/response to the console. Mirrors the -->
+<!-- "Upload Public File test" form in the moonshinedev provisioner-->
+<!-- restclient (https://staging.startcloud.com/public/file/serve/ -->
+<!-- restclient/index.html), but uses fetch() instead of a form    -->
+<!-- submit so we stay on the page and can inspect the response.   -->
+<!-- To remove: delete this <script> block.                        -->
+<!-- ============================================================ -->
+<script>
+(function() {
+  var dropzone = document.getElementById('upload-dropzone');
+  var fileInput = document.getElementById('nsf-file-input');
+  if (!dropzone || !fileInput) return;
+
+  /* Hook the same events the main script listens for. Both handlers
+     fire on the same event; the main script's UI flow and this upload
+     test run independently. We share validation via window.__nsValidate
+     (set by the main script) so we don't re-read the file's bytes —
+     and we only upload after validation passes. */
+  fileInput.addEventListener('change', function(e) {
+    if (e.target.files && e.target.files.length > 0) {
+      gateAndUpload(e.target.files[0]);
+    }
+  });
+  dropzone.addEventListener('drop', function(e) {
+    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      gateAndUpload(e.dataTransfer.files[0]);
+    }
+  });
+
+  function gateAndUpload(file) {
+    var p = (typeof window.__nsValidate === 'function')
+      ? window.__nsValidate(file)
+      : Promise.resolve({ ok: true, errors: [] });
+    p.then(function(result) {
+      if (!result.ok) {
+        console.warn('[upload test] skipping upload — validation rejected the file');
+        return;
+      }
+      runPublicUpload(file, makeUploadNames(file));
+    });
+  }
+
+  /* Build the full set of name variants for one upload. Returns:
+       originalName  e.g. "MyDatabase.nsf"   (display, file.name)
+       originalStem  e.g. "MyDatabase"        (no extension)
+       extension     e.g. ".nsf"              (with the dot, "" if none)
+       targetStem    e.g. "MyDatabase-nomad-7a3f...c1e"
+       targetName    e.g. "MyDatabase-nomad-7a3f...c1e.nsf"  (sent to server)
+     Pass the whole object into runPublicUpload — the multipart filename
+     uses targetName; the rest are kept on the same object so later code
+     (UI labels, follow-up API calls, etc.) can reach them via the cache
+     on window.__nsUploadNames. */
+  function makeUploadNames(file) {
+    var dot  = file.name.lastIndexOf('.');
+    var stem = dot > 0 ? file.name.slice(0, dot) : file.name;
+    var ext  = dot > 0 ? file.name.slice(dot)    : '';
+    var id   = generateRandomId();
+    var targetStem = stem + '-nomad-' + id;
+    return {
+      originalName: file.name,
+      originalStem: stem,
+      extension:    ext,
+      targetStem:   targetStem,
+      targetName:   targetStem + ext
+    };
+  }
+
+  /* 32-character alphanumeric (hex) random id — 128 bits of entropy,
+     effectively unguessable. Uses the browser's crypto API; the final
+     Math.random fallback is non-cryptographic and only kicks in on
+     ancient browsers that lack window.crypto entirely. */
+  function generateRandomId() {
+    if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+      return window.crypto.randomUUID().replace(/-/g, '');
+    }
+    if (window.crypto && typeof window.crypto.getRandomValues === 'function') {
+      var bytes = new Uint8Array(16);
+      window.crypto.getRandomValues(bytes);
+      return Array.prototype.map.call(bytes, function(b) {
+        return ('0' + b.toString(16)).slice(-2);
+      }).join('');
+    }
+    return (Math.random().toString(36).slice(2) +
+            Math.random().toString(36).slice(2)).slice(0, 32);
+  }
+
+  function runPublicUpload(file, names) {
+    /* Defensive default: if a caller passes nothing, derive names from
+       file.name so the function still works. */
+    names = names || makeUploadNames(file);
+
+    /* Stash names so later code / console inspection can read them.
+       Keyed by originalName so multiple uploads coexist; also expose
+       the most-recent under a flat property for quick lookup. */
+    window.__nsUploadNames = window.__nsUploadNames || {};
+    window.__nsUploadNames[names.originalName] = names;
+    window.__nsLastUploadNames = names;
+
+    var url = 'https://staging.startcloud.com/public/file/upload';
+    var tag = '[upload test]';
+
+    console.log(tag, '%cstarting', 'color:#9d8df1;font-weight:bold');
+    console.log(tag, 'target:', url);
+    console.log(tag, 'names:', names);
+    console.log(tag, '  originalName (UI display)  =', names.originalName);
+    console.log(tag, '  originalStem               =', names.originalStem);
+    console.log(tag, '  extension                  =', names.extension || '(none)');
+    console.log(tag, '  targetStem                 =', names.targetStem);
+    console.log(tag, '  targetName (sent to server)=', names.targetName);
+    console.log(tag, 'size:', file.size, 'bytes, type:', file.type || 'unknown');
+
+    /* Public endpoint, unauthenticated visit — nothing in cookies to
+       send. We deliberately do NOT set credentials: 'include' so:
+         - no CORS preflight fires (multipart POST with no custom
+           headers is a "simple" request);
+         - the server can return Access-Control-Allow-Origin: * and
+           does not need Access-Control-Allow-Credentials: true.
+       If the server later rejects with a CSRF error, the public
+       endpoint is enforcing CSRF and we'll need to revisit. */
+    var xsrfToken = readCookie('XSRF-TOKEN');
+    console.log(tag, 'XSRF-TOKEN cookie (informational, not sent):',
+      xsrfToken || '(empty — expected for an unauthenticated cross-origin visit)');
+
+    var formData = new FormData();
+    /* _csrf is part of the reference upload contract; populate from
+       document.cookie if present, empty otherwise. Note: even with
+       credentials omitted, document.cookie can still be read — it's
+       just that staging.startcloud.com cookies aren't visible from
+       this origin, so the value will be empty in practice. */
+    formData.append('_csrf', xsrfToken || '');
+    /* Third arg overrides the multipart filename without mutating the
+       File object — server sees names.targetName, our UI keeps file.name. */
+    formData.append('file', file, names.targetName);
+
+    var startTime = (window.performance && performance.now) ? performance.now() : Date.now();
+
+    fetch(url, {
+      method: 'POST',
+      body: formData
+    })
+      .then(function(response) {
+        var elapsed = (((window.performance && performance.now) ? performance.now() : Date.now()) - startTime).toFixed(0);
+        console.log(tag, '%cresponse received', 'color:#66bb6a;font-weight:bold',
+          '- HTTP ' + response.status + ' ' + response.statusText,
+          '(' + elapsed + 'ms)');
+        console.log(tag, 'response.type =', response.type,
+          '(should be "cors" for a cross-origin response)');
+        var visibleHeaders = {};
+        response.headers.forEach(function(v, k) { visibleHeaders[k] = v; });
+        console.log(tag, 'visible headers (CORS-safelisted + Access-Control-Expose-Headers):', visibleHeaders);
+        return response.text();
+      })
+      .then(function(body) {
+        console.log(tag, 'response body (first 500 chars):',
+          body.length > 500 ? body.substring(0, 500) + '... [truncated]' : body);
+      })
+      .catch(function(err) {
+        var elapsed = (((window.performance && performance.now) ? performance.now() : Date.now()) - startTime).toFixed(0);
+        console.warn(tag, '%cfailed', 'color:#e57373;font-weight:bold',
+          '-', err.name + ': ' + err.message, '(' + elapsed + 'ms)');
+        console.warn(tag, 'fetch() rejects with an opaque TypeError on CORS blocks and network errors.',
+          'Check the Network tab for the actual request status and any browser-emitted',
+          'CORS rejection reason (Access-Control-Allow-Origin missing / credentials mismatch / preflight fail / etc.).');
+      });
+  }
+
+  function readCookie(name) {
+    var match = document.cookie.match(new RegExp('(?:^|;\\s*)' + name + '=([^;]*)'));
+    return match ? decodeURIComponent(match[1]) : '';
   }
 })();
 </script>
