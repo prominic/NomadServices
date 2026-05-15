@@ -1411,10 +1411,20 @@ body.ns-launching-active #marketing-view ~ h2 {
 </script>
 
 <!-- ============================================================ -->
+<!-- TEMP: shared config for the test scripts below. Change        -->
+<!-- NS_BACKEND in one place to point every test at a different    -->
+<!-- environment (e.g. production, a local provisioner, etc.).     -->
+<!-- ============================================================ -->
+<script>
+  window.NS_BACKEND = 'https://beta.moonshine.dev';
+</script>
+
+<!-- ============================================================ -->
 <!-- TEMP: CORS sandbox bound to the "Try it now" banner button.   -->
 <!-- Click the button -> two cross-origin fetches run in parallel: -->
 <!--   1. https://example.com/    (no CORS header, expect failure) -->
 <!--   2. https://api.github.com/zen  (CORS allowed, expect ok)   -->
+<!--   3. NS_BACKEND/public/file/serve/...  (test success)         -->
 <!-- Open DevTools console + Network tab before clicking. To       -->
 <!-- remove: delete this <script> block and the id="try-it-now-    -->
 <!-- banner" attribute on the banner link above.                   -->
@@ -1429,7 +1439,8 @@ body.ns-launching-active #marketing-view ~ h2 {
     console.log('%c[CORS test] click', 'font-weight:bold;color:#9d8df1');
     runFetch('https://example.com/',         'no Access-Control-Allow-Origin header (expect CORS block)');
     runFetch('https://api.github.com/zen',   'CORS-friendly endpoint (expect success)');
-    runFetch('https://staging.startcloud.com/public/file/serve/moonshine-dev-private/resources/config.json',   'staging.startcloud.com endpoint (test success)');
+    runFetch(window.NS_BACKEND + '/public/file/serve/moonshine-dev-private/resources/config.json',
+             window.NS_BACKEND + ' endpoint (test success)');
   });
 
   function runFetch(url, label) {
@@ -1563,7 +1574,7 @@ body.ns-launching-active #marketing-view ~ h2 {
     window.__nsUploadNames[names.originalName] = names;
     window.__nsLastUploadNames = names;
 
-    var url = 'https://staging.startcloud.com/public/file/upload';
+    var url = window.NS_BACKEND + '/public/file/upload';
     var tag = '[upload test]';
 
     console.log(tag, '%cstarting', 'color:#9d8df1;font-weight:bold');
