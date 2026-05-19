@@ -261,50 +261,62 @@
 
   NSWebSocket.prototype._onMessage = function(ev) {
     var raw = ev.data;
-    var envelope = null;
-    var decoded  = null;
+    var decoded = null;
 
-    try { envelope = JSON.parse(raw); }
-    catch (e) {
-      var preview = String(raw).substring(0, 80);
-      /* The authenticated Domino WS server (DominoCompile.hx) replies
-         with these literal plaintext strings when the connection isn't
-         authorised. If we see them here it almost always means we're
-         pointed at the wrong server (this project uses an unauthen-
-         ticated analyze server on a different host). */
-      if (preview.indexOf('User not message') === 0 ||
-          preview.indexOf('User not authenticated') === 0) {
-        this._log('inbound: server rejected the connection — "' + preview + '". ' +
-          'This is the AUTHENTICATED Domino server\'s rejection text; ' +
-          'the analyze WebSocket is on a different host. Check NS_WEBSOCKET_BASE.',
-          'error');
-      } else {
-        this._log('inbound: non-JSON frame, ignoring (first 80 chars: "' +
-          preview + '")', 'warn');
+    /* Documented analyze-server inbound format (Moonshine-Websocket-
+       Server / Moonshine-DB-Analyzer, M1 helloWorld round-trip):
+
+         raw frame = base64-encoded JSON string
+         JSON.parse(atob(raw)) = { status, action, message, echo }
+
+       There is NO outer envelope on inbound — only outbound carries
+       the { username, message } envelope. So we decode base64 first,
+       then JSON.parse the result. */
+    try {
+      var inner = b64decode(String(raw).trim());
+      try { decoded = JSON.parse(inner); }
+      catch (e) {
+        /* Base64 decoded fine but content wasn't JSON. Surface the
+           string so consumers can still inspect it. */
+        decoded = inner;
       }
+      this._log('recv:', decoded);
+      this._emit('message', { decoded: decoded, raw: raw });
+      return;
+    } catch (e) {
+      /* Frame wasn't base64. Fall through to legacy/diagnostic paths. */
+    }
+
+    /* Fallback 1: known plaintext rejection strings from the
+       authenticated Domino WS server (DominoCompile.hx). Hitting these
+       means NS_WEBSOCKET_BASE points at the wrong server — log
+       explicitly so the next person doesn't have to decode the symptom. */
+    var preview = String(raw).substring(0, 80);
+    if (preview.indexOf('User not message') === 0 ||
+        preview.indexOf('User not authenticated') === 0) {
+      this._log('inbound: server rejected the connection — "' + preview + '". ' +
+        'This is the AUTHENTICATED Domino server\'s rejection text; ' +
+        'check NS_WEBSOCKET_BASE.', 'error');
       return;
     }
 
-    if (envelope && typeof envelope.message === 'string') {
-      var inner;
-      try { inner = b64decode(envelope.message); }
-      catch (e) {
-        this._log('inbound: base64 decode of envelope.message failed: ' +
-          e.message, 'warn');
+    /* Fallback 2: maybe it's an old-style { username, message } JSON
+       envelope (kept for resilience if a transitional server build is
+       ever encountered). */
+    try {
+      var envelope = JSON.parse(raw);
+      if (envelope && typeof envelope.message === 'string') {
+        var legacyInner = b64decode(envelope.message);
+        try { decoded = JSON.parse(legacyInner); }
+        catch (e2) { decoded = legacyInner; }
+        this._log('recv (legacy envelope):', decoded);
+        this._emit('message', { decoded: decoded, envelope: envelope, raw: raw });
         return;
       }
-      /* Server may send a JSON string or a raw string in the message
-         slot — try JSON first, fall back to the string. */
-      try { decoded = JSON.parse(inner); }
-      catch (e) { decoded = inner; }
-    } else {
-      /* No .message field — surface the envelope itself so consumers
-         can decide what to do. */
-      decoded = envelope;
-    }
+    } catch (e) { /* not JSON either */ }
 
-    this._log('recv:', decoded);
-    this._emit('message', { decoded: decoded, envelope: envelope, raw: raw });
+    this._log('inbound: unparseable frame, ignoring (first 80 chars: "' +
+      preview + '")', 'warn');
   };
 
   /* --- URL builder. Splits the path-prefix off so a future endpoint

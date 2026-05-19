@@ -1601,17 +1601,23 @@ body.ns-launching-active #marketing-view ~ h2 {
 </script>
 
 <!-- ============================================================ -->
-<!-- TEMP: shared config for the test scripts below. Change        -->
-<!-- NS_BACKEND in one place - the WebSocket base URL is derived  -->
-<!-- from it (http→ws, https→wss, with /websocket appended).      -->
+<!-- TEMP: shared config for the test scripts below.               -->
 <!--                                                               -->
-<!-- NS_ANALYZE_SERVER: the server-side routing token the analyze  -->
-<!--   backend expects in the envelope's `username` field. Same    -->
-<!--   value every connection - NOT a per-user identifier.         -->
+<!-- NS_BACKEND: HTTPS host for the public upload/serve endpoints. -->
+<!-- NS_WEBSOCKET_BASE: dedicated host:port for the analyze WS    -->
+<!--   server. Intentionally NOT derived from NS_BACKEND - the     -->
+<!--   WS server is a separate deployment on port 8443 with its    -->
+<!--   own (currently self-signed) cert. If the browser rejects    -->
+<!--   the WSS connection, visit https://nomad.services:8443/      -->
+<!--   once and accept the cert warning; that trusts it for the    -->
+<!--   rest of the session.                                        -->
+<!-- NS_ANALYZE_SERVER: server-side routing token expected in the  -->
+<!--   envelope's `username` field. Same value every connection - -->
+<!--   NOT a per-user identifier.                                  -->
 <!-- ============================================================ -->
 <script>
-  window.NS_BACKEND         = 'https://beta.moonshine.dev';
-  window.NS_WEBSOCKET_BASE  = window.NS_BACKEND.replace(/^http/, 'ws') + '/websocket';
+  window.NS_BACKEND         = 'https://staging.startcloud.com';
+  window.NS_WEBSOCKET_BASE  = 'wss://staging.startcloud.com:8443/websocket';
   window.NS_ANALYZE_SERVER  = 'ANALYZEx9pVRTzQ5sbK1wMnHd7Yfg2Lj';
 </script>
 
