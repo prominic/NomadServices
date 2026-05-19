@@ -35,14 +35,14 @@ html { scroll-behavior: smooth; }
 }
 
 /* ============================================================ */
-/* Launching-view styles — used when the user drops/picks a     */
+/* Launching-view styles - used when the user drops/picks a     */
 /* file. The whole launching view is hidden by default and      */
 /* shown by JS when the URL pushes to /launching/. We're not    */
 /* navigating, so the theme header and footer remain in place.  */
 /* ============================================================ */
 .ns-launching-wrap {
   margin: 1rem auto 3rem;
-  /* No inner max-width — defers to the parent .main-content-wrap
+  /* No inner max-width - defers to the parent .main-content-wrap
      (1200px from the wider color scheme), so analytical card, file
      card and email panel match the marketing content width. The
      progress strip pins itself narrow via its own max-width below. */
@@ -76,7 +76,7 @@ html { scroll-behavior: smooth; }
 }
 .ns-progress-sub { font-size: 0.85rem; color: #6a6a7c; margin-top: 0.75rem; }
 
-/* File card — bigger and more prominent in Variant B since it's the
+/* File card - bigger and more prominent in Variant B since it's the
    visual anchor (no stepper). */
 .ns-file-card {
   display: flex; align-items: center; gap: 1.25rem;
@@ -242,7 +242,7 @@ html { scroll-behavior: smooth; }
 }
 
 /* ============================================================ */
-/* Shared analytical report card — used by all three flows.      */
+/* Shared analytical report card - used by all three flows.      */
 /* (Lifted from the old inline #analysis-report block in the     */
 /* marketing view, which is now removed.)                        */
 /* ============================================================ */
@@ -291,9 +291,9 @@ html { scroll-behavior: smooth; }
 }
 .ns-confidence-text strong { color: #e8c547; font-weight: 700; }
 
-/* "What you unlock" value-prop card — sits between the confidence  */
+/* "What you unlock" value-prop card - sits between the confidence  */
 /* line and the email form. Answers "what's actually behind the     */
-/* sign-up wall?" — biggest conversion lever on this screen.        */
+/* sign-up wall?" - biggest conversion lever on this screen.        */
 .ns-unlock-card {
   background: linear-gradient(135deg, rgba(108,92,231,0.10) 0%, rgba(168,85,247,0.04) 100%);
   border: 1px solid #6c5ce7;
@@ -335,7 +335,7 @@ html { scroll-behavior: smooth; }
   font-size: 1.05rem;
 }
 
-/* Privacy reassurance strip — footer of #post-content, addresses   */
+/* Privacy reassurance strip - footer of #post-content, addresses   */
 /* the "what happened to my file?" worry at the choice point.       */
 .ns-privacy-strip {
   text-align: center;
@@ -351,7 +351,7 @@ html { scroll-behavior: smooth; }
 
 /* Inline validation error shown below the dropzone when the file the
    user dropped/picked is rejected by client-side checks (extension,
-   size, name sanity, magic bytes). UX guardrail only — the server
+   size, name sanity, magic bytes). UX guardrail only - the server
    must still validate. */
 .ns-validation-error {
   margin: 1rem auto 0;
@@ -395,6 +395,114 @@ body.ns-launching-active #marketing-view ~ h2 {
   display: none !important;
 }
 
+/* ============================================================ */
+/* Disclaimer trigger - small "? Disclaimer" button shown below */
+/* the "click to choose a file" text inside the dropzone. The   */
+/* JS handler stops click propagation so this doesn't also fire */
+/* the dropzone's file-picker click.                            */
+/* ============================================================ */
+.ns-disclaimer-row {
+  margin-top: 0.85rem;
+  font-size: 0.85rem;
+  color: #6a6a7c;
+}
+.ns-disclaimer-trigger {
+  background: none;
+  border: none;
+  color: #a0a0b8;
+  font: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.ns-disclaimer-trigger:hover,
+.ns-disclaimer-trigger:focus-visible {
+  color: #e0e0f0;
+  background: rgba(108,92,231,0.12);
+  outline: none;
+}
+.ns-disclaimer-trigger .ns-disclaimer-label {
+  text-decoration: underline;
+  text-decoration-color: rgba(160,160,184,0.4);
+  text-underline-offset: 2px;
+}
+.ns-disclaimer-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* ============================================================ */
+/* Modal - centered card with a dimmed backdrop. Hidden until   */
+/* JS removes the `hidden` attribute. Used by the disclaimer    */
+/* trigger above; generic enough to host other dialogs later.   */
+/* ============================================================ */
+.ns-modal[hidden] { display: none; }
+.ns-modal {
+  position: fixed; inset: 0; z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+  padding: 1rem;
+}
+.ns-modal-backdrop {
+  position: absolute; inset: 0;
+  background: rgba(8,8,20,0.78);
+  -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
+}
+.ns-modal-card {
+  position: relative; z-index: 1;
+  max-width: 540px; width: 100%;
+  background: linear-gradient(180deg, #1a1a2e 0%, #0f0f20 100%);
+  border: 1px solid #2a2a4a;
+  border-radius: 14px;
+  padding: 2rem 2rem 1.75rem;
+  color: #e0e0f0;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  max-height: 90vh; overflow-y: auto;
+}
+.ns-modal-close {
+  position: absolute; top: 0.6rem; right: 0.7rem;
+  background: none; border: none;
+  color: #a0a0b8; font-size: 1.6rem; line-height: 1;
+  width: 32px; height: 32px; border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.ns-modal-close:hover,
+.ns-modal-close:focus-visible {
+  color: #fff; background: rgba(255,255,255,0.08); outline: none;
+}
+.ns-modal-title {
+  margin: 0 0 1rem; font-size: 1.3rem; color: #fff; font-weight: 600;
+}
+.ns-modal-body p { margin: 0 0 1rem; line-height: 1.55; color: #c8c8d8; }
+.ns-modal-body p:last-child { margin-bottom: 0; }
+.ns-modal-body strong { color: #fff; }
+.ns-modal-cta {
+  display: inline-block;
+  padding: 0.65rem 1.4rem;
+  background: linear-gradient(135deg, #6c5ce7, #a855f7);
+  color: #fff !important;
+  border-radius: 8px;
+  text-decoration: none !important;
+  font-weight: 500;
+  transition: filter 0.15s ease;
+}
+.ns-modal-cta:hover,
+.ns-modal-cta:focus-visible {
+  filter: brightness(1.15); outline: none;
+}
+
 </style>
 
 <div id="marketing-view" markdown="1">
@@ -407,7 +515,7 @@ body.ns-launching-active #marketing-view ~ h2 {
 
 <h2 class="fs-9" style="text-align: center; font-weight: 800; font-size: 4rem; margin-bottom: 0.25rem;">Nomad.Services</h2>
 
-<p class="fs-5 fw-300" style="margin-top: 5.0rem; text-align: center;">Upload your NSF and get a full migration viability report in seconds - before you ever create an account.</p>
+<p class="fs-5 fw-300" style="margin-top: 5.0rem; text-align: center;">Upload your NSF and get a full <span style="color: #fff; font-weight: 500;">migration viability report</span> in seconds - before you ever create an account.</p>
 
 <!-- ============================================================ -->
 <!-- DUAL-ENTRY HERO WIDGET                                        -->
@@ -426,7 +534,33 @@ body.ns-launching-active #marketing-view ~ h2 {
     <div style="font-size: 1rem; color: #a0a0b8;">
       or <span style="color: #e8c547; text-decoration: underline;">click to choose a file</span> &middot; free preview, no signup
     </div>
+    <div class="ns-disclaimer-row">
+      <button type="button" id="disclaimer-trigger" class="ns-disclaimer-trigger" aria-haspopup="dialog" aria-controls="disclaimer-modal">
+        <span class="ns-disclaimer-icon" aria-hidden="true">?</span>
+        <span class="ns-disclaimer-label">Disclaimer</span>
+      </button>
+    </div>
     <input type="file" id="nsf-file-input" accept=".nsf" style="display: none;" aria-hidden="true">
+  </div>
+
+  <!-- Disclaimer modal. Hidden until JS opens it. role/aria attrs make -->
+  <!-- it announceable to screen readers; data-close on the backdrop +  -->
+  <!-- close button hooks the same dismiss handler.                     -->
+  <div id="disclaimer-modal" class="ns-modal" role="dialog" aria-modal="true" aria-labelledby="disclaimer-modal-title" hidden>
+    <div class="ns-modal-backdrop" data-close></div>
+    <div class="ns-modal-card" role="document">
+      <button type="button" class="ns-modal-close" data-close aria-label="Close disclaimer">&times;</button>
+      <h2 id="disclaimer-modal-title" class="ns-modal-title">Before you upload</h2>
+      <div class="ns-modal-body">
+        <p>This is a free, unauthenticated preview. Uploaded files are analyzed and deleted within 15 minutes, and we never store them - but the analysis runs in a shared environment.</p>
+        <p>For an extra layer of safety, please <strong>avoid uploading databases containing sensitive or confidential information</strong>. A sanitized copy or a non-production NSF is ideal for the preview.</p>
+        <p>If you'd like to test on production-style data in an isolated, authenticated environment, sign in here:</p>
+        <p style="text-align: center; margin-top: 1.25rem;">
+          <!-- TODO: replace with the real authenticated-environment URL once confirmed -->
+          <a class="ns-modal-cta" href="https://app.moonshine.dev/public/file/serve/domino-integration/index.html" target="_blank" rel="noopener">Open the authenticated environment &rarr;</a>
+        </p>
+      </div>
+    </div>
   </div>
 
   <div id="ns-validation-error" class="ns-validation-error" style="display: none;" role="alert">
@@ -714,7 +848,7 @@ body.ns-launching-active #marketing-view ~ h2 {
 <!-- LAUNCHING VIEW (Variant B: email-first)                       -->
 <!-- Hidden by default. Shown by JS when the user drops or picks   -->
 <!-- a file. We use pushState (no real navigation), so the theme   -->
-<!-- header and footer remain in place. No stepper here — the     -->
+<!-- header and footer remain in place. No stepper here - the     -->
 <!-- prominent file card serves as the visual anchor instead.      -->
 <!-- ============================================================ -->
 <div id="launching-view" style="display: none;" markdown="0">
@@ -744,7 +878,7 @@ body.ns-launching-active #marketing-view ~ h2 {
       </div>
     </div>
 
-    <!-- Stage 3: Results — analytical card (shared) + post-content for NSF flow -->
+    <!-- Stage 3: Results - analytical card (shared) + post-content for NSF flow -->
     <div class="ns-stage" id="stage-results" style="display: none;">
 
       <div class="ns-analysis-report ns-fade-in" id="analysis-report-card">
@@ -865,7 +999,7 @@ body.ns-launching-active #marketing-view ~ h2 {
 /* ============================================================ */
 (function() {
   /* The File object lives here while the launching view is active.
-     Not persisted across reloads — refreshing /launching/ takes the
+     Not persisted across reloads - refreshing /launching/ takes the
      user back to the marketing view. */
   var pendingFile = null;
   var pendingMode = null;  /* 'file' | 'sample' | null */
@@ -972,7 +1106,7 @@ body.ns-launching-active #marketing-view ~ h2 {
       if (entry && entry.isDirectory) {
         e.stopImmediatePropagation();
         showValidationError([{ code: 'DIR',
-          message: 'Folders are not supported — drop a single .nsf file.' }]);
+          message: 'Folders are not supported - drop a single .nsf file.' }]);
         return;
       }
     }
@@ -1106,7 +1240,7 @@ body.ns-launching-active #marketing-view ~ h2 {
   function handleUserFile(file) {
     /* Client-side validation gate. Promise resolves with
        { ok, errors }. If invalid we show inline + console errors and
-       skip the visual flow entirely. NOT a security boundary — server
+       skip the visual flow entirely. NOT a security boundary - server
        must validate independently. */
     validateUpload(file).then(function(result) {
       if (!result.ok) {
@@ -1126,7 +1260,7 @@ body.ns-launching-active #marketing-view ~ h2 {
     if (fileSizeEl) fileSizeEl.textContent = formatSize(file.size);
     if (confidenceFilename) confidenceFilename.textContent = file.name;
     if (analysisReportStatus) analysisReportStatus.textContent = 'Analysis report';
-    if (analysisReportTitle) analysisReportTitle.textContent = file.name + ' — analysis report';
+    if (analysisReportTitle) analysisReportTitle.textContent = file.name + ' - analysis report';
     if (prepTitle) prepTitle.textContent = 'Preparing ' + file.name + '…';
 
     pushStateToLaunching();
@@ -1159,7 +1293,7 @@ body.ns-launching-active #marketing-view ~ h2 {
       });
     }
 
-    /* 2. Size bounds — NSF header alone is bigger than a few KB; cap
+    /* 2. Size bounds - NSF header alone is bigger than a few KB; cap
           at 100 MB to keep the public upload light. Adjust both bounds
           if your backend allows more. */
     var MIN_BYTES = 4 * 1024;
@@ -1177,7 +1311,7 @@ body.ns-launching-active #marketing-view ~ h2 {
       });
     }
 
-    /* 3. Filename sanity — length, path separators, traversal markers,
+    /* 3. Filename sanity - length, path separators, traversal markers,
           control characters. */
     var name = file.name || '';
     if (name.length > 255) {
@@ -1198,7 +1332,7 @@ body.ns-launching-active #marketing-view ~ h2 {
       return Promise.resolve({ ok: false, errors: errors });
     }
 
-    /* 5. Magic-byte check — best-effort heuristic. NSF files start with
+    /* 5. Magic-byte check - best-effort heuristic. NSF files start with
           0x1A (ASCII SUB). Verify with a known-good NSF and tighten the
           check if needed. We always log the hex of the first 32 bytes
           so you can confirm what real files look like. */
@@ -1227,7 +1361,7 @@ body.ns-launching-active #marketing-view ~ h2 {
   }
 
   function showValidationError(errors) {
-    console.warn('[validation] rejected — ' + errors.length + ' error(s):');
+    console.warn('[validation] rejected - ' + errors.length + ' error(s):');
     errors.forEach(function(e) {
       console.warn('[validation]   ' + e.code + ': ' + e.message);
     });
@@ -1264,7 +1398,7 @@ body.ns-launching-active #marketing-view ~ h2 {
         showResultsStage(true);
         /* Focus the email input so keyboard users can start typing.
            preventScroll keeps the viewport at the top of the results
-           stage — without it, browsers scroll the input into view and
+           stage - without it, browsers scroll the input into view and
            skip the user past the analytical card. */
         schedule(function() {
           try { emailInput.focus({ preventScroll: true }); } catch (_) {}
@@ -1278,7 +1412,7 @@ body.ns-launching-active #marketing-view ~ h2 {
     pendingFile = null;
     pendingMode = 'sample';
     if (analysisReportStatus) analysisReportStatus.textContent = 'Sample analysis';
-    if (analysisReportTitle) analysisReportTitle.textContent = 'CRM.nsf — Customer Relationship Management';
+    if (analysisReportTitle) analysisReportTitle.textContent = 'CRM.nsf - Customer Relationship Management';
 
     pushStateToLaunching();
     showLaunchingView();
@@ -1362,7 +1496,7 @@ body.ns-launching-active #marketing-view ~ h2 {
     stageResults.classList.remove('ns-fade-out');
     stageResults.classList.add('ns-fade-in');
     /* Hide the analytical block's standalone CTA when post-content
-       is also showing — avoids two redundant sign-in CTAs. */
+       is also showing - avoids two redundant sign-in CTAs. */
     if (analysisCta) {
       analysisCta.style.display = withPostContent ? 'none' : '';
     }
@@ -1411,13 +1545,81 @@ body.ns-launching-active #marketing-view ~ h2 {
 </script>
 
 <!-- ============================================================ -->
-<!-- TEMP: shared config for the test scripts below. Change        -->
-<!-- NS_BACKEND in one place to point every test at a different    -->
-<!-- environment (e.g. production, a local provisioner, etc.).     -->
+<!-- Disclaimer modal wiring. Trigger lives inside the dropzone,  -->
+<!-- so stopPropagation/stopImmediatePropagation on its click is   -->
+<!-- required - otherwise the click bubbles to the dropzone's     -->
+<!-- file-picker handler. Escape key + backdrop click + close     -->
+<!-- button all dismiss. Focus is moved to the close button on    -->
+<!-- open and restored to the trigger on close.                   -->
 <!-- ============================================================ -->
 <script>
-  window.NS_BACKEND = 'https://beta.moonshine.dev';
+(function() {
+  var trigger = document.getElementById('disclaimer-trigger');
+  var modal   = document.getElementById('disclaimer-modal');
+  if (!trigger || !modal) return;
+
+  var lastFocus = null;
+
+  function openModal(e) {
+    if (e) { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); }
+    lastFocus = document.activeElement;
+    modal.hidden = false;
+    /* Focus the close button so keyboard users can dismiss with Enter. */
+    var closeBtn = modal.querySelector('.ns-modal-close');
+    if (closeBtn) { try { closeBtn.focus(); } catch (_) {} }
+    document.addEventListener('keydown', onKey);
+  }
+
+  function closeModal() {
+    modal.hidden = true;
+    document.removeEventListener('keydown', onKey);
+    if (lastFocus && typeof lastFocus.focus === 'function') {
+      try { lastFocus.focus(); } catch (_) {}
+    }
+  }
+
+  function onKey(e) {
+    if (e.key === 'Escape' || e.keyCode === 27) closeModal();
+  }
+
+  /* Capture phase: ensures we intercept the click before the dropzone's
+     bubble-phase listener runs (some browsers serialize handlers in
+     unexpected orders when an ancestor has its own click handler). */
+  trigger.addEventListener('click', openModal, true);
+  /* Also block keyboard activation (Enter/Space) from reaching the
+     dropzone, since the dropzone itself responds to those keys. */
+  trigger.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); }
+  });
+
+  /* Any element with data-close (backdrop, X button) dismisses. */
+  modal.addEventListener('click', function(e) {
+    var t = e.target;
+    if (t && t.hasAttribute && t.hasAttribute('data-close')) closeModal();
+  });
+})();
 </script>
+
+<!-- ============================================================ -->
+<!-- TEMP: shared config for the test scripts below. Change        -->
+<!-- NS_BACKEND in one place - the WebSocket base URL is derived  -->
+<!-- from it (http→ws, https→wss, with /websocket appended).      -->
+<!--                                                               -->
+<!-- NS_ANALYZE_SERVER: the server-side routing token the analyze  -->
+<!--   backend expects in the envelope's `username` field. Same    -->
+<!--   value every connection - NOT a per-user identifier.         -->
+<!-- ============================================================ -->
+<script>
+  window.NS_BACKEND         = 'https://beta.moonshine.dev';
+  window.NS_WEBSOCKET_BASE  = window.NS_BACKEND.replace(/^http/, 'ws') + '/websocket';
+  window.NS_ANALYZE_SERVER  = 'ANALYZEx9pVRTzQ5sbK1wMnHd7Yfg2Lj';
+</script>
+
+<!-- WebSocket client class. Loaded once; both the test block below   -->
+<!-- and (later) the real analyze flow share the same singleton.      -->
+<!-- URL prefix is /docs/ because the Jekyll source is the project   -->
+<!-- root, not docs/ - see _config.yml and .github/workflows/pages.yml -->
+<script src="{{ '/docs/assets/js/ns-websocket.js' | relative_url }}"></script>
 
 <!-- ============================================================ -->
 <!-- TEMP: CORS sandbox bound to the "Try it now" banner button.   -->
@@ -1492,7 +1694,7 @@ body.ns-launching-active #marketing-view ~ h2 {
   /* Hook the same events the main script listens for. Both handlers
      fire on the same event; the main script's UI flow and this upload
      test run independently. We share validation via window.__nsValidate
-     (set by the main script) so we don't re-read the file's bytes —
+     (set by the main script) so we don't re-read the file's bytes -
      and we only upload after validation passes. */
   fileInput.addEventListener('change', function(e) {
     if (e.target.files && e.target.files.length > 0) {
@@ -1511,7 +1713,7 @@ body.ns-launching-active #marketing-view ~ h2 {
       : Promise.resolve({ ok: true, errors: [] });
     p.then(function(result) {
       if (!result.ok) {
-        console.warn('[upload test] skipping upload — validation rejected the file');
+        console.warn('[upload test] skipping upload - validation rejected the file');
         return;
       }
       runPublicUpload(file, makeUploadNames(file));
@@ -1524,7 +1726,7 @@ body.ns-launching-active #marketing-view ~ h2 {
        extension     e.g. ".nsf"              (with the dot, "" if none)
        targetStem    e.g. "MyDatabase-nomad-7a3f...c1e"
        targetName    e.g. "MyDatabase-nomad-7a3f...c1e.nsf"  (sent to server)
-     Pass the whole object into runPublicUpload — the multipart filename
+     Pass the whole object into runPublicUpload - the multipart filename
      uses targetName; the rest are kept on the same object so later code
      (UI labels, follow-up API calls, etc.) can reach them via the cache
      on window.__nsUploadNames. */
@@ -1543,7 +1745,7 @@ body.ns-launching-active #marketing-view ~ h2 {
     };
   }
 
-  /* 32-character alphanumeric (hex) random id — 128 bits of entropy,
+  /* 32-character alphanumeric (hex) random id - 128 bits of entropy,
      effectively unguessable. Uses the browser's crypto API; the final
      Math.random fallback is non-cryptographic and only kicks in on
      ancient browsers that lack window.crypto entirely. */
@@ -1587,7 +1789,7 @@ body.ns-launching-active #marketing-view ~ h2 {
     console.log(tag, '  targetName (sent to server)=', names.targetName);
     console.log(tag, 'size:', file.size, 'bytes, type:', file.type || 'unknown');
 
-    /* Public endpoint, unauthenticated visit — nothing in cookies to
+    /* Public endpoint, unauthenticated visit - nothing in cookies to
        send. We deliberately do NOT set credentials: 'include' so:
          - no CORS preflight fires (multipart POST with no custom
            headers is a "simple" request);
@@ -1597,17 +1799,17 @@ body.ns-launching-active #marketing-view ~ h2 {
        endpoint is enforcing CSRF and we'll need to revisit. */
     var xsrfToken = readCookie('XSRF-TOKEN');
     console.log(tag, 'XSRF-TOKEN cookie (informational, not sent):',
-      xsrfToken || '(empty — expected for an unauthenticated cross-origin visit)');
+      xsrfToken || '(empty - expected for an unauthenticated cross-origin visit)');
 
     var formData = new FormData();
     /* _csrf is part of the reference upload contract; populate from
        document.cookie if present, empty otherwise. Note: even with
-       credentials omitted, document.cookie can still be read — it's
+       credentials omitted, document.cookie can still be read - it's
        just that staging.startcloud.com cookies aren't visible from
        this origin, so the value will be empty in practice. */
     formData.append('_csrf', xsrfToken || '');
     /* Third arg overrides the multipart filename without mutating the
-       File object — server sees names.targetName, our UI keeps file.name. */
+       File object - server sees names.targetName, our UI keeps file.name. */
     formData.append('file', file, names.targetName);
 
     var startTime = (window.performance && performance.now) ? performance.now() : Date.now();
@@ -1646,6 +1848,57 @@ body.ns-launching-active #marketing-view ~ h2 {
     var match = document.cookie.match(new RegExp('(?:^|;\\s*)' + name + '=([^;]*)'));
     return match ? decodeURIComponent(match[1]) : '';
   }
+})();
+</script>
+
+<!-- ============================================================ -->
+<!-- TEMP: WebSocket proof-of-life test. On page load, opens a    -->
+<!-- connection to the analyze WS server and fires a helloWorld   -->
+<!-- message; the server echoes back a decoded JSON object that   -->
+<!-- we log to the console. Mirrors the test snippet the backend  -->
+<!-- team provided, but goes through the reusable NSWebSocket     -->
+<!-- class so the same instance can drive the real analyze flow   -->
+<!-- once that contract is wired up.                              -->
+<!--                                                              -->
+<!-- Host and routing token come from NS_WEBSOCKET_BASE and       -->
+<!-- NS_ANALYZE_SERVER in the config block above; the WS base is  -->
+<!-- itself derived from NS_BACKEND so the whole page points at   -->
+<!-- one environment from a single setting.                       -->
+<!--                                                              -->
+<!-- To remove: delete this <script> block.                       -->
+<!-- ============================================================ -->
+<script>
+(function() {
+  if (!window.NS_WEBSOCKET_BASE || !window.NS_ANALYZE_SERVER) {
+    console.warn('[ws test] skipped - NS_WEBSOCKET_BASE or NS_ANALYZE_SERVER not configured');
+    return;
+  }
+
+  var ws = NSWebSocket.getInstance({
+    url:          window.NS_WEBSOCKET_BASE,
+    serverToken:  window.NS_ANALYZE_SERVER,
+    pathPrefix:   'analyze',
+    clientPrefix: 'test-client-'
+  });
+
+  /* Log every inbound frame so we can see the round-trip in DevTools. */
+  ws.on('message', function(evt) {
+    console.log('[ws test] %cdecoded response', 'color:#66bb6a;font-weight:bold', evt.decoded);
+  });
+
+  ws.on('open', function(info) {
+    console.log('[ws test] %cconnected', 'color:#9d8df1;font-weight:bold',
+      'clientId=' + info.clientId);
+    /* Fire the proof-of-life ping. The server should reply with a
+       JSON object echoing/acknowledging the payload. */
+    ws.helloWorld('ping from browser');
+  });
+
+  ws.on('reconnectFailed', function(info) {
+    console.warn('[ws test] gave up after ' + info.attempts + ' reconnect attempt(s)');
+  });
+
+  ws.open();
 })();
 </script>
 
