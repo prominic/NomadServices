@@ -140,21 +140,31 @@
 
   /* --- Outbound: action + payload -> envelope -> wire --- */
 
-  /* Generic send. Returns true if queued, false if the socket wasn't
-     open (callers can decide whether to wait, retry, or surface an
-     error). */
-  NSWebSocket.prototype.send = function(action, payload) {
+  /* Generic send. Variadic — every arg after `action` is independently
+     base64-encoded and joined with '#' to form the protocol body:
+        <action>#<base64(arg1)>#<base64(arg2)>#...
+     Backward-compatible: a single-payload call like send('helloWorld',
+     'ping') still produces <action>#<base64(payload)> as before.
+     Returns true if queued, false if the socket wasn't open. */
+  NSWebSocket.prototype.send = function(action /*, ...args */) {
     if (!this.isOpen()) {
       this._log('send("' + action + '") skipped — socket not open', 'warn');
       return false;
     }
-    var payloadStr = (payload == null) ? '' : String(payload);
-    var body = action + '#' + b64encode(payloadStr);
+    var parts = [action];
+    var summary = [];
+    for (var i = 1; i < arguments.length; i++) {
+      var raw = arguments[i];
+      var str = (raw == null) ? '' : String(raw);
+      parts.push(b64encode(str));
+      summary.push(str.length + ' chars');
+    }
+    var body = parts.join('#');
     var envelope = JSON.stringify({
       username: this.config.serverToken,
       message: body
     });
-    this._log('send: ' + action + ' (' + payloadStr.length + ' chars payload)');
+    this._log('send: ' + action + ' [' + summary.join(', ') + ']');
     this.ws.send(envelope);
     return true;
   };
@@ -163,6 +173,21 @@
      snippet describes. Returns the same boolean as send(). */
   NSWebSocket.prototype.helloWorld = function(payload) {
     return this.send('helloWorld', payload == null ? 'ping from browser' : payload);
+  };
+
+  /* Convenience for the analyzeDatabase action. Sends:
+        analyzeDatabase#<base64(nsfPath)>#<base64("anonymous")>
+     This site is the unauthenticated public flow, so the second
+     argument is always the literal string "anonymous" - never a UUID
+     or any other identifier. Response shape isn't yet documented; the
+     server is expected to emit multiple progress frames over time,
+     each delivered through the on('message', fn) listener. */
+  NSWebSocket.prototype.analyzeDatabase = function(nsfPath) {
+    if (typeof nsfPath !== 'string' || nsfPath === '') {
+      this._log('analyzeDatabase: nsfPath is required', 'error');
+      return false;
+    }
+    return this.send('analyzeDatabase', nsfPath, 'anonymous');
   };
 
   /* --- Listener API --- */
@@ -261,62 +286,72 @@
 
   NSWebSocket.prototype._onMessage = function(ev) {
     var raw = ev.data;
+    var rawStr = String(raw);
     var decoded = null;
 
     /* Documented analyze-server inbound format (Moonshine-Websocket-
-       Server / Moonshine-DB-Analyzer, M1 helloWorld round-trip):
-
+       Server / Moonshine-DB-Analyzer):
          raw frame = base64-encoded JSON string
-         JSON.parse(atob(raw)) = { status, action, message, echo }
+         JSON.parse(atob(raw)) = { status, action, message, ... }
+       Some flows (e.g. analyzeDatabase) may also emit *plain-text*
+       progress frames before the final JSON. We try the
+       most-specific decode first, but every branch logs full content
+       and emits through on('message') so listeners never miss a frame
+       and progress strings aren't silently dropped. */
 
-       There is NO outer envelope on inbound — only outbound carries
-       the { username, message } envelope. So we decode base64 first,
-       then JSON.parse the result. */
+    /* Path 1: base64 frame. Inner content is either JSON (final
+       result) or plain text (in-progress status). */
     try {
-      var inner = b64decode(String(raw).trim());
-      try { decoded = JSON.parse(inner); }
-      catch (e) {
-        /* Base64 decoded fine but content wasn't JSON. Surface the
-           string so consumers can still inspect it. */
-        decoded = inner;
+      var inner = b64decode(rawStr.trim());
+      try {
+        decoded = JSON.parse(inner);
+        this._log('recv:', decoded);
+        this._emit('message', { decoded: decoded, raw: raw, format: 'base64-json' });
+      } catch (e) {
+        /* base64 decoded fine but inner wasn't JSON - progress string. */
+        this._log('recv (text):', inner);
+        this._emit('message', { decoded: inner, raw: raw, format: 'base64-text' });
       }
-      this._log('recv:', decoded);
-      this._emit('message', { decoded: decoded, raw: raw });
       return;
     } catch (e) {
-      /* Frame wasn't base64. Fall through to legacy/diagnostic paths. */
+      /* Frame wasn't base64 - fall through to plaintext / legacy paths. */
     }
 
-    /* Fallback 1: known plaintext rejection strings from the
-       authenticated Domino WS server (DominoCompile.hx). Hitting these
-       means NS_WEBSOCKET_BASE points at the wrong server — log
-       explicitly so the next person doesn't have to decode the symptom. */
-    var preview = String(raw).substring(0, 80);
-    if (preview.indexOf('User not message') === 0 ||
-        preview.indexOf('User not authenticated') === 0) {
-      this._log('inbound: server rejected the connection — "' + preview + '". ' +
-        'This is the AUTHENTICATED Domino server\'s rejection text; ' +
-        'check NS_WEBSOCKET_BASE.', 'error');
+    /* Path 2: known authenticated-Domino rejection strings. Logged
+       loudly because they almost always indicate a misconfigured
+       NS_WEBSOCKET_BASE, but still emitted so listeners aren't blind. */
+    if (rawStr.indexOf('User not message') === 0 ||
+        rawStr.indexOf('User not authenticated') === 0) {
+      this._log('recv (rejection): server rejected the connection - "' +
+        rawStr + '". This is the AUTHENTICATED Domino server\'s ' +
+        'rejection text; check NS_WEBSOCKET_BASE.', 'error');
+      this._emit('message', { decoded: rawStr, raw: raw, format: 'rejection' });
       return;
     }
 
-    /* Fallback 2: maybe it's an old-style { username, message } JSON
-       envelope (kept for resilience if a transitional server build is
-       ever encountered). */
+    /* Path 3: legacy { username, message } envelope (defensive - covers
+       any transitional server build that might still wrap responses). */
     try {
-      var envelope = JSON.parse(raw);
+      var envelope = JSON.parse(rawStr);
       if (envelope && typeof envelope.message === 'string') {
         var legacyInner = b64decode(envelope.message);
         try { decoded = JSON.parse(legacyInner); }
         catch (e2) { decoded = legacyInner; }
         this._log('recv (legacy envelope):', decoded);
-        this._emit('message', { decoded: decoded, envelope: envelope, raw: raw });
+        this._emit('message', { decoded: decoded, envelope: envelope, raw: raw, format: 'legacy-envelope' });
         return;
       }
     } catch (e) { /* not JSON either */ }
 
-    this._log('inbound: unparseable frame, ignoring (first 80 chars: "' +
-      preview + '")', 'warn');
+    /* Path 4: catch-all. Raw plain text we couldn't classify - could
+       be a progress string or any other server output we didn't
+       anticipate. Log full content (capped to keep huge frames from
+       spamming the console) and emit so listeners see everything. */
+    var capped = rawStr.length > 2000
+      ? rawStr.substring(0, 2000) + '... [truncated, ' + (rawStr.length - 2000) + ' more chars]'
+      : rawStr;
+    this._log('recv (raw):', capped);
+    this._emit('message', { decoded: rawStr, raw: raw, format: 'raw' });
   };
 
   /* --- URL builder. Splits the path-prefix off so a future endpoint

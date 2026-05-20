@@ -109,7 +109,13 @@ html { scroll-behavior: smooth; }
   color: #e8c547; font-size: 1.6rem; font-weight: 700; margin: 0 0 0.5rem;
 }
 .ns-action-sub {
-  color: #c8c8d8; font-size: 1rem; margin: 0 auto 1.75rem; max-width: 480px;
+  color: #c8c8d8; font-size: 1rem; margin: 0 auto 1.75rem; max-width: 640px;
+  line-height: 1.5;
+  /* Distributes line breaks across full width instead of leaving an
+     orphaned "HCL Nomad." dangling on its own line. Supported in
+     Chrome 114+ / Safari 17.4+ / Firefox 121+; older browsers ignore
+     it harmlessly and fall back to default wrapping. */
+  text-wrap: balance;
 }
 .ns-email-form { max-width: 420px; margin: 0 auto 0.75rem; }
 .ns-email-input {
@@ -145,12 +151,31 @@ html { scroll-behavior: smooth; }
 .ns-alt-link a { color: #e8c547; font-weight: 600; text-decoration: none; }
 .ns-alt-link a:hover { text-decoration: underline; }
 
+/* Back-to-home control. Was a faint underlined link styled like
+   "Not now, just exploring"; promoted to a visible outline button
+   so users have a clear, scannable way out without scrolling for it. */
 .ns-exit-link {
-  display: inline-block; color: #6a6a7c;
-  font-size: 0.9rem; text-decoration: underline; cursor: pointer;
-  background: none; border: none; padding: 0; font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+  padding: 0.65rem 1.4rem;
+  background: transparent;
+  border: 1px solid #2a2a4a;
+  border-radius: 8px;
+  color: #c8c8d8;
+  font-size: 0.95rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
 }
-.ns-exit-link:hover { color: #9d8df1; }
+.ns-exit-link:hover,
+.ns-exit-link:focus-visible {
+  color: #e0e0f0;
+  border-color: #6c5ce7;
+  background: rgba(108,92,231,0.08);
+  outline: none;
+}
 
 /* Confirmation card after email submit */
 .ns-confirmation-card {
@@ -503,6 +528,52 @@ body.ns-launching-active #marketing-view ~ h2 {
   filter: brightness(1.15); outline: none;
 }
 
+/* ============================================================ */
+/* Viability + callout variants. Default is the existing green  */
+/* "good" styling. B = yellow caveats, C = red blockers.        */
+/* The stat-num and callout both get a variant class applied at */
+/* render time from report.viability.                           */
+/* ============================================================ */
+.ns-stat-num-warn { color: #e8c547; }
+.ns-stat-num-bad  { color: #e57373; }
+
+/* Split agents tile: number reads "2 / 0" where left=Java,    */
+/* right=LotusScript. Separator muted so the digits dominate.  */
+.ns-stat-num-sep {
+  color: #6a6a7c;
+  font-weight: 400;
+  margin: 0 0.25rem;
+}
+
+.ns-analysis-callout.ns-callout-warn {
+  background: rgba(232,197,71,0.10);
+  border-left-color: #e8c547;
+}
+.ns-analysis-callout.ns-callout-warn strong { color: #e8c547; }
+
+.ns-analysis-callout.ns-callout-bad {
+  background: rgba(229,115,115,0.10);
+  border-left-color: #e57373;
+}
+.ns-analysis-callout.ns-callout-bad strong { color: #e57373; }
+
+/* ============================================================ */
+/* Error stage - shown when upload or analyze fails. Borrows    */
+/* the analysis-report layout for visual consistency but with a */
+/* red accent.                                                  */
+/* ============================================================ */
+.ns-error-report {
+  border-color: #e57373 !important;
+  background: linear-gradient(135deg, rgba(229,115,115,0.08) 0%, rgba(229,115,115,0.02) 100%) !important;
+}
+.ns-error-status { color: #e57373 !important; }
+.ns-error-title  { color: #e57373 !important; }
+.ns-error-message {
+  color: #c8c8d8;
+  margin: 0 0 1.5rem;
+  line-height: 1.5;
+}
+
 </style>
 
 <div id="marketing-view" markdown="1">
@@ -556,8 +627,7 @@ body.ns-launching-active #marketing-view ~ h2 {
         <p>For an extra layer of safety, please <strong>avoid uploading databases containing sensitive or confidential information</strong>. A sanitized copy or a non-production NSF is ideal for the preview.</p>
         <p>If you'd like to test on production-style data in an isolated, authenticated environment, sign in here:</p>
         <p style="text-align: center; margin-top: 1.25rem;">
-          <!-- TODO: replace with the real authenticated-environment URL once confirmed -->
-          <a class="ns-modal-cta" href="https://app.moonshine.dev/public/file/serve/domino-integration/index.html" target="_blank" rel="noopener">Open the authenticated environment &rarr;</a>
+          <a class="ns-modal-cta" href="{{ site.backend_url }}/public/file/serve/domino-integration/index.html?brand=nomad.services" target="_blank" rel="noopener">Open the authenticated environment &rarr;</a>
         </p>
       </div>
     </div>
@@ -771,7 +841,7 @@ body.ns-launching-active #marketing-view ~ h2 {
   <div style="flex: 1; min-width: 220px; max-width: 270px; padding: 2rem 1.5rem; background: linear-gradient(135deg, rgba(108,92,231,0.12) 0%, rgba(168,85,247,0.06) 100%); border: 1px solid #2a2a4a; border-radius: 12px;">
     <h4 style="color: #e8c547; margin-top: 0;">Domino Integration</h4>
     <p style="color: #c8c8d8; font-size: 0.95rem;"><strong>NoSQL database</strong> with REST API access and a complete web testing interface.</p>
-    <a href="https://app.moonshine.dev/public/file/serve/domino-integration/index.html" style="color: #9d8df1; font-size: 0.9rem;">Try Now &rarr;</a>
+    <a href="{{ site.backend_url }}/public/file/serve/domino-integration/index.html" style="color: #9d8df1; font-size: 0.9rem;">Try Now &rarr;</a>
   </div>
 
 </div>
@@ -885,32 +955,41 @@ body.ns-launching-active #marketing-view ~ h2 {
         <div class="ns-analysis-status" id="analysis-report-status">Sample analysis</div>
         <h3 class="ns-analysis-title" id="analysis-report-title">CRM.nsf &mdash; Customer Relationship Management</h3>
 
+        <!-- Stat tiles. Values are placeholder dashes; populateReport() -->
+        <!-- in the main script swaps them in from the analyzeDatabase    -->
+        <!-- response (or from the mock sample data in the sample flow).  -->
         <div class="ns-analysis-stats">
           <div class="ns-stat">
-            <div class="ns-stat-num">42</div>
+            <div class="ns-stat-num" id="report-stat-forms">&mdash;</div>
             <div class="ns-stat-label">Forms</div>
           </div>
           <div class="ns-stat">
-            <div class="ns-stat-num">17</div>
+            <div class="ns-stat-num" id="report-stat-views">&mdash;</div>
             <div class="ns-stat-label">Views</div>
           </div>
           <div class="ns-stat">
-            <div class="ns-stat-num">8</div>
-            <div class="ns-stat-label">Agents</div>
+            <div class="ns-stat-num">
+              <span id="report-stat-java-agents">&mdash;</span><span class="ns-stat-num-sep">/</span><span id="report-stat-ls-agents">&mdash;</span>
+            </div>
+            <div class="ns-stat-label">Java / LotusScript Agents</div>
           </div>
           <div class="ns-stat">
-            <div class="ns-stat-num ns-stat-num-good">A</div>
+            <div class="ns-stat-num ns-stat-num-good" id="report-stat-viability">&mdash;</div>
             <div class="ns-stat-label">Viability</div>
           </div>
         </div>
 
-        <div class="ns-analysis-callout">
-          <strong>&check; Ready to migrate.</strong>
-          <span>No blockers detected. Standard LotusScript and Formula patterns throughout. Estimated Nomad rendering time: under 30 seconds.</span>
+        <!-- Callout text + heading both get replaced at render time.    -->
+        <!-- Heading is derived from viability letter; message is        -->
+        <!-- report.message verbatim. Variant class (default green /    -->
+        <!-- ns-callout-warn / ns-callout-bad) controls colors.          -->
+        <div class="ns-analysis-callout" id="analysis-callout">
+          <strong id="analysis-callout-heading">&check; Ready to migrate.</strong>
+          <span id="analysis-callout-message">No blockers detected. Standard LotusScript and Formula patterns throughout. Estimated Nomad rendering time: under 30 seconds.</span>
         </div>
 
         <div class="ns-analysis-cta" id="analysis-cta">
-          <a href="https://app.moonshine.dev/public/file/serve/domino-integration/index.html" target="_blank" rel="noopener" class="btn btn-primary fs-5">Sign in to see it running live &rarr;</a>
+          <a href="{{ site.backend_url }}/public/file/serve/domino-integration/index.html" target="_blank" rel="noopener" class="btn btn-primary fs-5">Sign in to see it running live &rarr;</a>
           <p class="ns-analysis-cta-sub">Free for 30 days. No credit card required.</p>
         </div>
       </div>
@@ -919,7 +998,7 @@ body.ns-launching-active #marketing-view ~ h2 {
       <div id="post-content" style="display: none;">
 
         <p class="ns-confidence-text ns-fade-in">
-          Your <strong id="confidence-filename">your file</strong> scored <strong>A for viability</strong> &mdash; no migration blockers found. Create an account to unlock the full breakdown.
+          Your <strong id="confidence-filename">your file</strong> scored <strong id="confidence-viability">&mdash; for viability</strong> &mdash; <span id="confidence-qualifier">analysis pending</span>. Create an account to unlock the full breakdown.
         </p>
 
         <div class="ns-unlock-card ns-fade-in" style="animation-delay: 0.05s;">
@@ -944,7 +1023,7 @@ body.ns-launching-active #marketing-view ~ h2 {
 
         <div class="ns-action-panel ns-fade-in" id="action-panel" style="animation-delay: 0.2s;">
           <h2 class="ns-action-headline">You're almost there</h2>
-          <p class="ns-action-sub">Enter your email and we'll send a sign-in link to launch your file in HCL Nomad.</p>
+          <p class="ns-action-sub" id="action-sub">Enter your email and we'll send a magic link to launch your file in HCL Nomad.</p>
 
           <form class="ns-email-form" id="email-form" novalidate>
             <input type="email" class="ns-email-input" id="email-input" required placeholder="you@company.com" autocomplete="email" aria-label="Your email address">
@@ -957,14 +1036,14 @@ body.ns-launching-active #marketing-view ~ h2 {
             <a href="https://auth.moonshine.dev/login" id="alt-signin">Sign in</a>
           </p>
 
-          <button type="button" class="ns-exit-link" id="exit-link">Not now, just exploring</button>
+          <button type="button" class="ns-exit-link" id="exit-link">&larr; Back to home</button>
         </div>
 
         <div class="ns-confirmation-card" id="confirmation-card" style="display: none;">
           <div class="ns-confirmation-icon" aria-hidden="true">&#9993;&#65039;</div>
           <h2 class="ns-confirmation-headline">Check your inbox</h2>
           <p class="ns-confirmation-body">
-            A sign-in link is on its way to <span class="ns-confirmation-email" id="confirmation-email">you@example.com</span>.
+            A magic link is on its way to <span class="ns-confirmation-email" id="confirmation-email">you@example.com</span>.
             Open it to launch your file in HCL Nomad.
           </p>
           <p class="ns-confirmation-hint">Don't see it in a minute or two? Check your spam folder.</p>
@@ -983,6 +1062,20 @@ body.ns-launching-active #marketing-view ~ h2 {
       </div><!-- /#post-content -->
 
     </div><!-- /#stage-results -->
+
+    <!-- Stage 4: Error - shown when upload or analyze fails. Sibling   -->
+    <!-- of the other stages so resetStages() can hide it the same way. -->
+    <div class="ns-stage" id="stage-error" style="display: none;">
+      <div class="ns-analysis-report ns-fade-in ns-error-report">
+        <div class="ns-analysis-status ns-error-status">Something went wrong</div>
+        <h3 class="ns-analysis-title ns-error-title" id="stage-error-title">We couldn't analyze your file.</h3>
+        <p id="stage-error-message" class="ns-error-message">Please try again, or use a different database.</p>
+        <div class="ns-analysis-cta">
+          <button type="button" class="btn btn-primary fs-5" id="stage-error-retry">Try again</button>
+          <p class="ns-analysis-cta-sub">Or refresh the page to start over.</p>
+        </div>
+      </div>
+    </div><!-- /#stage-error -->
 
   </div>
 </div><!-- /#launching-view -->
@@ -1057,6 +1150,43 @@ body.ns-launching-active #marketing-view ~ h2 {
   var confirmationEmail = document.getElementById('confirmation-email');
   var backHome = document.getElementById('back-home');
   var tryAgain = document.getElementById('try-again');
+
+  /* Error stage + report card targets (populated at render time). */
+  var stageError       = document.getElementById('stage-error');
+  var stageErrorTitle  = document.getElementById('stage-error-title');
+  var stageErrorMessage= document.getElementById('stage-error-message');
+  var stageErrorRetry  = document.getElementById('stage-error-retry');
+  var reportStatForms  = document.getElementById('report-stat-forms');
+  var reportStatViews  = document.getElementById('report-stat-views');
+  var reportStatJava   = document.getElementById('report-stat-java-agents');
+  var reportStatLs     = document.getElementById('report-stat-ls-agents');
+  var reportStatViab   = document.getElementById('report-stat-viability');
+  var analysisCallout  = document.getElementById('analysis-callout');
+  var calloutHeading   = document.getElementById('analysis-callout-heading');
+  var calloutMessage   = document.getElementById('analysis-callout-message');
+  var confidenceViability = document.getElementById('confidence-viability');
+  var confidenceQualifier = document.getElementById('confidence-qualifier');
+  var actionSub           = document.getElementById('action-sub');
+
+  /* Mock report data for the sample-DB flow. Keeps the sample
+     visually identical to the real flow without hitting the backend. */
+  var MOCK_SAMPLE_REPORT = {
+    status: 'success',
+    action: 'analyzeDatabase',
+    databaseFilePath: '/sample/CRM.nsf',
+    uuid: 'anonymous',
+    report: {
+      forms: 42,
+      views: 17,
+      lotusScriptAgents: 6,
+      javaAgents: 2,
+      viability: 'A',
+      message: 'No blockers detected. Standard LotusScript and Formula patterns throughout. Estimated Nomad rendering time: under 30 seconds.',
+      problemCategories: [],
+      fileSizeBytes: 0
+    },
+    checks: []
+  };
 
   if (!dropzone || !fileInput || !marketingView || !launchingView) return;
 
@@ -1162,6 +1292,14 @@ body.ns-launching-active #marketing-view ~ h2 {
       handleEmailSubmit();
     });
   }
+  if (stageErrorRetry) {
+    /* "Try again" on the error stage: drop back to marketing view so
+       the user can re-drop a file. The cleanest reset since pendingFile
+       is already invalidated by showMarketingView(). */
+    stageErrorRetry.addEventListener('click', function() {
+      try { history.back(); } catch (_) { showMarketingView(); }
+    });
+  }
 
   /* Browser back/forward buttons */
   window.addEventListener('popstate', function(e) {
@@ -1212,7 +1350,7 @@ body.ns-launching-active #marketing-view ~ h2 {
   }
 
   function resetStages() {
-    [stagePreparing, stageAnalyzing, stageResults].forEach(function(el) {
+    [stagePreparing, stageAnalyzing, stageResults, stageError].forEach(function(el) {
       if (!el) return;
       el.style.display = 'none';
       el.classList.remove('ns-fade-out', 'ns-fade-in');
@@ -1393,8 +1531,30 @@ body.ns-launching-active #marketing-view ~ h2 {
 
   function runFullFlow() {
     resetStages();
-    runPreparingStage(function() {
-      runAnalyzingStage(function() {
+    if (!pendingFile) {
+      console.warn('[flow] runFullFlow called with no pendingFile');
+      return;
+    }
+
+    /* Both async tracks start in parallel:
+         - upload  (HTTP POST) -> { path }
+         - prep-stage animation
+       Promise.all gates on whichever finishes last (step 3 of the
+       UI flow). On success, we then start the analyze + analyzing
+       animation in parallel and gate again (step 5). */
+    var uploadP   = startUpload(pendingFile);
+    var prepAnimP = runPreparingStage();
+
+    Promise.all([uploadP, prepAnimP])
+      .then(function(results) {
+        var uploadResult = results[0];
+        var analyzeP     = startAnalyze(uploadResult.path);
+        var animP        = runAnalyzingStage();
+        return Promise.all([analyzeP, animP]);
+      })
+      .then(function(results) {
+        var report = results[0];
+        populateReport(report);
         showResultsStage(true);
         /* Focus the email input so keyboard users can start typing.
            preventScroll keeps the viewport at the top of the results
@@ -1403,11 +1563,16 @@ body.ns-launching-active #marketing-view ~ h2 {
         schedule(function() {
           try { emailInput.focus({ preventScroll: true }); } catch (_) {}
         }, 300);
+      })
+      .catch(function(err) {
+        console.error('[flow] failed:', err);
+        var msg = (err && err.message) ? err.message : String(err);
+        showErrorStage(msg);
       });
-    });
   }
 
-  /* --- Sample-DB path --- */
+  /* --- Sample-DB path. Inject mock report so the visual flow matches
+         the real upload flow without hitting the backend. ----------- */
   function runSampleAnalysis() {
     pendingFile = null;
     pendingMode = 'sample';
@@ -1421,73 +1586,272 @@ body.ns-launching-active #marketing-view ~ h2 {
 
   function runAnalyzingThenResults(withPostContent) {
     resetStages();
-    runAnalyzingStage(function() {
+    runAnalyzingStage().then(function() {
+      populateReport(MOCK_SAMPLE_REPORT);
       showResultsStage(withPostContent);
     });
   }
 
-  /* --- Stage runners --- */
-  function runPreparingStage(onDone) {
-    if (!stagePreparing) { if (onDone) onDone(); return; }
-    stagePreparing.style.display = '';
-    stagePreparing.classList.remove('ns-fade-out');
-    stagePreparing.classList.add('ns-fade-in');
-    if (prepBar) prepBar.style.width = '0%';
-    if (prepSub) prepSub.textContent = 'Securing your upload…';
+  /* --- Upload: HTTP POST to /public/file/upload, returns a Promise
+         that resolves with the parsed JSON body ({ path, size }). --- */
+  function startUpload(file) {
+    var tag = '[upload]';
+    var names = makeUploadNames(file);
+    var url = window.NS_BACKEND + '/public/file/upload';
 
-    schedule(function() {
-      if (prepBar) prepBar.style.width = '40%';
-      if (prepSub) prepSub.textContent = 'Verifying file integrity…';
-    }, 300);
-    schedule(function() {
-      if (prepBar) prepBar.style.width = '85%';
-      if (prepSub) prepSub.textContent = 'Almost ready…';
-    }, 1000);
-    schedule(function() {
-      if (prepBar) prepBar.style.width = '100%';
-      if (prepSub) prepSub.textContent = 'Done.';
-    }, 1500);
-    schedule(function() {
-      stagePreparing.classList.remove('ns-fade-in');
-      stagePreparing.classList.add('ns-fade-out');
+    console.log(tag, 'starting', { url: url, targetName: names.targetName, sizeBytes: file.size });
+
+    var formData = new FormData();
+    formData.append('_csrf', '');                 /* anonymous flow */
+    formData.append('file', file, names.targetName);
+
+    var t0 = (window.performance && performance.now) ? performance.now() : Date.now();
+
+    return fetch(url, { method: 'POST', body: formData })
+      .then(function(res) {
+        var elapsed = (((window.performance && performance.now) ? performance.now() : Date.now()) - t0).toFixed(0);
+        if (!res.ok) {
+          throw new Error('Upload failed: HTTP ' + res.status + ' ' + res.statusText + ' (' + elapsed + 'ms)');
+        }
+        console.log(tag, 'HTTP ' + res.status + ' (' + elapsed + 'ms)');
+        return res.text();
+      })
+      .then(function(body) {
+        console.log(tag, 'response body:', body);
+        var parsed;
+        try { parsed = JSON.parse(body); }
+        catch (e) { throw new Error('Upload response was not JSON: ' + body.substring(0, 200)); }
+        if (!parsed || typeof parsed.path !== 'string' || !parsed.path) {
+          throw new Error('Upload response is missing .path');
+        }
+        return parsed;  /* { path, size, ... } */
+      });
+  }
+
+  /* --- Analyze: send analyzeDatabase via the existing WS instance,
+         and resolve when a frame arrives with the matching action +
+         status. Intermediate progress frames (plain text / non-matching
+         JSON) keep streaming through the class's on('message') log but
+         don't fulfil this promise. Times out after 90s. ------------- */
+  function startAnalyze(nsfPath) {
+    var tag = '[analyze]';
+    return new Promise(function(resolve, reject) {
+      var ws = (window.NSWebSocket && typeof window.NSWebSocket.getInstance === 'function')
+        ? window.NSWebSocket.getInstance()
+        : null;
+      if (!ws || !ws.isOpen()) {
+        reject(new Error('WebSocket is not connected. Refresh the page and try again.'));
+        return;
+      }
+
+      var settled = false;
+      function settle(fn, arg) {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timeoutId);
+        fn(arg);
+      }
+
+      var listener = function(evt) {
+        var d = evt && evt.decoded;
+        if (!d || typeof d !== 'object') return;          /* progress strings etc. */
+        if (d.action !== 'analyzeDatabase') return;       /* not our response */
+        if (d.status === 'success') {
+          console.log(tag, 'report received');
+          settle(resolve, d);
+        } else {
+          var msg = d.message || ('analyzeDatabase returned status="' + d.status + '"');
+          settle(reject, new Error(msg));
+        }
+      };
+      ws.on('message', listener);
+
+      var timeoutId = setTimeout(function() {
+        settle(reject, new Error('Analysis timed out after 90s.'));
+      }, 90000);
+
+      console.log(tag, 'sending analyzeDatabase for path:', nsfPath);
+      var queued = ws.analyzeDatabase(nsfPath);
+      if (!queued) {
+        settle(reject, new Error('analyzeDatabase send was rejected by the WS class (socket closed?).'));
+      }
+    });
+  }
+
+  /* --- Populate the analytical report card from a report frame. ---- */
+  function populateReport(frame) {
+    var r = (frame && frame.report) || {};
+    var v = String(r.viability || '').toUpperCase();
+
+    if (reportStatForms) reportStatForms.textContent = (r.forms != null ? r.forms : '—');
+    if (reportStatViews) reportStatViews.textContent = (r.views != null ? r.views : '—');
+    if (reportStatJava)  reportStatJava.textContent  = (r.javaAgents != null ? r.javaAgents : '—');
+    if (reportStatLs)    reportStatLs.textContent    = (r.lotusScriptAgents != null ? r.lotusScriptAgents : '—');
+
+    if (reportStatViab) {
+      reportStatViab.textContent = (v || '—');
+      reportStatViab.classList.remove('ns-stat-num-good', 'ns-stat-num-warn', 'ns-stat-num-bad');
+      if (v === 'A')      reportStatViab.classList.add('ns-stat-num-good');
+      else if (v === 'B') reportStatViab.classList.add('ns-stat-num-warn');
+      else if (v === 'C') reportStatViab.classList.add('ns-stat-num-bad');
+    }
+
+    if (calloutHeading) {
+      if (v === 'A')      calloutHeading.innerHTML = '&check; Ready to migrate.';
+      else if (v === 'B') calloutHeading.innerHTML = '&#9888; Migration with caveats.';
+      else if (v === 'C') calloutHeading.innerHTML = '&times; Significant changes needed.';
+      else                calloutHeading.textContent = '';
+    }
+    if (calloutMessage) calloutMessage.textContent = r.message || '';
+
+    if (analysisCallout) {
+      analysisCallout.classList.remove('ns-callout-warn', 'ns-callout-bad');
+      if (v === 'B') analysisCallout.classList.add('ns-callout-warn');
+      else if (v === 'C') analysisCallout.classList.add('ns-callout-bad');
+    }
+
+    /* Confidence line below the report card: "Your <file> scored
+       <letter> for viability — <qualifier>." Letter + qualifier
+       both follow the viability so the sentence stays consistent
+       with the score. */
+    if (confidenceViability) {
+      confidenceViability.textContent = (v || '—') + ' for viability';
+    }
+    if (confidenceQualifier) {
+      if (v === 'A')      confidenceQualifier.textContent = 'no migration blockers found';
+      else if (v === 'B') confidenceQualifier.textContent = 'migration is feasible with some caveats';
+      else if (v === 'C') confidenceQualifier.textContent = 'significant changes will be needed before migration';
+      else                confidenceQualifier.textContent = '';
+    }
+
+    /* Email-form description. For A/B the magic link launches the
+       file in Nomad; for C, launching a problematic file is a poor
+       framing - pivot to "send the full breakdown" instead. */
+    if (actionSub) {
+      if (v === 'C') {
+        actionSub.textContent = "Enter your email and we'll send a magic link with the full breakdown of changes needed.";
+      } else {
+        actionSub.textContent = "Enter your email and we'll send a magic link to launch your file in HCL Nomad.";
+      }
+    }
+  }
+
+  /* --- Error stage: hide other stages, show the red error card. ---- */
+  function showErrorStage(message) {
+    clearTimers();
+    [stagePreparing, stageAnalyzing, stageResults].forEach(function(el) {
+      if (el) el.style.display = 'none';
+    });
+    if (stageError) {
+      stageError.style.display = '';
+      stageError.classList.remove('ns-fade-out');
+      stageError.classList.add('ns-fade-in');
+    }
+    if (stageErrorMessage) stageErrorMessage.textContent = message || 'Please try again, or use a different database.';
+  }
+
+  /* --- Upload filename helpers (lifted from the old upload-test
+         block - the analyzer expects randomized filenames so two
+         uploads of "Real.nsf" don't collide on the server). --------- */
+  function makeUploadNames(file) {
+    var dot  = file.name.lastIndexOf('.');
+    var stem = dot > 0 ? file.name.slice(0, dot) : file.name;
+    var ext  = dot > 0 ? file.name.slice(dot)    : '';
+    var id   = generateRandomId();
+    var targetStem = stem + '-nomad-' + id;
+    return {
+      originalName: file.name,
+      originalStem: stem,
+      extension:    ext,
+      targetStem:   targetStem,
+      targetName:   targetStem + ext
+    };
+  }
+  function generateRandomId() {
+    if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+      return window.crypto.randomUUID().replace(/-/g, '');
+    }
+    if (window.crypto && typeof window.crypto.getRandomValues === 'function') {
+      var bytes = new Uint8Array(16);
+      window.crypto.getRandomValues(bytes);
+      return Array.prototype.map.call(bytes, function(b) {
+        return ('0' + b.toString(16)).slice(-2);
+      }).join('');
+    }
+    return (Math.random().toString(36).slice(2) +
+            Math.random().toString(36).slice(2)).slice(0, 32);
+  }
+
+  /* --- Stage runners. Return a Promise that resolves when the
+         stage's fade-out finishes. onDone callback is still supported
+         for any legacy callers; both fire. ----------------------- */
+  function runPreparingStage(onDone) {
+    return new Promise(function(resolve) {
+      if (!stagePreparing) { if (onDone) onDone(); resolve(); return; }
+      stagePreparing.style.display = '';
+      stagePreparing.classList.remove('ns-fade-out');
+      stagePreparing.classList.add('ns-fade-in');
+      if (prepBar) prepBar.style.width = '0%';
+      if (prepSub) prepSub.textContent = 'Securing your upload…';
+
       schedule(function() {
-        stagePreparing.style.display = 'none';
-        stagePreparing.classList.remove('ns-fade-out');
-        if (onDone) onDone();
-      }, 350);
-    }, 1900);
+        if (prepBar) prepBar.style.width = '40%';
+        if (prepSub) prepSub.textContent = 'Verifying file integrity…';
+      }, 300);
+      schedule(function() {
+        if (prepBar) prepBar.style.width = '85%';
+        if (prepSub) prepSub.textContent = 'Almost ready…';
+      }, 1000);
+      schedule(function() {
+        if (prepBar) prepBar.style.width = '100%';
+        if (prepSub) prepSub.textContent = 'Done.';
+      }, 1500);
+      schedule(function() {
+        stagePreparing.classList.remove('ns-fade-in');
+        stagePreparing.classList.add('ns-fade-out');
+        schedule(function() {
+          stagePreparing.style.display = 'none';
+          stagePreparing.classList.remove('ns-fade-out');
+          if (onDone) onDone();
+          resolve();
+        }, 350);
+      }, 1900);
+    });
   }
 
   function runAnalyzingStage(onDone) {
-    if (!stageAnalyzing) { if (onDone) onDone(); return; }
-    stageAnalyzing.style.display = '';
-    stageAnalyzing.classList.remove('ns-fade-out');
-    stageAnalyzing.classList.add('ns-fade-in');
-    if (analyzeBar) analyzeBar.style.width = '0%';
-    if (analyzeTitle) analyzeTitle.textContent = 'Reading database structure…';
-    if (analyzeSub) analyzeSub.textContent = 'Parsing forms, views, agents…';
-
-    schedule(function() {
-      if (analyzeBar) analyzeBar.style.width = '35%';
+    return new Promise(function(resolve) {
+      if (!stageAnalyzing) { if (onDone) onDone(); resolve(); return; }
+      stageAnalyzing.style.display = '';
+      stageAnalyzing.classList.remove('ns-fade-out');
+      stageAnalyzing.classList.add('ns-fade-in');
+      if (analyzeBar) analyzeBar.style.width = '0%';
+      if (analyzeTitle) analyzeTitle.textContent = 'Reading database structure…';
       if (analyzeSub) analyzeSub.textContent = 'Parsing forms, views, agents…';
-    }, 300);
-    schedule(function() {
-      if (analyzeBar) analyzeBar.style.width = '70%';
-      if (analyzeSub) analyzeSub.textContent = 'Checking migration blockers…';
-    }, 1100);
-    schedule(function() {
-      if (analyzeBar) analyzeBar.style.width = '100%';
-      if (analyzeSub) analyzeSub.textContent = 'Scoring viability…';
-    }, 1900);
-    schedule(function() {
-      stageAnalyzing.classList.remove('ns-fade-in');
-      stageAnalyzing.classList.add('ns-fade-out');
+
       schedule(function() {
-        stageAnalyzing.style.display = 'none';
-        stageAnalyzing.classList.remove('ns-fade-out');
-        if (onDone) onDone();
-      }, 350);
-    }, 2400);
+        if (analyzeBar) analyzeBar.style.width = '35%';
+        if (analyzeSub) analyzeSub.textContent = 'Parsing forms, views, agents…';
+      }, 300);
+      schedule(function() {
+        if (analyzeBar) analyzeBar.style.width = '70%';
+        if (analyzeSub) analyzeSub.textContent = 'Checking migration blockers…';
+      }, 1100);
+      schedule(function() {
+        if (analyzeBar) analyzeBar.style.width = '100%';
+        if (analyzeSub) analyzeSub.textContent = 'Scoring viability…';
+      }, 1900);
+      schedule(function() {
+        stageAnalyzing.classList.remove('ns-fade-in');
+        stageAnalyzing.classList.add('ns-fade-out');
+        schedule(function() {
+          stageAnalyzing.style.display = 'none';
+          stageAnalyzing.classList.remove('ns-fade-out');
+          if (onDone) onDone();
+          resolve();
+        }, 350);
+      }, 2400);
+    });
   }
 
   function showResultsStage(withPostContent) {
@@ -1603,21 +1967,22 @@ body.ns-launching-active #marketing-view ~ h2 {
 <!-- ============================================================ -->
 <!-- TEMP: shared config for the test scripts below.               -->
 <!--                                                               -->
-<!-- NS_BACKEND: HTTPS host for the public upload/serve endpoints. -->
-<!-- NS_WEBSOCKET_BASE: dedicated host:port for the analyze WS    -->
-<!--   server. Intentionally NOT derived from NS_BACKEND - the     -->
-<!--   WS server is a separate deployment on port 8443 with its    -->
-<!--   own (currently self-signed) cert. If the browser rejects    -->
-<!--   the WSS connection, visit https://nomad.services:8443/      -->
-<!--   once and accept the cert warning; that trusts it for the    -->
-<!--   rest of the session.                                        -->
+<!-- NS_BACKEND comes from `backend_url` in _config.yml (single    -->
+<!-- source of truth used by both HTML hrefs and JS code). The WS  -->
+<!-- base is derived from it by swapping the scheme to wss:// and  -->
+<!-- appending the analyze server's port (8443) and path.          -->
+<!--                                                               -->
+<!-- The WS server uses a self-signed cert. If the browser rejects -->
+<!-- the WSS connection, visit https://<host>:8443/ once and       -->
+<!-- accept the cert warning; that trusts it for the session.      -->
+<!--                                                               -->
 <!-- NS_ANALYZE_SERVER: server-side routing token expected in the  -->
 <!--   envelope's `username` field. Same value every connection - -->
 <!--   NOT a per-user identifier.                                  -->
 <!-- ============================================================ -->
 <script>
-  window.NS_BACKEND         = 'https://staging.startcloud.com';
-  window.NS_WEBSOCKET_BASE  = 'wss://staging.startcloud.com:8443/websocket';
+  window.NS_BACKEND         = '{{ site.backend_url }}';
+  window.NS_WEBSOCKET_BASE  = window.NS_BACKEND.replace(/^http/, 'ws') + ':8443/websocket';
   window.NS_ANALYZE_SERVER  = 'ANALYZEx9pVRTzQ5sbK1wMnHd7Yfg2Lj';
 </script>
 
@@ -1679,183 +2044,6 @@ body.ns-launching-active #marketing-view ~ h2 {
 })();
 </script>
 
-<!-- ============================================================ -->
-<!-- TEMP: cross-origin public-upload test wired to the dropzone.  -->
-<!-- When the user drops or picks an NSF, we POST it (in parallel  -->
-<!-- with the existing UI flow) to                                 -->
-<!--   https://staging.startcloud.com/public/file/upload           -->
-<!-- and log the full request/response to the console. Mirrors the -->
-<!-- "Upload Public File test" form in the moonshinedev provisioner-->
-<!-- restclient (https://staging.startcloud.com/public/file/serve/ -->
-<!-- restclient/index.html), but uses fetch() instead of a form    -->
-<!-- submit so we stay on the page and can inspect the response.   -->
-<!-- To remove: delete this <script> block.                        -->
-<!-- ============================================================ -->
-<script>
-(function() {
-  var dropzone = document.getElementById('upload-dropzone');
-  var fileInput = document.getElementById('nsf-file-input');
-  if (!dropzone || !fileInput) return;
-
-  /* Hook the same events the main script listens for. Both handlers
-     fire on the same event; the main script's UI flow and this upload
-     test run independently. We share validation via window.__nsValidate
-     (set by the main script) so we don't re-read the file's bytes -
-     and we only upload after validation passes. */
-  fileInput.addEventListener('change', function(e) {
-    if (e.target.files && e.target.files.length > 0) {
-      gateAndUpload(e.target.files[0]);
-    }
-  });
-  dropzone.addEventListener('drop', function(e) {
-    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      gateAndUpload(e.dataTransfer.files[0]);
-    }
-  });
-
-  function gateAndUpload(file) {
-    var p = (typeof window.__nsValidate === 'function')
-      ? window.__nsValidate(file)
-      : Promise.resolve({ ok: true, errors: [] });
-    p.then(function(result) {
-      if (!result.ok) {
-        console.warn('[upload test] skipping upload - validation rejected the file');
-        return;
-      }
-      runPublicUpload(file, makeUploadNames(file));
-    });
-  }
-
-  /* Build the full set of name variants for one upload. Returns:
-       originalName  e.g. "MyDatabase.nsf"   (display, file.name)
-       originalStem  e.g. "MyDatabase"        (no extension)
-       extension     e.g. ".nsf"              (with the dot, "" if none)
-       targetStem    e.g. "MyDatabase-nomad-7a3f...c1e"
-       targetName    e.g. "MyDatabase-nomad-7a3f...c1e.nsf"  (sent to server)
-     Pass the whole object into runPublicUpload - the multipart filename
-     uses targetName; the rest are kept on the same object so later code
-     (UI labels, follow-up API calls, etc.) can reach them via the cache
-     on window.__nsUploadNames. */
-  function makeUploadNames(file) {
-    var dot  = file.name.lastIndexOf('.');
-    var stem = dot > 0 ? file.name.slice(0, dot) : file.name;
-    var ext  = dot > 0 ? file.name.slice(dot)    : '';
-    var id   = generateRandomId();
-    var targetStem = stem + '-nomad-' + id;
-    return {
-      originalName: file.name,
-      originalStem: stem,
-      extension:    ext,
-      targetStem:   targetStem,
-      targetName:   targetStem + ext
-    };
-  }
-
-  /* 32-character alphanumeric (hex) random id - 128 bits of entropy,
-     effectively unguessable. Uses the browser's crypto API; the final
-     Math.random fallback is non-cryptographic and only kicks in on
-     ancient browsers that lack window.crypto entirely. */
-  function generateRandomId() {
-    if (window.crypto && typeof window.crypto.randomUUID === 'function') {
-      return window.crypto.randomUUID().replace(/-/g, '');
-    }
-    if (window.crypto && typeof window.crypto.getRandomValues === 'function') {
-      var bytes = new Uint8Array(16);
-      window.crypto.getRandomValues(bytes);
-      return Array.prototype.map.call(bytes, function(b) {
-        return ('0' + b.toString(16)).slice(-2);
-      }).join('');
-    }
-    return (Math.random().toString(36).slice(2) +
-            Math.random().toString(36).slice(2)).slice(0, 32);
-  }
-
-  function runPublicUpload(file, names) {
-    /* Defensive default: if a caller passes nothing, derive names from
-       file.name so the function still works. */
-    names = names || makeUploadNames(file);
-
-    /* Stash names so later code / console inspection can read them.
-       Keyed by originalName so multiple uploads coexist; also expose
-       the most-recent under a flat property for quick lookup. */
-    window.__nsUploadNames = window.__nsUploadNames || {};
-    window.__nsUploadNames[names.originalName] = names;
-    window.__nsLastUploadNames = names;
-
-    var url = window.NS_BACKEND + '/public/file/upload';
-    var tag = '[upload test]';
-
-    console.log(tag, '%cstarting', 'color:#9d8df1;font-weight:bold');
-    console.log(tag, 'target:', url);
-    console.log(tag, 'names:', names);
-    console.log(tag, '  originalName (UI display)  =', names.originalName);
-    console.log(tag, '  originalStem               =', names.originalStem);
-    console.log(tag, '  extension                  =', names.extension || '(none)');
-    console.log(tag, '  targetStem                 =', names.targetStem);
-    console.log(tag, '  targetName (sent to server)=', names.targetName);
-    console.log(tag, 'size:', file.size, 'bytes, type:', file.type || 'unknown');
-
-    /* Public endpoint, unauthenticated visit - nothing in cookies to
-       send. We deliberately do NOT set credentials: 'include' so:
-         - no CORS preflight fires (multipart POST with no custom
-           headers is a "simple" request);
-         - the server can return Access-Control-Allow-Origin: * and
-           does not need Access-Control-Allow-Credentials: true.
-       If the server later rejects with a CSRF error, the public
-       endpoint is enforcing CSRF and we'll need to revisit. */
-    var xsrfToken = readCookie('XSRF-TOKEN');
-    console.log(tag, 'XSRF-TOKEN cookie (informational, not sent):',
-      xsrfToken || '(empty - expected for an unauthenticated cross-origin visit)');
-
-    var formData = new FormData();
-    /* _csrf is part of the reference upload contract; populate from
-       document.cookie if present, empty otherwise. Note: even with
-       credentials omitted, document.cookie can still be read - it's
-       just that staging.startcloud.com cookies aren't visible from
-       this origin, so the value will be empty in practice. */
-    formData.append('_csrf', xsrfToken || '');
-    /* Third arg overrides the multipart filename without mutating the
-       File object - server sees names.targetName, our UI keeps file.name. */
-    formData.append('file', file, names.targetName);
-
-    var startTime = (window.performance && performance.now) ? performance.now() : Date.now();
-
-    fetch(url, {
-      method: 'POST',
-      body: formData
-    })
-      .then(function(response) {
-        var elapsed = (((window.performance && performance.now) ? performance.now() : Date.now()) - startTime).toFixed(0);
-        console.log(tag, '%cresponse received', 'color:#66bb6a;font-weight:bold',
-          '- HTTP ' + response.status + ' ' + response.statusText,
-          '(' + elapsed + 'ms)');
-        console.log(tag, 'response.type =', response.type,
-          '(should be "cors" for a cross-origin response)');
-        var visibleHeaders = {};
-        response.headers.forEach(function(v, k) { visibleHeaders[k] = v; });
-        console.log(tag, 'visible headers (CORS-safelisted + Access-Control-Expose-Headers):', visibleHeaders);
-        return response.text();
-      })
-      .then(function(body) {
-        console.log(tag, 'response body (first 500 chars):',
-          body.length > 500 ? body.substring(0, 500) + '... [truncated]' : body);
-      })
-      .catch(function(err) {
-        var elapsed = (((window.performance && performance.now) ? performance.now() : Date.now()) - startTime).toFixed(0);
-        console.warn(tag, '%cfailed', 'color:#e57373;font-weight:bold',
-          '-', err.name + ': ' + err.message, '(' + elapsed + 'ms)');
-        console.warn(tag, 'fetch() rejects with an opaque TypeError on CORS blocks and network errors.',
-          'Check the Network tab for the actual request status and any browser-emitted',
-          'CORS rejection reason (Access-Control-Allow-Origin missing / credentials mismatch / preflight fail / etc.).');
-      });
-  }
-
-  function readCookie(name) {
-    var match = document.cookie.match(new RegExp('(?:^|;\\s*)' + name + '=([^;]*)'));
-    return match ? decodeURIComponent(match[1]) : '';
-  }
-})();
-</script>
 
 <!-- ============================================================ -->
 <!-- TEMP: WebSocket proof-of-life test. On page load, opens a    -->

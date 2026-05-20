@@ -3,6 +3,11 @@ title: Nomad.Services
 description: Upload your NSF and test it in HCL Nomad — powered by Moonshine.dev
 baseurl: ''
 url: 'https://nomad.services'
+# Backend host for public file serve / upload / WebSocket routes.
+# Referenced in templates as {{ site.backend_url }} and mirrored
+# at runtime into window.NS_BACKEND. Override per-environment by
+# editing this single line and rebuilding.
+backend_url: 'https://beta.moonshine.dev'
 repository: prominic/NomadServices
 
 permalink: pretty
