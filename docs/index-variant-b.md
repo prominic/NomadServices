@@ -579,7 +579,7 @@ body.ns-launching-active #marketing-view ~ h2 {
 <div id="marketing-view" markdown="1">
 <div style="background: linear-gradient(135deg, #6c5ce7 0%, #a855f7 50%, #6c5ce7 100%); margin: -2rem -2rem 2rem -2rem; padding: 1rem 2rem; text-align: center; position: relative; overflow: hidden;">
   <div style="position: relative; z-index: 1;">
-    <span style="color: #ffffff; font-size: 1.1rem; font-weight: 600; letter-spacing: 0.02em;">&#128640; See your NSF analyzed in seconds - free preview, no signup required.</span>
+    <span style="color: #ffffff; font-size: 1.2rem; font-weight: 600; letter-spacing: 0.02em;">&#128640; Eliminate the Notes client forever. Free preview. No signup.</span>
     <a href="#upload-dropzone" id="try-it-now-banner" style="display: inline-block; margin-left: 1.5rem; background: #e8c547; color: #0f0f23; font-weight: 700; padding: 6px 20px; border-radius: 20px; text-decoration: none; font-size: 0.95rem;">Try it now &darr;</a>
   </div>
 </div>
@@ -730,7 +730,7 @@ body.ns-launching-active #marketing-view ~ h2 {
   </p>
   <div style="max-width: 720px; margin: 0 auto; aspect-ratio: 16/9; background: rgba(108,92,231,0.08); border: 1px solid #2a2a4a; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #6a6a7c;">
     <!-- TODO(marketing): replace with <iframe> to YouTube/Vimeo embed when the demo video is recorded -->
-    <span>Demo video &mdash; coming soon</span>
+    <span>Demo video - coming soon</span>
   </div>
 </div>
 
@@ -953,28 +953,28 @@ body.ns-launching-active #marketing-view ~ h2 {
 
       <div class="ns-analysis-report ns-fade-in" id="analysis-report-card">
         <div class="ns-analysis-status" id="analysis-report-status">Sample analysis</div>
-        <h3 class="ns-analysis-title" id="analysis-report-title">CRM.nsf &mdash; Customer Relationship Management</h3>
+        <h3 class="ns-analysis-title" id="analysis-report-title">CRM.nsf - Customer Relationship Management</h3>
 
         <!-- Stat tiles. Values are placeholder dashes; populateReport() -->
         <!-- in the main script swaps them in from the analyzeDatabase    -->
         <!-- response (or from the mock sample data in the sample flow).  -->
         <div class="ns-analysis-stats">
           <div class="ns-stat">
-            <div class="ns-stat-num" id="report-stat-forms">&mdash;</div>
+            <div class="ns-stat-num" id="report-stat-forms">-</div>
             <div class="ns-stat-label">Forms</div>
           </div>
           <div class="ns-stat">
-            <div class="ns-stat-num" id="report-stat-views">&mdash;</div>
+            <div class="ns-stat-num" id="report-stat-views">-</div>
             <div class="ns-stat-label">Views</div>
           </div>
           <div class="ns-stat">
             <div class="ns-stat-num">
-              <span id="report-stat-java-agents">&mdash;</span><span class="ns-stat-num-sep">/</span><span id="report-stat-ls-agents">&mdash;</span>
+              <span id="report-stat-java-agents">-</span><span class="ns-stat-num-sep">/</span><span id="report-stat-ls-agents">-</span>
             </div>
             <div class="ns-stat-label">Java / LotusScript Agents</div>
           </div>
           <div class="ns-stat">
-            <div class="ns-stat-num ns-stat-num-good" id="report-stat-viability">&mdash;</div>
+            <div class="ns-stat-num ns-stat-num-good" id="report-stat-viability">-</div>
             <div class="ns-stat-label">Viability</div>
           </div>
         </div>
@@ -998,7 +998,7 @@ body.ns-launching-active #marketing-view ~ h2 {
       <div id="post-content" style="display: none;">
 
         <p class="ns-confidence-text ns-fade-in">
-          Your <strong id="confidence-filename">your file</strong> scored <strong id="confidence-viability">&mdash; for viability</strong> &mdash; <span id="confidence-qualifier">analysis pending</span>. Create an account to unlock the full breakdown.
+          Your <strong id="confidence-filename">your file</strong> scored <strong id="confidence-viability">- for viability</strong> - <span id="confidence-qualifier">analysis pending</span>. Create an account to unlock the full breakdown.
         </p>
 
         <div class="ns-unlock-card ns-fade-in" style="animation-delay: 0.05s;">
@@ -1016,7 +1016,7 @@ body.ns-launching-active #marketing-view ~ h2 {
           <div class="ns-file-icon" aria-hidden="true">&#128196;</div>
           <div class="ns-file-meta">
             <div class="ns-file-name" id="file-name">your-file.nsf</div>
-            <div class="ns-file-size" id="file-size">&mdash;</div>
+            <div class="ns-file-size" id="file-size">-</div>
           </div>
           <div class="ns-file-status">&check; Ready</div>
         </div>
@@ -1683,13 +1683,13 @@ body.ns-launching-active #marketing-view ~ h2 {
     var r = (frame && frame.report) || {};
     var v = String(r.viability || '').toUpperCase();
 
-    if (reportStatForms) reportStatForms.textContent = (r.forms != null ? r.forms : '—');
-    if (reportStatViews) reportStatViews.textContent = (r.views != null ? r.views : '—');
-    if (reportStatJava)  reportStatJava.textContent  = (r.javaAgents != null ? r.javaAgents : '—');
-    if (reportStatLs)    reportStatLs.textContent    = (r.lotusScriptAgents != null ? r.lotusScriptAgents : '—');
+    if (reportStatForms) reportStatForms.textContent = (r.forms != null ? r.forms : '-');
+    if (reportStatViews) reportStatViews.textContent = (r.views != null ? r.views : '-');
+    if (reportStatJava)  reportStatJava.textContent  = (r.javaAgents != null ? r.javaAgents : '-');
+    if (reportStatLs)    reportStatLs.textContent    = (r.lotusScriptAgents != null ? r.lotusScriptAgents : '-');
 
     if (reportStatViab) {
-      reportStatViab.textContent = (v || '—');
+      reportStatViab.textContent = (v || '-');
       reportStatViab.classList.remove('ns-stat-num-good', 'ns-stat-num-warn', 'ns-stat-num-bad');
       if (v === 'A')      reportStatViab.classList.add('ns-stat-num-good');
       else if (v === 'B') reportStatViab.classList.add('ns-stat-num-warn');
@@ -1711,11 +1711,11 @@ body.ns-launching-active #marketing-view ~ h2 {
     }
 
     /* Confidence line below the report card: "Your <file> scored
-       <letter> for viability — <qualifier>." Letter + qualifier
+       <letter> for viability - <qualifier>." Letter + qualifier
        both follow the viability so the sentence stays consistent
        with the score. */
     if (confidenceViability) {
-      confidenceViability.textContent = (v || '—') + ' for viability';
+      confidenceViability.textContent = (v || '-') + ' for viability';
     }
     if (confidenceQualifier) {
       if (v === 'A')      confidenceQualifier.textContent = 'no migration blockers found';
