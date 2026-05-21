@@ -278,37 +278,95 @@ html { scroll-behavior: smooth; }
   border-radius: 12px;
   margin-bottom: 2rem;
 }
+/* File metadata strip — sits at the top of the analytical report     */
+/* card. Visually de-emphasized vs. the report content below, and     */
+/* separated from it by a thin divider so the file context doesn't   */
+/* compete with the analysis itself. */
+.ns-report-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #a0a0b8;
+  padding-bottom: 1rem;
+  margin-bottom: 1.75rem;
+  border-bottom: 1px solid rgba(67,160,71,0.20);
+}
+.ns-report-meta-name {
+  font-family: 'SF Mono', Menlo, Monaco, Consolas, monospace;
+  color: #e0e0f0;
+  font-weight: 500;
+}
+.ns-report-meta-sep { color: #4a4a64; }
+.ns-report-meta-tag {
+  margin-left: auto;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  color: #9d8df1;
+  padding: 0.15rem 0.55rem;
+  background: rgba(108,92,231,0.10);
+  border: 1px solid rgba(108,92,231,0.4);
+  border-radius: 999px;
+}
+
 .ns-analysis-status {
   color: #9d8df1; text-transform: uppercase; letter-spacing: 0.1em;
   font-size: 0.85rem; margin-bottom: 0.5rem;
 }
+/* Retained for callers that may still rely on the class, but the
+   h3.ns-analysis-title element is removed from the markup so this
+   becomes inert in practice. */
 .ns-analysis-title {
   color: #e8c547; margin: 0 0 1.5rem; font-size: 1.5rem;
 }
 .ns-analysis-stats {
-  display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1.5rem;
+  display: flex; gap: 1.5rem; flex-wrap: wrap;
+  margin: 0.75rem 0 1.5rem;
 }
-.ns-stat { flex: 1; min-width: 120px; text-align: center; }
+.ns-stat {
+  flex: 1; min-width: 120px; text-align: center;
+  padding: 0.75rem 0.5rem;
+  background: rgba(255,255,255,0.025);
+  border-radius: 10px;
+}
 .ns-stat-num {
-  font-size: 2.5rem; font-weight: 700; color: #e8c547; line-height: 1;
+  font-size: 3rem; font-weight: 800; color: #e8c547;
+  line-height: 1; letter-spacing: -0.02em;
 }
 .ns-stat-num-good { color: #66bb6a; }
+.ns-stat-num-warn { color: #e8c547; }
+.ns-stat-num-bad  { color: #ff8a80; }
+.ns-stat-num-sep {
+  color: #6a6a7c; font-weight: 500;
+  font-size: 1.5rem; margin: 0 0.15rem;
+}
 .ns-stat-label {
-  font-size: 0.9rem; color: #a0a0b8; margin-top: 0.25rem;
+  font-size: 0.85rem; color: #a0a0b8; margin-top: 0.5rem;
+  letter-spacing: 0.02em;
 }
 .ns-analysis-callout {
-  padding: 1rem; background: rgba(67,160,71,0.1);
+  padding: 1rem 1.25rem; background: rgba(67,160,71,0.1);
   border-left: 3px solid #43a047; border-radius: 4px;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0;
+  font-size: 0.98rem;
 }
-.ns-analysis-callout strong { color: #66bb6a; }
+.ns-analysis-callout strong {
+  color: #66bb6a;
+  font-size: 1.05rem;
+  display: block; margin-bottom: 0.25rem;
+}
 .ns-analysis-callout span { color: #c8c8d8; }
-.ns-analysis-cta { text-align: center; padding-top: 0.5rem; }
+.ns-analysis-cta { text-align: center; padding-top: 1.25rem; }
 .ns-analysis-cta-sub {
   color: #6a6a7c; font-size: 0.85rem; margin-top: 0.75rem;
 }
 
-/* Confidence-building text shown above conversion CTAs in NSF flows. */
+/* Confidence-building text — kept in CSS so the class doesn't break  */
+/* if reused elsewhere, but the element is now removed from the post- */
+/* content (its job is done by the report card meta strip + the      */
+/* unlock card headline below). */
 .ns-confidence-text {
   text-align: center; color: #c8c8d8;
   font-size: 1.1rem; margin: 1.5rem auto;
@@ -320,19 +378,27 @@ html { scroll-behavior: smooth; }
 /* line and the email form. Answers "what's actually behind the     */
 /* sign-up wall?" - biggest conversion lever on this screen.        */
 .ns-unlock-card {
-  background: linear-gradient(135deg, rgba(108,92,231,0.10) 0%, rgba(168,85,247,0.04) 100%);
+  background: linear-gradient(135deg, rgba(108,92,231,0.12) 0%, rgba(168,85,247,0.05) 100%);
   border: 1px solid #6c5ce7;
   border-radius: 12px;
-  padding: 1.5rem 2rem;
+  padding: 1.75rem 2rem 1.5rem;
   margin-bottom: 2rem;
+}
+.ns-unlock-eyebrow {
+  text-align: center;
+  color: #9d8df1;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  margin: 0 0 0.5rem;
 }
 .ns-unlock-headline {
   color: #e8c547;
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin: 0 0 1.25rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0 0 1.5rem;
   text-align: center;
 }
 .ns-unlock-list {
@@ -341,23 +407,42 @@ html { scroll-behavior: smooth; }
   margin: 0;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 0.75rem 2rem;
+  gap: 0.85rem 2rem;
 }
 .ns-unlock-list li {
-  color: #c8c8d8;
-  font-size: 0.95rem;
-  padding-left: 1.75rem;
   position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  color: #c8c8d8;
+  font-size: 0.98rem;
+  padding-left: 0.8rem;
   line-height: 1.4;
 }
 .ns-unlock-list li::before {
   content: "\2713";
   position: absolute;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  top: auto;
   left: 0;
-  top: -1px;
+  background: rgba(76,175,80,0.18);
+  border: 1px solid rgba(67,160,71,0.55);
+  border-radius: 50%;
   color: #66bb6a;
   font-weight: 700;
-  font-size: 1.05rem;
+  font-size: 0.85rem;
+}
+.ns-unlock-tagline {
+  text-align: center;
+  color: #8888a0;
+  font-size: 0.88rem;
+  margin: 1.5rem 0 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(108,92,231,0.20);
 }
 
 /* Privacy reassurance strip - footer of #post-content, addresses   */
@@ -380,7 +465,7 @@ html { scroll-behavior: smooth; }
    must still validate. */
 .ns-validation-error {
   margin: 1rem auto 0;
-  max-width: 720px;
+  /*max-width: 720px;*/
   padding: 0.9rem 1.25rem;
   background: rgba(229,115,115,0.10);
   border: 1px solid #e57373;
@@ -952,8 +1037,16 @@ body.ns-launching-active #marketing-view ~ h2 {
     <div class="ns-stage" id="stage-results" style="display: none;">
 
       <div class="ns-analysis-report ns-fade-in" id="analysis-report-card">
-        <div class="ns-analysis-status" id="analysis-report-status">Sample analysis</div>
-        <h3 class="ns-analysis-title" id="analysis-report-title">CRM.nsf - Customer Relationship Management</h3>
+        <!-- Subdued file-meta strip — visually separated from the     -->
+        <!-- report content below by a thin divider. Carries the file -->
+        <!-- name + size + a short report-kind tag. populateReport()  -->
+        <!-- and the sample/real flow scripts fill these in.           -->
+        <div class="ns-report-meta">
+          <span class="ns-report-meta-name" id="report-meta-name">your-file.nsf</span>
+          <span class="ns-report-meta-sep" aria-hidden="true">&middot;</span>
+          <span class="ns-report-meta-size" id="report-meta-size">&mdash;</span>
+          <span class="ns-report-meta-tag" id="report-meta-tag">PREVIEW REPORT</span>
+        </div>
 
         <!-- Stat tiles. Values are placeholder dashes; populateReport() -->
         <!-- in the main script swaps them in from the analyzeDatabase    -->
@@ -997,12 +1090,12 @@ body.ns-launching-active #marketing-view ~ h2 {
       <!-- Post-content: shown only when a real NSF was dropped (variant-b: email-first) -->
       <div id="post-content" style="display: none;">
 
-        <p class="ns-confidence-text ns-fade-in">
-          Your <strong id="confidence-filename">your file</strong> scored <strong id="confidence-viability">- for viability</strong> - <span id="confidence-qualifier">analysis pending</span>. Create an account to unlock the full breakdown.
-        </p>
-
+        <!-- Value-prop card — the conversion pivot. Eyebrow signals    -->
+        <!-- this is a sub-section of the flow, headline does the sell, -->
+        <!-- five bullets do the proof, tagline closes the loop.        -->
         <div class="ns-unlock-card ns-fade-in" style="animation-delay: 0.05s;">
-          <div class="ns-unlock-headline">What you unlock with an account</div>
+          <div class="ns-unlock-eyebrow">Free preview &middot; full report just an email away</div>
+          <h3 class="ns-unlock-headline">Your full report unlocks</h3>
           <ul class="ns-unlock-list">
             <li>Per-form &amp; per-view risk flags</li>
             <li>LotusScript &amp; Formula complexity scores</li>
@@ -1010,20 +1103,12 @@ body.ns-launching-active #marketing-view ~ h2 {
             <li>Downloadable PDF migration report</li>
             <li>Prioritized migration roadmap</li>
           </ul>
-        </div>
-
-        <div class="ns-file-card ns-fade-in" style="animation-delay: 0.1s;">
-          <div class="ns-file-icon" aria-hidden="true">&#128196;</div>
-          <div class="ns-file-meta">
-            <div class="ns-file-name" id="file-name">your-file.nsf</div>
-            <div class="ns-file-size" id="file-size">-</div>
-          </div>
-          <div class="ns-file-status">&check; Ready</div>
+          <p class="ns-unlock-tagline">Available the moment you create your account.</p>
         </div>
 
         <div class="ns-action-panel ns-fade-in" id="action-panel" style="animation-delay: 0.2s;">
-          <h2 class="ns-action-headline">You're almost there</h2>
-          <p class="ns-action-sub" id="action-sub">Enter your email and we'll send a magic link to launch your file in HCL Nomad.</p>
+          <h2 class="ns-action-headline">Get your full report</h2>
+          <p class="ns-action-sub" id="action-sub">We&rsquo;ll send a magic link to your inbox. One click, no password.</p>
 
           <form class="ns-email-form" id="email-form" novalidate>
             <input type="email" class="ns-email-input" id="email-input" required placeholder="you@company.com" autocomplete="email" aria-label="Your email address">
@@ -1135,12 +1220,23 @@ body.ns-launching-active #marketing-view ~ h2 {
 
   /* Results-stage elements */
   var analysisCta = document.getElementById('analysis-cta');
+  /* analysis-report-status, analysis-report-title, file-name, file-size,
+     confidence-filename, confidence-viability, confidence-qualifier are
+     all gone from the markup after the report-card redesign — these
+     getElementById calls return null, the if-guards below no-op them.
+     Kept as documentation; safe to remove on cleanup. */
   var analysisReportStatus = document.getElementById('analysis-report-status');
   var analysisReportTitle = document.getElementById('analysis-report-title');
   var postContent = document.getElementById('post-content');
   var fileNameEl = document.getElementById('file-name');
   var fileSizeEl = document.getElementById('file-size');
   var confidenceFilename = document.getElementById('confidence-filename');
+
+  /* New file-meta strip at the top of the analytical report card. */
+  var reportMetaName = document.getElementById('report-meta-name');
+  var reportMetaSize = document.getElementById('report-meta-size');
+  var reportMetaTag  = document.getElementById('report-meta-tag');
+
   var actionPanel = document.getElementById('action-panel');
   var exitLink = document.getElementById('exit-link');
   var emailForm = document.getElementById('email-form');
@@ -1399,6 +1495,10 @@ body.ns-launching-active #marketing-view ~ h2 {
     if (confidenceFilename) confidenceFilename.textContent = file.name;
     if (analysisReportStatus) analysisReportStatus.textContent = 'Analysis report';
     if (analysisReportTitle) analysisReportTitle.textContent = file.name + ' - analysis report';
+    /* File meta strip at the top of the report card. */
+    if (reportMetaName) reportMetaName.textContent = file.name;
+    if (reportMetaSize) reportMetaSize.textContent = formatSize(file.size);
+    if (reportMetaTag)  reportMetaTag.textContent  = 'PREVIEW REPORT';
     if (prepTitle) prepTitle.textContent = 'Preparing ' + file.name + '…';
 
     pushStateToLaunching();
@@ -1578,6 +1678,10 @@ body.ns-launching-active #marketing-view ~ h2 {
     pendingMode = 'sample';
     if (analysisReportStatus) analysisReportStatus.textContent = 'Sample analysis';
     if (analysisReportTitle) analysisReportTitle.textContent = 'CRM.nsf - Customer Relationship Management';
+    /* File meta strip — for the sample flow we use a fixed name+size. */
+    if (reportMetaName) reportMetaName.textContent = 'CRM.nsf';
+    if (reportMetaSize) reportMetaSize.textContent = '256.0 KB';
+    if (reportMetaTag)  reportMetaTag.textContent  = 'SAMPLE ANALYSIS';
 
     pushStateToLaunching();
     showLaunchingView();
