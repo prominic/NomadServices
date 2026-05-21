@@ -1103,7 +1103,7 @@ body.ns-launching-active #marketing-view ~ h2 {
             <li>Downloadable PDF migration report</li>
             <li>Prioritized migration roadmap</li>
           </ul>
-          <p class="ns-unlock-tagline">Available the moment you create your account.</p>
+          <p class="ns-unlock-tagline">Available the moment you have access to the magic link.</p>
         </div>
 
         <div class="ns-action-panel ns-fade-in" id="action-panel" style="animation-delay: 0.2s;">
