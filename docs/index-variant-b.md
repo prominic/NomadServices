@@ -1,9 +1,9 @@
 ---
-title: Home
+title: Home (variant B)
 layout: home
 nav_exclude: true
 description: "Nomad.Services - See your HCL Domino NSF analyzed for migration viability in seconds. No signup required for the preview."
-permalink: /
+permalink: /variants/b/
 ---
 
 <!-- markdownlint-disable MD033 MD013 -->
