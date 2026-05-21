@@ -2,7 +2,7 @@
 title: Home
 layout: home
 nav_exclude: true
-description: "Nomad.Services - See your HCL Domino NSF analyzed for migration viability in seconds. No signup required for the preview."
+description: "Nomad.Services - See your HCL Domino NSF analyzed for migration viability in seconds. Free preview - sign up when you're ready for the full report."
 permalink: /
 ---
 
@@ -664,14 +664,14 @@ body.ns-launching-active #marketing-view ~ h2 {
 <div id="marketing-view" markdown="1">
 <div style="background: linear-gradient(135deg, #6c5ce7 0%, #a855f7 50%, #6c5ce7 100%); margin: -2rem -2rem 2rem -2rem; padding: 1rem 2rem; text-align: center; position: relative; overflow: hidden;">
   <div style="position: relative; z-index: 1;">
-    <span style="color: #ffffff; font-size: 1.2rem; font-weight: 600; letter-spacing: 0.02em;">&#128640; Eliminate the Notes client forever. Free preview. No signup.</span>
+    <span style="color: #ffffff; font-size: 1.2rem; font-weight: 600; letter-spacing: 0.02em;">&#128640; Eliminate the Notes client forever. Free preview.</span>
     <a href="#upload-dropzone" id="try-it-now-banner" style="display: inline-block; margin-left: 1.5rem; background: #e8c547; color: #0f0f23; font-weight: 700; padding: 6px 20px; border-radius: 20px; text-decoration: none; font-size: 0.95rem;">Try it now &darr;</a>
   </div>
 </div>
 
 <h2 class="fs-9" style="text-align: center; font-weight: 800; font-size: 4rem; margin-bottom: 0.25rem;">Nomad.Services</h2>
 
-<p class="fs-5 fw-300" style="margin-top: 5.0rem; text-align: center;">Upload your NSF and get a full <span style="color: #fff; font-weight: 500;">migration viability report</span> in seconds - before you ever create an account.</p>
+<p class="fs-5 fw-300" style="margin-top: 5.0rem; text-align: center;">Upload your NSF and get a <span style="color: #fff; font-weight: 500;">migration viability preview</span> in seconds - no account needed to start.</p>
 
 <!-- ============================================================ -->
 <!-- DUAL-ENTRY HERO WIDGET                                        -->
@@ -688,7 +688,7 @@ body.ns-launching-active #marketing-view ~ h2 {
       Drop your NSF here to analyze
     </div>
     <div style="font-size: 1rem; color: #a0a0b8;">
-      or <span style="color: #e8c547; text-decoration: underline;">click to choose a file</span> &middot; free preview, no signup
+      or <span style="color: #e8c547; text-decoration: underline;">click to choose a file</span> &middot; free preview, no account needed to start
     </div>
     <div class="ns-disclaimer-row">
       <button type="button" id="disclaimer-trigger" class="ns-disclaimer-trigger" aria-haspopup="dialog" aria-controls="disclaimer-modal">
@@ -1113,6 +1113,12 @@ body.ns-launching-active #marketing-view ~ h2 {
           <form class="ns-email-form" id="email-form" novalidate>
             <input type="email" class="ns-email-input" id="email-input" required placeholder="you@company.com" autocomplete="email" aria-label="Your email address">
             <button type="submit" class="ns-btn ns-btn-primary" id="email-submit">Continue with email</button>
+            <!-- Inline status area. Populated by ns-email-capture.js with -->
+            <!-- one of: nothing (idle), a friendly "please upload first"  -->
+            <!-- message (no claim_token in sessionStorage), or a generic  -->
+            <!-- "try again" failure message. role=status keeps screen     -->
+            <!-- readers in the loop without nagging.                      -->
+            <div class="ns-email-status" id="email-status" role="status" aria-live="polite" style="display: none; margin-top: 0.75rem; font-size: 0.95rem; color: #c8c8d8;"></div>
           </form>
           <p class="ns-form-hint">We'll send a magic link. No password to remember.</p>
 
@@ -1431,6 +1437,14 @@ body.ns-launching-active #marketing-view ~ h2 {
       emailSubmit.disabled = false;
       emailSubmit.textContent = 'Continue with email';
     }
+    /* Clear the inline status line (set by ns-email-capture failure
+       paths) so a subsequent visit isn't pre-populated with a stale
+       "try again" message. */
+    var emailStatusEl = document.getElementById('email-status');
+    if (emailStatusEl) {
+      emailStatusEl.style.display = 'none';
+      emailStatusEl.textContent = '';
+    }
     if (launchingView) launchingView.style.display = 'none';
     if (marketingView) marketingView.style.display = '';
     if (opts.scroll !== false) {
@@ -1696,12 +1710,24 @@ body.ns-launching-active #marketing-view ~ h2 {
     });
   }
 
-  /* --- Upload: HTTP POST to /public/file/upload, returns a Promise
-         that resolves with the parsed JSON body ({ path, size }). --- */
+  /* --- Upload: HTTP POST to /api/nomad/upload, returns a Promise
+         that resolves with the parsed JSON body
+         ({ path, size, claim_token, expires_at }).
+
+         credentials: 'omit' is load-bearing - the marketing site never
+         reads cross-origin cookies (they live on the BFF host). The
+         multipart _csrf part is kept for compatibility; the BFF
+         endpoint tolerates and ignores it.
+
+         On success we side-effect persist claim_token to sessionStorage
+         so the later email-capture step can read it. The WebSocket
+         analyze step still consumes `path` verbatim (the new endpoint
+         returns an absolute filesystem path, same shape as the legacy
+         /public/file/upload endpoint). --- */
   function startUpload(file) {
     var tag = '[upload]';
     var names = makeUploadNames(file);
-    var url = window.NS_BACKEND + '/public/file/upload';
+    var url = window.NS_BACKEND + '/api/nomad/upload';
 
     console.log(tag, 'starting', { url: url, targetName: names.targetName, sizeBytes: file.size });
 
@@ -1711,7 +1737,7 @@ body.ns-launching-active #marketing-view ~ h2 {
 
     var t0 = (window.performance && performance.now) ? performance.now() : Date.now();
 
-    return fetch(url, { method: 'POST', body: formData })
+    return fetch(url, { method: 'POST', body: formData, credentials: 'omit' })
       .then(function(res) {
         var elapsed = (((window.performance && performance.now) ? performance.now() : Date.now()) - t0).toFixed(0);
         if (!res.ok) {
@@ -1728,7 +1754,29 @@ body.ns-launching-active #marketing-view ~ h2 {
         if (!parsed || typeof parsed.path !== 'string' || !parsed.path) {
           throw new Error('Upload response is missing .path');
         }
-        return parsed;  /* { path, size, ... } */
+        /* Capture claim_token + expires_at for the post-analyze
+           email-capture step. The token is the BFF's handle on this
+           anonymous upload; on email submit we hand it back so the
+           BFF can correlate the inbound magic-link request with the
+           file we just uploaded. sessionStorage scope is intentional:
+           per-tab, cleared when the tab closes, never persisted. */
+        if (parsed.claim_token && typeof parsed.claim_token === 'string') {
+          try {
+            sessionStorage.setItem('ns_claim_token', parsed.claim_token);
+            if (parsed.expires_at && typeof parsed.expires_at === 'string') {
+              sessionStorage.setItem('ns_claim_expires_at', parsed.expires_at);
+            }
+            console.log(tag, 'claim_token persisted to sessionStorage');
+          } catch (e) {
+            /* sessionStorage can throw in private-mode browsers; the
+               analyze flow still works without it, but the email-capture
+               step will surface the "please upload an NSF first" path. */
+            console.warn(tag, 'sessionStorage.setItem failed:', e);
+          }
+        } else {
+          console.warn(tag, 'upload response missing claim_token; email-capture will be unavailable');
+        }
+        return parsed;  /* { path, size, claim_token, expires_at } */
       });
   }
 
@@ -1976,7 +2024,17 @@ body.ns-launching-active #marketing-view ~ h2 {
     stageResults.classList.toggle('ns-mode-results-only', !withPostContent);
   }
 
-  /* --- Email form handling --- */
+  /* --- Email form handling ---
+     Delegates the network call to window.NSEmailCapture (loaded from
+     /docs/assets/js/ns-email-capture.js). That module owns the
+     contract with the BFF (POST /api/nomad/magic-link, JSON body
+     {email, claim_token}, credentials: 'omit', 202 always).
+
+     Anti-enumeration is the BFF's contract: it always returns 202
+     regardless of email existence, send success, or rate-limit state.
+     We mirror that by showing the same "check your inbox" panel for
+     every 2xx and a generic "try again" message for every non-2xx -
+     never surface server response details to the user. */
   function handleEmailSubmit() {
     if (!emailInput || !emailSubmit) return;
     var email = (emailInput.value || '').trim();
@@ -1989,19 +2047,56 @@ body.ns-launching-active #marketing-view ~ h2 {
     emailInput.classList.remove('is-invalid');
     emailSubmit.disabled = true;
     emailSubmit.textContent = 'Sending…';
-    /*
-      TODO(backend): POST email to /api/magic-link, then transition to
-      the confirmation panel only on success. On failure show inline
-      error copy and re-enable the submit button. For now we simulate a
-      brief delay so the UX flow can be reviewed end-to-end.
-    */
-    schedule(function() {
+
+    var statusEl = document.getElementById('email-status');
+    if (statusEl) {
+      statusEl.style.display = 'none';
+      statusEl.textContent = '';
+      statusEl.style.color = '#c8c8d8';
+    }
+
+    if (!window.NSEmailCapture || typeof window.NSEmailCapture.submit !== 'function') {
+      /* Module didn't load (script tag missing, network error). Reset
+         the button so the user can retry once the script loads. */
       emailSubmit.disabled = false;
       emailSubmit.textContent = 'Continue with email';
-      if (confirmationEmail) confirmationEmail.textContent = email;
-      if (actionPanel) actionPanel.style.display = 'none';
-      if (confirmationCard) confirmationCard.style.display = 'block';
-    }, 700);
+      if (statusEl) {
+        statusEl.textContent = 'Something went wrong - please try again.';
+        statusEl.style.color = '#e57373';
+        statusEl.style.display = 'block';
+      }
+      return;
+    }
+
+    window.NSEmailCapture.submit(email).then(function(result) {
+      emailSubmit.disabled = false;
+      emailSubmit.textContent = 'Continue with email';
+      if (result && result.ok) {
+        /* 202 path: swap to the confirmation card. Clear the
+           claim_token from sessionStorage so a refresh doesn't
+           re-trigger the same flow. The token is single-use from the
+           BFF's perspective anyway. */
+        try {
+          sessionStorage.removeItem('ns_claim_token');
+          sessionStorage.removeItem('ns_claim_expires_at');
+        } catch (_) {}
+        if (confirmationEmail) confirmationEmail.textContent = email;
+        if (actionPanel) actionPanel.style.display = 'none';
+        if (confirmationCard) confirmationCard.style.display = 'block';
+      } else if (result && result.reason === 'no_claim_token') {
+        if (statusEl) {
+          statusEl.textContent = 'Please upload an NSF first, then come back to enter your email.';
+          statusEl.style.color = '#e57373';
+          statusEl.style.display = 'block';
+        }
+      } else {
+        if (statusEl) {
+          statusEl.textContent = 'Something went wrong - please try again.';
+          statusEl.style.color = '#e57373';
+          statusEl.style.display = 'block';
+        }
+      }
+    });
   }
 
   function formatSize(bytes) {
@@ -2095,6 +2190,13 @@ body.ns-launching-active #marketing-view ~ h2 {
 <!-- URL prefix is /docs/ because the Jekyll source is the project   -->
 <!-- root, not docs/ - see _config.yml and .github/workflows/pages.yml -->
 <script src="{{ '/docs/assets/js/ns-websocket.js' | relative_url }}"></script>
+
+<!-- Email-capture module. Exposes window.NSEmailCapture.submit(email) -->
+<!-- which reads claim_token from sessionStorage and POSTs JSON to    -->
+<!-- ${NS_BACKEND}/api/nomad/magic-link with credentials: 'omit'.     -->
+<!-- The BFF always returns 202 (anti-enumeration); we map 2xx -> ok  -->
+<!-- and everything else -> generic failure with no server details.   -->
+<script src="{{ '/docs/assets/js/ns-email-capture.js' | relative_url }}"></script>
 
 <!-- ============================================================ -->
 <!-- TEMP: CORS sandbox bound to the "Try it now" banner button.   -->
