@@ -2005,8 +2005,15 @@ body.ns-launching-active #marketing-view ~ h2 {
   function handleEmailSubmit() {
     if (!emailInput || !emailSubmit) return;
     var email = (emailInput.value || '').trim();
-    /* Lightweight shape-check; real validation is server-side. */
-    if (!email || email.indexOf('@') < 1 || email.indexOf('.') < email.indexOf('@')) {
+    /* Lightweight shape-check; real validation is server-side. Requires:
+       - at least one non-whitespace, non-@ char before the @
+       - a literal @
+       - non-whitespace, non-@ chars on the domain side
+       - at least one dot in the domain, followed by more chars (TLD)
+       This correctly accepts "user.name@example.com", "j+sales@a.co.uk",
+       etc. The previous indexOf('.')/indexOf('@') check rejected any
+       address whose first dot happened to be in the local part. */
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       emailInput.classList.add('is-invalid');
       emailInput.focus();
       return;
