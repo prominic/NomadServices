@@ -1182,6 +1182,13 @@ body.ns-launching-active #marketing-view ~ h2 {
   var pendingFile = null;
   var pendingMode = null;  /* 'file' | 'sample' | null */
 
+  /* Full upload response for the current pending file:
+       { claim_token, expires_at, path, size }
+     Set by startUpload() after the server responds; consumed by
+     handleEmailSubmit() to forward claim_token to /api/nomad/magic-link.
+     Reset to null on every showMarketingView / runSampleAnalysis. */
+  var pendingUploadResult = null;
+
   /* Track stage timers so we can cancel them if the user exits the
      launching view mid-animation (back button, exit link, etc.). */
   var stageTimers = [];
@@ -1420,6 +1427,7 @@ body.ns-launching-active #marketing-view ~ h2 {
     clearTimers();
     pendingFile = null;
     pendingMode = null;
+    pendingUploadResult = null;
     document.body.classList.remove('ns-launching-active');
     resetStages();
     /* Reset email-form state so a fresh visit starts clean. */
@@ -1676,6 +1684,7 @@ body.ns-launching-active #marketing-view ~ h2 {
   function runSampleAnalysis() {
     pendingFile = null;
     pendingMode = 'sample';
+    pendingUploadResult = null;  /* sample flow doesn't upload */
     if (analysisReportStatus) analysisReportStatus.textContent = 'Sample analysis';
     if (analysisReportTitle) analysisReportTitle.textContent = 'CRM.nsf - Customer Relationship Management';
     /* File meta strip — for the sample flow we use a fixed name+size. */
@@ -1696,12 +1705,16 @@ body.ns-launching-active #marketing-view ~ h2 {
     });
   }
 
-  /* --- Upload: HTTP POST to /public/file/upload, returns a Promise
-         that resolves with the parsed JSON body ({ path, size }). --- */
+  /* --- Upload: HTTP POST to /api/nomad/upload, returns a Promise
+         that resolves with the parsed JSON body:
+           { claim_token, expires_at, path, size }
+         The whole object is also stashed on the module-scope
+         `pendingUploadResult` so handleEmailSubmit() can forward
+         claim_token to /api/nomad/magic-link. ---------------------- */
   function startUpload(file) {
     var tag = '[upload]';
     var names = makeUploadNames(file);
-    var url = window.NS_BACKEND + '/public/file/upload';
+    var url = window.NS_BACKEND + '/api/nomad/upload';
 
     console.log(tag, 'starting', { url: url, targetName: names.targetName, sizeBytes: file.size });
 
@@ -1728,7 +1741,14 @@ body.ns-launching-active #marketing-view ~ h2 {
         if (!parsed || typeof parsed.path !== 'string' || !parsed.path) {
           throw new Error('Upload response is missing .path');
         }
-        return parsed;  /* { path, size, ... } */
+        if (typeof parsed.claim_token !== 'string' || !parsed.claim_token) {
+          throw new Error('Upload response is missing .claim_token');
+        }
+        /* Stash for downstream use (magic-link POST in handleEmailSubmit). */
+        pendingUploadResult = parsed;
+        console.log(tag, 'claim_token =', parsed.claim_token,
+          '| expires_at =', parsed.expires_at);
+        return parsed;  /* { claim_token, expires_at, path, size } */
       });
   }
 
@@ -1976,7 +1996,12 @@ body.ns-launching-active #marketing-view ~ h2 {
     stageResults.classList.toggle('ns-mode-results-only', !withPostContent);
   }
 
-  /* --- Email form handling --- */
+  /* --- Email form handling ---
+     POSTs { email, claim_token } to /api/nomad/magic-link. The
+     claim_token comes from the upload response stashed earlier on
+     `pendingUploadResult`. Under the normal flow the email form is
+     only revealed AFTER the upload promise has resolved, so the
+     token is always available here; we still guard defensively. */
   function handleEmailSubmit() {
     if (!emailInput || !emailSubmit) return;
     var email = (emailInput.value || '').trim();
@@ -1989,19 +2014,50 @@ body.ns-launching-active #marketing-view ~ h2 {
     emailInput.classList.remove('is-invalid');
     emailSubmit.disabled = true;
     emailSubmit.textContent = 'Sending…';
-    /*
-      TODO(backend): POST email to /api/magic-link, then transition to
-      the confirmation panel only on success. On failure show inline
-      error copy and re-enable the submit button. For now we simulate a
-      brief delay so the UX flow can be reviewed end-to-end.
-    */
-    schedule(function() {
-      emailSubmit.disabled = false;
-      emailSubmit.textContent = 'Continue with email';
-      if (confirmationEmail) confirmationEmail.textContent = email;
-      if (actionPanel) actionPanel.style.display = 'none';
-      if (confirmationCard) confirmationCard.style.display = 'block';
-    }, 700);
+
+    var tag = '[magic-link]';
+    var claimToken = pendingUploadResult ? pendingUploadResult.claim_token : null;
+    if (!claimToken) {
+      console.warn(tag, 'no claim_token available — upload result missing or expired');
+    }
+    var url = window.NS_BACKEND + '/api/nomad/magic-link';
+    var payload = { email: email, claim_token: claimToken || '' };
+    console.log(tag, 'POST', url, payload);
+
+    fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+      .then(function(res) {
+        console.log(tag, 'HTTP ' + res.status + ' ' + res.statusText);
+        if (!res.ok) {
+          /* Try to read the body for a useful error message before bailing. */
+          return res.text().then(function(b) {
+            throw new Error('Magic-link request failed: HTTP ' + res.status + (b ? ' - ' + b.substring(0, 200) : ''));
+          });
+        }
+        return res.text();
+      })
+      .then(function(body) {
+        if (body) console.log(tag, 'response body:', body);
+        /* Success: swap to the confirmation card. */
+        emailSubmit.disabled = false;
+        emailSubmit.textContent = 'Continue with email';
+        if (confirmationEmail) confirmationEmail.textContent = email;
+        if (actionPanel) actionPanel.style.display = 'none';
+        if (confirmationCard) confirmationCard.style.display = 'block';
+      })
+      .catch(function(err) {
+        console.error(tag, 'failed:', err);
+        emailSubmit.disabled = false;
+        emailSubmit.textContent = 'Continue with email';
+        /* Flag the input so the user knows something went wrong; the
+           console carries the real error for the dev. Server-driven
+           inline error copy can replace this once the API contract
+           settles. */
+        emailInput.classList.add('is-invalid');
+      });
   }
 
   function formatSize(bytes) {
