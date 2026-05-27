@@ -1645,23 +1645,31 @@ body.ns-launching-active #marketing-view ~ h2 {
     }
 
     /* Both async tracks start in parallel:
-         - upload  (HTTP POST) -> { path }
+         - upload  (HTTP POST) -> { claim_token, path, … }
          - prep-stage animation
-       Promise.all gates on whichever finishes last (step 3 of the
-       UI flow). On success, we then start the analyze + analyzing
-       animation in parallel and gate again (step 5). */
+       Promise.all gates on whichever finishes last — i.e. the
+       preparing block stays on screen until BOTH the animation has
+       reached 100% AND the server has actually responded. Only then
+       do we fade the block out (via hideStage) and start the analyze
+       track. Same pattern again for analyze + analyzing-animation. */
     var uploadP   = startUpload(pendingFile);
     var prepAnimP = runPreparingStage();
 
     Promise.all([uploadP, prepAnimP])
       .then(function(results) {
         var uploadResult = results[0];
-        var analyzeP     = startAnalyze(uploadResult.path);
-        var animP        = runAnalyzingStage();
+        return hideStage(stagePreparing).then(function() { return uploadResult; });
+      })
+      .then(function(uploadResult) {
+        var analyzeP = startAnalyze(uploadResult.path);
+        var animP    = runAnalyzingStage();
         return Promise.all([analyzeP, animP]);
       })
       .then(function(results) {
         var report = results[0];
+        return hideStage(stageAnalyzing).then(function() { return report; });
+      })
+      .then(function(report) {
         populateReport(report);
         showResultsStage(true);
         /* Focus the email input so keyboard users can start typing.
@@ -1699,10 +1707,12 @@ body.ns-launching-active #marketing-view ~ h2 {
 
   function runAnalyzingThenResults(withPostContent) {
     resetStages();
-    runAnalyzingStage().then(function() {
-      populateReport(MOCK_SAMPLE_REPORT);
-      showResultsStage(withPostContent);
-    });
+    runAnalyzingStage()
+      .then(function() { return hideStage(stageAnalyzing); })
+      .then(function() {
+        populateReport(MOCK_SAMPLE_REPORT);
+        showResultsStage(withPostContent);
+      });
   }
 
   /* --- Upload: HTTP POST to /api/nomad/upload, returns a Promise
@@ -1907,8 +1917,12 @@ body.ns-launching-active #marketing-view ~ h2 {
   }
 
   /* --- Stage runners. Return a Promise that resolves when the
-         stage's fade-out finishes. onDone callback is still supported
-         for any legacy callers; both fire. ----------------------- */
+         progress bar reaches 100% (the *animation* is done) — they no
+         longer hide the block on their own. The block stays on screen
+         until the caller invokes hideStage(), which lets us gate the
+         disappearance on the actual server response and avoid the
+         "blank screen while we wait" gap. onDone fires at the same
+         point as resolve for any legacy callers. ----------------- */
   function runPreparingStage(onDone) {
     return new Promise(function(resolve) {
       if (!stagePreparing) { if (onDone) onDone(); resolve(); return; }
@@ -1928,18 +1942,14 @@ body.ns-launching-active #marketing-view ~ h2 {
       }, 1000);
       schedule(function() {
         if (prepBar) prepBar.style.width = '100%';
-        if (prepSub) prepSub.textContent = 'Done.';
+        /* Bar is full but we may still be waiting on the server. The
+           sub-copy stays in-progress so users don't read "Done." while
+           nothing visibly happens. hideStage() will be triggered by
+           runFullFlow once the upload response actually arrives. */
+        if (prepSub) prepSub.textContent = 'Finishing upload…';
+        if (onDone) onDone();
+        resolve();
       }, 1500);
-      schedule(function() {
-        stagePreparing.classList.remove('ns-fade-in');
-        stagePreparing.classList.add('ns-fade-out');
-        schedule(function() {
-          stagePreparing.style.display = 'none';
-          stagePreparing.classList.remove('ns-fade-out');
-          if (onDone) onDone();
-          resolve();
-        }, 350);
-      }, 1900);
     });
   }
 
@@ -1963,18 +1973,31 @@ body.ns-launching-active #marketing-view ~ h2 {
       }, 1100);
       schedule(function() {
         if (analyzeBar) analyzeBar.style.width = '100%';
+        /* Same pattern as runPreparingStage — bar full, but if the
+           backend isn't finished yet we sit with "Scoring viability…"
+           rather than a misleading "Done." */
         if (analyzeSub) analyzeSub.textContent = 'Scoring viability…';
+        if (onDone) onDone();
+        resolve();
       }, 1900);
+    });
+  }
+
+  /* Caller-driven fade-out + hide for a stage block. Resolves once the
+     block is fully removed from the visual flow, so the next stage can
+     fade in cleanly with no flash of overlap. Used by runFullFlow and
+     runAnalyzingThenResults to time the disappearance against the
+     actual server response. */
+  function hideStage(stage) {
+    return new Promise(function(resolve) {
+      if (!stage) { resolve(); return; }
+      stage.classList.remove('ns-fade-in');
+      stage.classList.add('ns-fade-out');
       schedule(function() {
-        stageAnalyzing.classList.remove('ns-fade-in');
-        stageAnalyzing.classList.add('ns-fade-out');
-        schedule(function() {
-          stageAnalyzing.style.display = 'none';
-          stageAnalyzing.classList.remove('ns-fade-out');
-          if (onDone) onDone();
-          resolve();
-        }, 350);
-      }, 2400);
+        stage.style.display = 'none';
+        stage.classList.remove('ns-fade-out');
+        resolve();
+      }, 350);
     });
   }
 
