@@ -874,7 +874,7 @@ body.ns-launching-active #marketing-view ~ h2 {
             A magic link is on its way to <span class="ns-confirmation-email" id="confirmation-email">you@example.com</span>.
             Open it to launch your file in HCL Nomad.
           </p>
-          <p class="ns-confirmation-hint">Don't see it in a minute or two? Check your spam folder.</p>
+          <p class="ns-confirmation-hint">Don't see it in a minute or two? Check your spam folder &mdash; or, if you've requested several links recently, wait a few minutes and try again.</p>
           <button type="button" class="ns-confirmation-action" id="back-home">Back to home</button>
           <button type="button" class="ns-try-again" id="try-again">Wrong email? Try again</button>
         </div>
