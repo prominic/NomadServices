@@ -726,6 +726,8 @@ body.ns-launching-active #marketing-view ~ h2 {
   <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.5rem; font-size: 1rem; color: #c8c8d8;">
   <span>Don't have an NSF handy?</span>
   <a href="#analysis-results" id="sample-db-link" style="display: inline-block; padding: 8px 20px; background: rgba(255,255,255,0.04); color: #ffffff; border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: background 0.2s ease, border-color 0.2s ease;" onmouseover="this.style.background='rgba(255,255,255,0.10)'; this.style.borderColor='rgba(255,255,255,0.45)';" onmouseout="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(255,255,255,0.25)';">Try with our sample database &rarr;</a>
+  <span style="color: #6a6a7c;">|</span>
+  <a href="#demo-video" style="color: #9d8df1;">Watch the 60-second demo &rarr;</a>
 </div>
 
   <div style="text-align: center; margin-top: 1rem; font-size: 0.85rem; color: #6a6a7c;">
@@ -738,6 +740,261 @@ body.ns-launching-active #marketing-view ~ h2 {
      view (see #launching-view below). The old inline analysis card was
      removed when the analytical block became shared across flows. -->
 
+
+---
+
+<div style="text-align: center; padding: 2rem 0;">
+  <h2 id="accelerate-your-domino-modernization" style="font-size: 2rem; color: #e0e0f0;">Accelerate Your Domino Modernization</h2>
+  <p style="font-size: 1.2rem; color: #c8c8d8; max-width: 800px; margin: 0 auto;">
+    Legacy applications shouldn't hold your organization back. Nomad.Services bridges the gap between your existing Domino investments and the modern, mobile-first experiences your users demand.
+  </p>
+</div>
+
+---
+
+<div style="display: flex; gap: 2rem; flex-wrap: wrap; margin: 2rem 0; justify-content: center;">
+
+  <div style="flex: 1; min-width: 250px; max-width: 350px; padding: 2rem; background: linear-gradient(135deg, rgba(108,92,231,0.1) 0%, rgba(168,85,247,0.05) 100%); border: 1px solid #2a2a4a; border-radius: 12px;">
+    <h3 style="color: #e8c547; margin-top: 0;">See Results Before You Sign Up</h3>
+    <p>Skip the account creation. Drop an NSF or try our sample - your viability report shows up in seconds, not forms-to-fill-out later.</p>
+  </div>
+
+  <div style="flex: 1; min-width: 250px; max-width: 350px; padding: 2rem; background: linear-gradient(135deg, rgba(108,92,231,0.1) 0%, rgba(168,85,247,0.05) 100%); border: 1px solid #2a2a4a; border-radius: 12px;">
+    <h3 style="color: #e8c547; margin-top: 0;">Enterprise-Grade Cloud</h3>
+    <p>Built on the <a href="https://moonshine.team">moonshine.team</a> infrastructure - a secure, scalable, cloud-native environment purpose-built for Domino workloads.</p>
+  </div>
+
+  <div style="flex: 1; min-width: 250px; max-width: 350px; padding: 2rem; background: linear-gradient(135deg, rgba(108,92,231,0.1) 0%, rgba(168,85,247,0.05) 100%); border: 1px solid #2a2a4a; border-radius: 12px;">
+    <h3 style="color: #e8c547; margin-top: 0;">Cross-Platform, Mobile-First</h3>
+    <p>See exactly how your application renders on desktop, tablet, and mobile. HCL Nomad delivers your Domino apps to <strong>every device</strong>, everywhere.</p>
+  </div>
+
+</div>
+
+---
+
+<div style="text-align: center; padding: 2rem 0;">
+  <h2 id="how-it-works" style="font-size: 2rem; color: #e0e0f0;">How It Works</h2>
+  <p style="font-size: 1.1rem; color: #9d8df1;">From NSF to live application in four simple steps</p>
+</div>
+
+<div style="display: flex; gap: 1.5rem; flex-wrap: wrap; margin: 1.5rem 0; justify-content: center;">
+
+  <div style="flex: 1; min-width: 180px; max-width: 260px; padding: 2rem 1.5rem; background: rgba(108, 92, 231, 0.08); border: 1px solid #2a2a4a; border-radius: 12px; text-align: center;">
+    <div style="font-size: 2.5rem; color: #e8c547; font-weight: 700; margin-bottom: 0.5rem;">01</div>
+    <h4 style="color: #e0e0f0; margin: 0.5rem 0;">Drop or sample</h4>
+    <p style="color: #a0a0b8; font-size: 0.95rem;">Upload your NSF or try our sample database - no signup required to start.</p>
+  </div>
+
+  <div style="flex: 1; min-width: 180px; max-width: 260px; padding: 2rem 1.5rem; background: rgba(108, 92, 231, 0.08); border: 1px solid #2a2a4a; border-radius: 12px; text-align: center;">
+    <div style="font-size: 2.5rem; color: #e8c547; font-weight: 700; margin-bottom: 0.5rem;">02</div>
+    <h4 style="color: #e0e0f0; margin: 0.5rem 0;">Instant analysis</h4>
+    <p style="color: #a0a0b8; font-size: 0.95rem;">See forms, views, agents, and migration viability scored in seconds.</p>
+  </div>
+
+  <div style="flex: 1; min-width: 180px; max-width: 260px; padding: 2rem 1.5rem; background: rgba(108, 92, 231, 0.08); border: 1px solid #2a2a4a; border-radius: 12px; text-align: center;">
+    <div style="font-size: 2.5rem; color: #e8c547; font-weight: 700; margin-bottom: 0.5rem;">03</div>
+    <h4 style="color: #e0e0f0; margin: 0.5rem 0;">Review the report</h4>
+    <p style="color: #a0a0b8; font-size: 0.95rem;">Full compatibility breakdown with zero commitment - still no account needed.</p>
+  </div>
+
+  <div style="flex: 1; min-width: 180px; max-width: 260px; padding: 2rem 1.5rem; background: linear-gradient(135deg, rgba(232,197,71,0.12) 0%, rgba(232,197,71,0.04) 100%); border: 1px solid #e8c547; border-radius: 12px; text-align: center;">
+    <div style="font-size: 2.5rem; color: #e8c547; font-weight: 700; margin-bottom: 0.5rem;">04</div>
+    <h4 style="color: #e0e0f0; margin: 0.5rem 0;">Sign in to run live</h4>
+    <p style="color: #a0a0b8; font-size: 0.95rem;">Free 30-day trial unlocks your database running interactively in HCL Nomad.</p>
+  </div>
+
+</div>
+
+---
+
+<div style="text-align: center; padding: 2rem 0;">
+  <h2 id="demo-video" style="font-size: 2rem; color: #e0e0f0;">Prefer to Watch First?</h2>
+  <p style="font-size: 1.1rem; color: #c8c8d8; max-width: 700px; margin: 0 auto 1.5rem;">
+    A 60-second tour of what happens between drop and live-in-Nomad.
+  </p>
+  <div style="max-width: 720px; margin: 0 auto; aspect-ratio: 16/9; background: rgba(108,92,231,0.08); border: 1px solid #2a2a4a; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #6a6a7c;">
+    <!-- TODO(marketing): replace with <iframe> to YouTube/Vimeo embed when the demo video is recorded -->
+    <span>Demo video - coming soon</span>
+  </div>
+</div>
+
+---
+
+<div style="text-align: center; padding: 2rem 0;">
+  <h2 id="domino-online-editor" style="font-size: 2rem; color: #e8c547;">Domino Online Editor</h2>
+  <p style="font-size: 1.2rem; color: #c8c8d8; max-width: 800px; margin: 0 auto;">
+    A complete <strong>browser-based environment</strong> for building, managing, and deploying Domino applications across your entire infrastructure. No Notes client required.
+  </p>
+</div>
+
+<div style="display: flex; gap: 2rem; flex-wrap: wrap; margin: 2rem 0; justify-content: center;">
+
+  <div style="flex: 1; min-width: 250px; max-width: 280px; padding: 2rem; background: linear-gradient(135deg, rgba(76,175,80,0.1) 0%, rgba(76,175,80,0.03) 100%); border: 1px solid #2a2a4a; border-radius: 12px; text-align: center;">
+    <div aria-hidden="true" style="width: 56px; height: 56px; margin: 0 auto 1rem; background: linear-gradient(135deg, #43a047, #66bb6a); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">&#128187;</div>
+    <h4 style="color: #e0e0f0; margin: 0.5rem 0;">Agent Development</h4>
+    <p style="color: #a0a0b8; font-size: 0.95rem;">Create and edit <strong>LotusScript</strong>, <strong>Java</strong>, and <strong>Formula</strong> agents directly in your browser. Full syntax highlighting and debugging.</p>
+  </div>
+
+  <div style="flex: 1; min-width: 250px; max-width: 280px; padding: 2rem; background: linear-gradient(135deg, rgba(76,175,80,0.1) 0%, rgba(76,175,80,0.03) 100%); border: 1px solid #2a2a4a; border-radius: 12px; text-align: center;">
+    <div aria-hidden="true" style="width: 56px; height: 56px; margin: 0 auto 1rem; background: linear-gradient(135deg, #43a047, #66bb6a); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">&#128451;</div>
+    <h4 style="color: #e0e0f0; margin: 0.5rem 0;">Database Management</h4>
+    <p style="color: #a0a0b8; font-size: 0.95rem;">Browse, manage, and edit Domino <strong>database elements</strong> online. Full CRUD operations without a desktop client.</p>
+  </div>
+
+  <div style="flex: 1; min-width: 250px; max-width: 280px; padding: 2rem; background: linear-gradient(135deg, rgba(156,39,176,0.1) 0%, rgba(156,39,176,0.03) 100%); border: 1px solid #2a2a4a; border-radius: 12px; text-align: center;">
+    <div aria-hidden="true" style="width: 56px; height: 56px; margin: 0 auto 1rem; background: linear-gradient(135deg, #8e24aa, #ab47bc); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">&#127760;</div>
+    <h4 style="color: #e0e0f0; margin: 0.5rem 0;">Multi-Server Support</h4>
+    <p style="color: #a0a0b8; font-size: 0.95rem;">Connect to <strong>multiple Domino servers</strong> with a single ID file. Manage your entire infrastructure from one interface.</p>
+  </div>
+
+  <div style="flex: 1; min-width: 250px; max-width: 280px; padding: 2rem; background: linear-gradient(135deg, rgba(156,39,176,0.1) 0%, rgba(156,39,176,0.03) 100%); border: 1px solid #2a2a4a; border-radius: 12px; text-align: center;">
+    <div aria-hidden="true" style="width: 56px; height: 56px; margin: 0 auto 1rem; background: linear-gradient(135deg, #8e24aa, #ab47bc); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">&#128260;</div>
+    <h4 style="color: #e0e0f0; margin: 0.5rem 0;">Version Control</h4>
+    <p style="color: #a0a0b8; font-size: 0.95rem;">Built-in <strong>backup and restore</strong> for design elements. Track changes and roll back with confidence.</p>
+  </div>
+
+</div>
+
+<div style="text-align: center; padding: 1rem 0 0;">
+  <p style="font-size: 1.1rem; color: #9d8df1; margin-bottom: 1rem;">Secure ID file management - connect to any Domino server from your browser</p>
+</div>
+
+---
+
+<div style="text-align: center; padding: 2rem 0;">
+  <h2 id="built-for-the-enterprise" style="font-size: 2rem; color: #e0e0f0;">Built for the Enterprise</h2>
+</div>
+
+<div style="display: flex; gap: 3rem; flex-wrap: wrap; margin: 1rem 0 2rem; justify-content: center;">
+
+  <div style="text-align: center; max-width: 200px;">
+    <div aria-hidden="true" style="font-size: 2.5rem; color: #e8c547;">&#9889;</div>
+    <h4 style="color: #e0e0f0;">Rapid Prototyping</h4>
+    <p style="color: #a0a0b8; font-size: 0.9rem;">Validate before you commit. Test modernization strategies in minutes, not quarters.</p>
+  </div>
+
+  <div style="text-align: center; max-width: 200px;">
+    <div aria-hidden="true" style="font-size: 2.5rem; color: #e8c547;">&#128274;</div>
+    <h4 style="color: #e0e0f0;">Secure by Design</h4>
+    <p style="color: #a0a0b8; font-size: 0.9rem;">Enterprise-grade security with ID file management. Your data stays protected in our managed cloud.</p>
+  </div>
+
+  <div style="text-align: center; max-width: 200px;">
+    <div aria-hidden="true" style="font-size: 2.5rem; color: #e8c547;">&#128268;</div>
+    <h4 style="color: #e0e0f0;">REST API Access</h4>
+    <p style="color: #a0a0b8; font-size: 0.9rem;">Full NoSQL database access via REST APIs. Integrate with modern toolchains and CI/CD workflows.</p>
+  </div>
+
+  <div style="text-align: center; max-width: 200px;">
+    <div aria-hidden="true" style="font-size: 2.5rem; color: #e8c547;">&#128640;</div>
+    <h4 style="color: #e0e0f0;">Digital Transformation</h4>
+    <p style="color: #a0a0b8; font-size: 0.9rem;">Bridge legacy Domino to modern mobile-first experiences without rewriting a single line of code.</p>
+  </div>
+
+</div>
+
+---
+
+<div style="text-align: center; padding: 2rem 0;">
+  <h2 id="moonshine-platform" style="font-size: 2rem; color: #e0e0f0;">The Moonshine.dev Platform</h2>
+  <p style="font-size: 1.1rem; color: #c8c8d8; max-width: 700px; margin: 0 auto;">
+    Nomad.Services is part of a complete <strong>rapid application development</strong> ecosystem. Build, test, and deploy - all from one platform.
+  </p>
+</div>
+
+<div style="display: flex; gap: 1.5rem; flex-wrap: wrap; margin: 2rem 0; justify-content: center;">
+
+  <div style="flex: 1; min-width: 220px; max-width: 270px; padding: 2rem 1.5rem; background: linear-gradient(135deg, rgba(108,92,231,0.12) 0%, rgba(168,85,247,0.06) 100%); border: 1px solid #2a2a4a; border-radius: 12px;">
+    <h4 style="color: #e8c547; margin-top: 0;">Canvas Editor</h4>
+    <p style="color: #c8c8d8; font-size: 0.95rem;">Drag-and-drop <strong>WYSIWYG</strong> UI designer. Build mockups visually and deploy to any platform.</p>
+    <a href="https://app.moonshine.dev/public/file/serve/moonshine-dev-private/index.html" style="color: #9d8df1; font-size: 0.9rem;">Try Now &rarr;</a>
+  </div>
+
+  <div style="flex: 1; min-width: 220px; max-width: 270px; padding: 2rem 1.5rem; background: linear-gradient(135deg, rgba(108,92,231,0.12) 0%, rgba(168,85,247,0.06) 100%); border: 1px solid #2a2a4a; border-radius: 12px;">
+    <h4 style="color: #e8c547; margin-top: 0;">Form Builder</h4>
+    <p style="color: #c8c8d8; font-size: 0.95rem;"><strong>Low-code</strong> form creation with built-in validation, fields, and components.</p>
+    <a href="https://app.moonshine.dev/public/file/serve/form-builder/index.html" style="color: #9d8df1; font-size: 0.9rem;">Try Now &rarr;</a>
+  </div>
+
+  <div style="flex: 1; min-width: 220px; max-width: 270px; padding: 2rem 1.5rem; background: linear-gradient(135deg, rgba(108,92,231,0.12) 0%, rgba(168,85,247,0.06) 100%); border: 1px solid #2a2a4a; border-radius: 12px;">
+    <h4 style="color: #e8c547; margin-top: 0;">AI Tooling</h4>
+    <p style="color: #c8c8d8; font-size: 0.95rem;">Describe your UI in <strong>plain English</strong> and watch AI generate your mockup instantly.</p>
+    <a href="https://app.moonshine.dev/public/file/serve/moonshine-dev-private/assets/ai/index.html" style="color: #9d8df1; font-size: 0.9rem;">Try Now &rarr;</a>
+  </div>
+
+  <div style="flex: 1; min-width: 220px; max-width: 270px; padding: 2rem 1.5rem; background: linear-gradient(135deg, rgba(108,92,231,0.12) 0%, rgba(168,85,247,0.06) 100%); border: 1px solid #2a2a4a; border-radius: 12px;">
+    <h4 style="color: #e8c547; margin-top: 0;">Domino Integration</h4>
+    <p style="color: #c8c8d8; font-size: 0.95rem;"><strong>NoSQL database</strong> with REST API access and a complete web testing interface.</p>
+    <a href="{{ site.backend_url }}/public/file/serve/domino-integration/index.html" style="color: #9d8df1; font-size: 0.9rem;">Try Now &rarr;</a>
+  </div>
+
+</div>
+
+---
+
+<div style="text-align: center; padding: 2rem 0;">
+  <h2 id="pricing" style="font-size: 2rem; color: #e0e0f0;">Pricing</h2>
+  <p style="font-size: 1.1rem; color: #c8c8d8; max-width: 700px; margin: 0 auto;">
+    From free exploration to full-service modernization - choose the plan that fits your needs.
+  </p>
+</div>
+
+<div style="display: flex; gap: 1.5rem; flex-wrap: wrap; margin: 2rem 0; justify-content: center; align-items: stretch;">
+
+  <div style="flex: 1; min-width: 280px; max-width: 340px; padding: 2.5rem 2rem; background: linear-gradient(135deg, rgba(108,92,231,0.08) 0%, rgba(108,92,231,0.03) 100%); border: 1px solid #2a2a4a; border-radius: 12px; display: flex; flex-direction: column;">
+    <div style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; color: #9d8df1; margin-bottom: 0.5rem;">Starter</div>
+    <div style="font-size: 3rem; font-weight: 700; color: #e8c547; line-height: 1;">Free</div>
+    <div style="color: #9d8df1; font-size: 0.85rem; margin-top: 0.25rem;">30-day trial</div>
+    <p style="color: #a0a0b8; margin: 1rem 0; font-size: 0.95rem; flex-grow: 1;">Upload your NSF and preview it running in HCL Nomad on our cloud servers. No credit card required.</p>
+    <ul style="color: #c8c8d8; font-size: 0.9rem; padding-left: 1.2rem; margin-bottom: 1.5rem;">
+      <li>NSF upload and deployment</li>
+      <li>HCL Nomad web preview</li>
+      <li>Cross-platform testing</li>
+      <li>Community support</li>
+    </ul>
+    <a href="#upload-dropzone" class="btn btn-primary" style="text-align: center; width: 100%;">Start with a free preview</a>
+  </div>
+
+  <div style="flex: 1; min-width: 280px; max-width: 340px; padding: 2.5rem 2rem; background: linear-gradient(135deg, rgba(108,92,231,0.08) 0%, rgba(168,85,247,0.04) 100%); border: 1px solid #2a2a4a; border-radius: 12px; display: flex; flex-direction: column;">
+    <div style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; color: #9d8df1; margin-bottom: 0.5rem;">Security Audit</div>
+    <div style="font-size: 3rem; font-weight: 700; color: #e8c547; line-height: 1;">$200</div>
+    <p style="color: #a0a0b8; margin: 1rem 0; font-size: 0.95rem; flex-grow: 1;">Comprehensive security vulnerability assessment of your Domino NSF application by our expert team.</p>
+    <ul style="color: #c8c8d8; font-size: 0.9rem; padding-left: 1.2rem; margin-bottom: 1.5rem;">
+      <li>Full vulnerability scan</li>
+      <li>Security risk report</li>
+      <li>Remediation recommendations</li>
+      <li>Priority email support</li>
+    </ul>
+    <a href="https://www.moonshine.dev/" class="btn" style="text-align: center; width: 100%; border: 1px solid #6c5ce7; color: #9d8df1;">Request audit</a>
+  </div>
+
+  <div style="flex: 1; min-width: 280px; max-width: 340px; padding: 2.5rem 2rem; background: linear-gradient(135deg, rgba(232,197,71,0.12) 0%, rgba(232,197,71,0.04) 100%); border: 2px solid #e8c547; border-radius: 12px; display: flex; flex-direction: column; position: relative;">
+    <div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #e8c547; color: #0f0f23; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; padding: 4px 16px; border-radius: 20px; font-weight: 700;">Most Popular</div>
+    <div style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; color: #e8c547; margin-bottom: 0.5rem;">Enterprise</div>
+    <div style="font-size: 3rem; font-weight: 700; color: #e8c547; line-height: 1;">Custom</div>
+    <p style="color: #a0a0b8; margin: 1rem 0; font-size: 0.95rem; flex-grow: 1;">End-to-end modernization of your legacy Domino applications. Scope and pricing tailored to your environment.</p>
+    <ul style="color: #c8c8d8; font-size: 0.9rem; padding-left: 1.2rem; margin-bottom: 1.5rem;">
+      <li>Full application modernization</li>
+      <li>Architecture consulting</li>
+      <li>Migration planning &amp; execution</li>
+      <li>Dedicated support team</li>
+    </ul>
+    <a href="https://www.moonshine.dev/" class="btn btn-primary" style="text-align: center; width: 100%;">Contact sales</a>
+  </div>
+
+</div>
+
+---
+
+<div style="text-align: center; padding: 3rem 0;">
+  <h2 id="final-cta" style="font-size: 2.2rem; color: #e8c547; margin-bottom: 1rem;">Ready to See What's Really in Your NSF?</h2>
+  <p style="font-size: 1.2rem; color: #c8c8d8; max-width: 600px; margin: 0 auto 2rem;">
+    Drop a file or try our sample - get your migration viability report in seconds. No credit card, no signup, nothing to cancel.
+  </p>
+  <a href="#upload-dropzone" class="btn btn-primary fs-5" style="margin-right: 1rem;">Analyze an NSF now</a>
+  <a href="https://www.moonshine.dev/" class="btn fs-5">Contact us</a>
+</div>
 
 </div><!-- /#marketing-view -->
 
@@ -1923,7 +2180,7 @@ body.ns-launching-active #marketing-view ~ h2 {
 <!-- and (later) the real analyze flow share the same singleton.      -->
 <!-- URL prefix is /docs/ because the Jekyll source is the project   -->
 <!-- root, not docs/ - see _config.yml and .github/workflows/pages.yml -->
-<script src="{{ '/assets/js/ns-websocket.js' | relative_url }}"></script>
+<script src="{{ '/docs/assets/js/ns-websocket.js' | relative_url }}"></script>
 
 <!-- ============================================================ -->
 <!-- TEMP: CORS sandbox bound to the "Try it now" banner button.   -->

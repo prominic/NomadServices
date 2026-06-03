@@ -29,10 +29,30 @@ $border-color: #2a2a4a;
   display: none !important;
 }
 
-// Make main content full width
+// Make main content full width. Page is also a vertical flex column so
+// the footer (.site-footer is nested inside .main-content per the
+// just-the-docs default layout) sticks to the bottom of the viewport
+// on short pages without changing any horizontal widths.
+//
+// Every container in the chain (.main → .main-content-wrap →
+// .main-content → <main>) is a column flex with the next one growing.
+// That replaces the percentage-height chain that doesn't reliably
+// resolve through a plain block parent.
+//
+// CRITICAL: `width: 100%` on BOTH .main-content-wrap and .main-content.
+// They're flex items with `margin: 0 auto` (or margin-left/right: auto),
+// and per the CSS flex spec auto cross-axis margins suppress
+// `align-self: stretch`. Without explicit width, the items would then
+// fall back to their content's intrinsic width — which is what
+// previously made the body look narrower. `width: 100%` restores
+// fill-the-parent sizing; `max-width: 1200px` still caps the outer
+// wrap; the auto margins still center it.
 .main {
   margin-left: 0 !important;
   max-width: 100% !important;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 
   @media (min-width: 50rem) {
     margin-left: 0 !important;
@@ -48,12 +68,26 @@ $border-color: #2a2a4a;
   margin: 0 auto;
   padding-left: 2rem;
   padding-right: 2rem;
+  width: 100%;            // prevent flex-item content-sizing (auto margins suppress stretch)
+  flex: 1 0 auto;         // grow to fill remaining height under the header
+  display: flex;
+  flex-direction: column;
 }
 
 .main-content {
   max-width: 100%;
   margin-left: auto;
   margin-right: auto;
+  width: 100%;            // same reason as above — auto margins on a flex item
+  flex: 1 0 auto;         // grow to fill .main-content-wrap (replaces min-height: 100%)
+  display: flex;
+  flex-direction: column;
+}
+
+// <main> is the actual page content; growing it pushes .site-footer
+// (its sibling under .main-content) to the bottom.
+.main-content > main {
+  flex: 1 0 auto;
 }
 
 // Hide ALL "This site uses Just the Docs" attributions (sidebar + mobile footer)
