@@ -7,7 +7,8 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  # write is required to create/update the GitHub Release and move its tag.
+  contents: write
 
 jobs:
   build:
@@ -33,21 +34,42 @@ jobs:
           chmod +x create-dev-artifact.sh
           ./create-dev-artifact.sh
 
-      - name: Determine artifact name
+      - name: Determine artifact name and release target
         id: name
-        # main -> nomad-services-artifact.zip
-        # any other branch -> nomad-services-artifact-dev.zip
+        # main  -> nomad-services-artifact.zip,     rolling release tag "latest"
+        # other -> nomad-services-artifact-dev.zip, rolling release tag "latest-dev"
+        # The tags are reused every run so each stream keeps only its newest build.
         run: |
           if [ "${{ github.ref_name }}" = "main" ]; then
             echo "zip=nomad-services-artifact.zip" >> "$GITHUB_OUTPUT"
+            echo "tag=latest" >> "$GITHUB_OUTPUT"
+            echo "release_name=Latest build (main)" >> "$GITHUB_OUTPUT"
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
           else
             mv nomad-services-artifact.zip nomad-services-artifact-dev.zip
             echo "zip=nomad-services-artifact-dev.zip" >> "$GITHUB_OUTPUT"
+            echo "tag=latest-dev" >> "$GITHUB_OUTPUT"
+            echo "release_name=Latest dev build (${{ github.ref_name }})" >> "$GITHUB_OUTPUT"
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Upload artifact
+      - name: Upload run artifact
+        # Keeps the zip downloadable from this run's Summary page as well.
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.name.outputs.zip }}
           path: ${{ steps.name.outputs.zip }}
           if-no-files-found: error
+
+      - name: Publish to Releases
+        # Creates the release if the tag is new, otherwise updates it in place:
+        # moves the tag to this commit and replaces the attached zip.
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.name.outputs.tag }}
+          name: ${{ steps.name.outputs.release_name }}
+          prerelease: ${{ steps.name.outputs.prerelease }}
+          files: ${{ steps.name.outputs.zip }}
+          body: |
+            Automated build from `${{ github.ref_name }}` at ${{ github.sha }}.
+            This release is overwritten on each run of the Build Dev Artifact workflow.
