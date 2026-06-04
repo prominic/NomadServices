@@ -1,0 +1,53 @@
+name: Build Dev Artifact
+
+# Manual trigger only. GitHub renders a "Run workflow" button with a
+# branch selector (the "Use workflow from" dropdown) for workflow_dispatch,
+# so the chosen branch is whatever ref this run is dispatched against.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout selected branch
+        uses: actions/checkout@v6
+
+      - name: Setup Ruby
+        # bundler-cache installs the gems from the Gemfile (Jekyll et al.)
+        # and caches them between runs.
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+
+      - name: Install zip
+        # create-dev-artifact.sh requires the 'zip' command.
+        run: sudo apt-get update && sudo apt-get install -y zip
+
+      - name: Build artifact
+        run: |
+          chmod +x create-dev-artifact.sh
+          ./create-dev-artifact.sh
+
+      - name: Determine artifact name
+        id: name
+        # main -> nomad-services-artifact.zip
+        # any other branch -> nomad-services-artifact-dev.zip
+        run: |
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            echo "zip=nomad-services-artifact.zip" >> "$GITHUB_OUTPUT"
+          else
+            mv nomad-services-artifact.zip nomad-services-artifact-dev.zip
+            echo "zip=nomad-services-artifact-dev.zip" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.name.outputs.zip }}
+          path: ${{ steps.name.outputs.zip }}
+          if-no-files-found: error

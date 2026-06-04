@@ -3,7 +3,7 @@ REM ============================================================
 REM create-dev-artifact.bat
 REM
 REM Build the Jekyll site fresh and package the deployable files
-REM from _site\ into nomad-services-dev-artifact.zip in this
+REM from _site\ into nomad-services-artifact.zip in this
 REM directory. Any existing zip with that name is removed first.
 REM
 REM Items included in the archive (edit the array in the
@@ -18,7 +18,7 @@ setlocal
 set "PATH=C:\Ruby33-x64\bin;%PATH%"
 cd /d "%~dp0"
 
-set "ZIPNAME=nomad-services-dev-artifact.zip"
+set "ZIPNAME=nomad-services-artifact.zip"
 set "ZIPPATH=%~dp0%ZIPNAME%"
 
 if exist "%ZIPNAME%" (

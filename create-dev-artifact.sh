@@ -3,7 +3,7 @@
 # create-dev-artifact.sh
 #
 # Build the Jekyll site fresh and package the deployable files
-# from _site/ into nomad-services-dev-artifact.zip in this
+# from _site/ into nomad-services-artifact.zip in this
 # directory. Any existing zip with that name is removed first.
 #
 # Items included in the archive (edit INCLUDE below to change
@@ -26,7 +26,7 @@ INCLUDE=(assets index.html sitemap.xml robots.txt)
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "$SCRIPT_DIR"
 
-ZIP_NAME="nomad-services-dev-artifact.zip"
+ZIP_NAME="nomad-services-artifact.zip"
 ZIP_PATH="$SCRIPT_DIR/$ZIP_NAME"
 
 if [[ -f "$ZIP_PATH" ]]; then

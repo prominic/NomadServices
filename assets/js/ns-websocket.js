@@ -128,6 +128,10 @@
       clearTimeout(this.reconnectTimer);
       this.reconnectTimer = null;
     }
+    if (this._stableTimer) {
+      clearTimeout(this._stableTimer);
+      this._stableTimer = null;
+    }
     if (this.ws) {
       try { this.ws.close(); } catch (e) { /* swallow */ }
       this.ws = null;
@@ -176,18 +180,17 @@
   };
 
   /* Convenience for the analyzeDatabase action. Sends:
-        analyzeDatabase#<base64(nsfPath)>#<base64("anonymous")>
-     This site is the unauthenticated public flow, so the second
-     argument is always the literal string "anonymous" - never a UUID
-     or any other identifier. Response shape isn't yet documented; the
-     server is expected to emit multiple progress frames over time,
-     each delivered through the on('message', fn) listener. */
+        analyzeDatabase#<base64(nsfPath)>
+     Anonymous public flow — only the path is base64'd into the
+     message; no second argument. Response shape isn't yet documented;
+     the server is expected to emit multiple progress frames over
+     time, each delivered through the on('message', fn) listener. */
   NSWebSocket.prototype.analyzeDatabase = function(nsfPath) {
     if (typeof nsfPath !== 'string' || nsfPath === '') {
       this._log('analyzeDatabase: nsfPath is required', 'error');
       return false;
     }
-    return this.send('analyzeDatabase', nsfPath, 'anonymous');
+    return this.send('analyzeDatabase', nsfPath);
   };
 
   /* --- Listener API --- */
@@ -221,9 +224,30 @@
 
   /* --- Internal socket handlers --- */
 
+  /* How long the socket must stay open before we consider it "stable"
+     and reset the reconnect counter. Without this delay, a server
+     that completes the WS handshake and *then* immediately closes
+     (e.g. responds with an application-level "ERROR: ..." string and
+     drops the connection) would reset the counter on every reopen
+     and never give up retrying. 10 seconds is much longer than the
+     "open → reject → close" round-trip and short enough to forget
+     transient drops on a healthy session. */
+  var STABILITY_WINDOW_MS = 10000;
+
   NSWebSocket.prototype._onOpen = function() {
     this._log('connected (clientId=' + this.clientId + ')');
-    this.reconnectAttempts = 0;
+    /* Defer the counter reset until the connection actually proves
+       stable. _onClose cancels this timer if the socket dies first. */
+    var self = this;
+    if (this._stableTimer) clearTimeout(this._stableTimer);
+    this._stableTimer = setTimeout(function() {
+      self._stableTimer = null;
+      if (self.reconnectAttempts > 0) {
+        self._log('connection stable - resetting reconnect counter (was ' +
+          self.reconnectAttempts + ')');
+      }
+      self.reconnectAttempts = 0;
+    }, STABILITY_WINDOW_MS);
     this._emit('open', { clientId: this.clientId });
   };
 
@@ -252,6 +276,14 @@
   NSWebSocket.prototype._onClose = function(ev) {
     this._log('closed (code ' + ev.code +
       (ev.reason ? ', reason="' + ev.reason + '"' : '') + ')');
+    /* If the connection didn't survive long enough to be considered
+       stable, the counter must NOT be reset. Cancel the pending
+       stability timer so the counter keeps growing across reconnects
+       and we eventually hit maxReconnectAttempts. */
+    if (this._stableTimer) {
+      clearTimeout(this._stableTimer);
+      this._stableTimer = null;
+    }
     this._emit('close', ev);
     this.ws = null;
     if (this.closedByCaller) return;

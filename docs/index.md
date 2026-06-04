@@ -1902,11 +1902,10 @@ body.ns-launching-active #marketing-view ~ h2 {
 <!--                                                               -->
 <!-- NS_BACKEND comes from `backend_url` in _config.yml (single    -->
 <!-- source of truth used by both HTML hrefs and JS code). The WS  -->
-<!-- base is derived from it by swapping the scheme to wss:// and  -->
-<!-- appending the analyze server's port (8443) and path.          -->
+<!-- base is derived from it by swapping the scheme to wss://.     -->
 <!--                                                               -->
 <!-- The WS server uses a self-signed cert. If the browser rejects -->
-<!-- the WSS connection, visit https://<host>:8443/ once and       -->
+<!-- the WSS connection, visit https://<host>/ once and            -->
 <!-- accept the cert warning; that trusts it for the session.      -->
 <!--                                                               -->
 <!-- NS_ANALYZE_SERVER: server-side routing token expected in the  -->
@@ -1915,7 +1914,7 @@ body.ns-launching-active #marketing-view ~ h2 {
 <!-- ============================================================ -->
 <script>
   window.NS_BACKEND         = '{{ site.backend_url }}';
-  window.NS_WEBSOCKET_BASE  = window.NS_BACKEND.replace(/^http/, 'ws') + ':8443/websocket';
+  window.NS_WEBSOCKET_BASE  = window.NS_BACKEND.replace(/^http/, 'ws') + '/ws/anonymous';
   window.NS_ANALYZE_SERVER  = 'ANALYZEx9pVRTzQ5sbK1wMnHd7Yfg2Lj';
 </script>
 
@@ -2005,7 +2004,7 @@ body.ns-launching-active #marketing-view ~ h2 {
     url:          window.NS_WEBSOCKET_BASE,
     serverToken:  window.NS_ANALYZE_SERVER,
     pathPrefix:   'analyze',
-    clientPrefix: 'test-client-'
+    clientPrefix: 'client-'
   });
 
   /* Log every inbound frame so we can see the round-trip in DevTools. */
