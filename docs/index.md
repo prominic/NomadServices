@@ -696,7 +696,7 @@ body.ns-launching-active #marketing-view ~ h2 {
         <span class="ns-disclaimer-label">Disclaimer</span>
       </button>
     </div>
-    <input type="file" id="nsf-file-input" accept=".nsf" style="display: none;" aria-hidden="true">
+    <input type="file" id="nsf-file-input" accept=".nsf,.ntf" style="display: none;" aria-hidden="true">
   </div>
 
   <!-- Disclaimer modal. Hidden until JS opens it. role/aria attrs make -->
@@ -1275,10 +1275,10 @@ body.ns-launching-active #marketing-view ~ h2 {
 
     /* 1. Extension whitelist (case-insensitive). */
     var nameLower = (file.name || '').toLowerCase();
-    if (!/\.nsf$/.test(nameLower)) {
+    if (!/\.(nsf|ntf)$/.test(nameLower)) {
       errors.push({
         code: 'EXT',
-        message: 'File must have a .nsf extension. Got: "' + (file.name || '(no name)') + '".'
+        message: 'File must have a .nsf or .ntf extension. Got: "' + (file.name || '(no name)') + '".'
       });
     }
 
