@@ -478,6 +478,26 @@ html { scroll-behavior: smooth; }
 .ns-validation-error strong { color: #ff8a80; display: block; margin-bottom: 0.25rem; }
 .ns-validation-error ul { margin: 0.25rem 0 0; padding-left: 1.25rem; }
 .ns-validation-error li { margin-bottom: 0.15rem; }
+.ns-validation-error a { color: #ff8a80; text-decoration: underline; }
+
+/* Green "Connecting to server.." status beside the sample-DB button.
+   Pulses its alpha between 0.5 and 1.0 to draw the eye while the WS
+   handshake is in flight. */
+.ns-connecting {
+  color: #66bb6a;
+  font-weight: 600;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  animation: nsConnectingPulse 1.6s ease-in-out infinite;
+}
+@keyframes nsConnectingPulse {
+  0%, 100% { opacity: 0.5; }
+  50%      { opacity: 1; }
+}
+/* Honour reduced-motion: keep it fully visible, just don't pulse. */
+@media (prefers-reduced-motion: reduce) {
+  .ns-connecting { animation: none; opacity: 1; }
+}
 
 /* ============================================================ */
 /* Belt-and-suspenders hide rules for launching mode.            */
@@ -665,7 +685,7 @@ body.ns-launching-active #marketing-view ~ h2 {
 <div style="background: linear-gradient(135deg, #6c5ce7 0%, #a855f7 50%, #6c5ce7 100%); margin: -2rem -2rem 2rem -2rem; padding: 1rem 2rem; text-align: center; position: relative; overflow: hidden;">
   <div style="position: relative; z-index: 1;">
     <span style="color: #ffffff; font-size: 1.2rem; font-weight: 600; letter-spacing: 0.02em;">&#128640; Eliminate the Notes client forever. Free preview. No signup.</span>
-    <a href="#upload-dropzone" id="try-it-now-banner" style="display: inline-block; margin-left: 1.5rem; background: #e8c547; color: #0f0f23; font-weight: 700; padding: 6px 20px; border-radius: 20px; text-decoration: none; font-size: 0.95rem;">Try it now &darr;</a>
+    <a href="#" id="try-it-now-banner" style="display: inline-block; margin-left: 1.5rem; background: #e8c547; color: #0f0f23; font-weight: 700; padding: 6px 20px; border-radius: 20px; text-decoration: none; font-size: 0.95rem;">Try it now &darr;</a>
   </div>
 </div>
 
@@ -723,9 +743,22 @@ body.ns-launching-active #marketing-view ~ h2 {
     <ul id="ns-validation-error-list"></ul>
   </div>
 
+  <!-- Shown when the analyze WS server replies with an "ERROR: ..."     -->
+  <!-- string (e.g. the analyzer backend is down). Toggled by the        -->
+  <!-- WebSocket message handler in the script block at the foot of the  -->
+  <!-- page.                                                             -->
+  <div id="ns-analyzer-error" class="ns-validation-error" style="display: none;" role="alert">
+    Oops! Something went wrong.. Please contact <a href="mailto:santanu@prominic.net">Administrator</a>!
+  </div>
+
   <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.5rem; font-size: 1rem; color: #c8c8d8;">
   <span>Don't have an NSF handy?</span>
   <a href="#analysis-results" id="sample-db-link" style="display: inline-block; padding: 8px 20px; background: rgba(255,255,255,0.04); color: #ffffff; border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: background 0.2s ease, border-color 0.2s ease;" onmouseover="this.style.background='rgba(255,255,255,0.10)'; this.style.borderColor='rgba(255,255,255,0.45)';" onmouseout="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(255,255,255,0.25)';">Try with our sample database &rarr;</a>
+  <!-- Live connection status for the analyze WS. Shown while the         -->
+  <!-- helloWorld handshake is in flight; hidden once the server replies  -->
+  <!-- (success) or the connection/analyzer fails. Toggled by the script  -->
+  <!-- block at the foot of the page.                                     -->
+  <span id="ns-connecting" class="ns-connecting" role="status" style="display: none;">Connecting to server...</span>
 </div>
 
   <div style="text-align: center; margin-top: 1rem; font-size: 0.85rem; color: #6a6a7c;">
@@ -1937,7 +1970,7 @@ body.ns-launching-active #marketing-view ~ h2 {
 <script>
 (function() {
   var btn = document.getElementById('try-it-now-banner');
-  if (!btn) return;
+  if (btn) return;
 
   btn.addEventListener('click', function(e) {
     e.preventDefault();
@@ -2007,23 +2040,60 @@ body.ns-launching-active #marketing-view ~ h2 {
     clientPrefix: 'client-'
   });
 
+  /* Show/hide the green "Connecting to server.." status beside the
+     sample-DB button. It stays up while the helloWorld handshake is in
+     flight and comes down on the first definitive outcome — a server
+     reply (success or "ERROR:") or a dropped/failed connection. */
+  function setConnecting(on) {
+    var el = document.getElementById('ns-connecting');
+    if (el) el.style.display = on ? 'inline' : 'none';
+  }
+
   /* Log every inbound frame so we can see the round-trip in DevTools. */
   ws.on('message', function(evt) {
     console.log('[ws test] %cdecoded response', 'color:#66bb6a;font-weight:bold', evt.decoded);
+    /* Any reply means the handshake resolved — stop the connecting pulse. */
+    setConnecting(false);
+    /* The analyze server replies to helloWorld with a plain
+       "ERROR: ..." string when the analyzer backend is unavailable.
+       Surface that to the user as the red error block beneath the
+       dropzone; hide it again on any non-error reply (e.g. after a
+       successful reconnect). */
+    var errEl = document.getElementById('ns-analyzer-error');
+    if (errEl) {
+      var isError = typeof evt.decoded === 'string' && /^\s*ERROR:/i.test(evt.decoded);
+      errEl.style.display = isError ? 'block' : 'none';
+    }
   });
 
   ws.on('open', function(info) {
     console.log('[ws test] %cconnected', 'color:#9d8df1;font-weight:bold',
       'clientId=' + info.clientId);
+    /* Connected — clear any error shown by a previous failed attempt so
+       a successful reconnect within the retry budget removes the block. */
+    var errEl = document.getElementById('ns-analyzer-error');
+    if (errEl) errEl.style.display = 'none';
     /* Fire the proof-of-life ping. The server should reply with a
        JSON object echoing/acknowledging the payload. */
     ws.helloWorld('ping from browser');
+  });
+
+  ws.on('close', function() {
+    /* Connection dropped or never established (timeout / refused). Show
+       the red error block immediately — on the very first failed attempt
+       — rather than waiting for all retries to be exhausted. If a later
+       reconnect succeeds, the 'open' handler above hides it again. */
+    setConnecting(false);
+    var errEl = document.getElementById('ns-analyzer-error');
+    if (errEl) errEl.style.display = 'block';
   });
 
   ws.on('reconnectFailed', function(info) {
     console.warn('[ws test] gave up after ' + info.attempts + ' reconnect attempt(s)');
   });
 
+  /* Kick off the connection and start the connecting indicator. */
+  setConnecting(true);
   ws.open();
 })();
 </script>
