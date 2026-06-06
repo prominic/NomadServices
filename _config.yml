@@ -7,7 +7,7 @@ url: 'https://nomad.services'
 # Referenced in templates as {{ site.backend_url }} and mirrored
 # at runtime into window.NS_BACKEND. Override per-environment by
 # editing this single line and rebuilding.
-backend_url: 'https://staging.startcloud.com'
+backend_url: 'https://beta.moonshine.dev'
 repository: prominic/NomadServices
 
 permalink: pretty
