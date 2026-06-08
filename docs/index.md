@@ -748,7 +748,7 @@ body.ns-launching-active #marketing-view ~ h2 {
   <!-- WebSocket message handler in the script block at the foot of the  -->
   <!-- page.                                                             -->
   <div id="ns-analyzer-error" class="ns-validation-error" style="display: none;" role="alert">
-    Oops! Something went wrong.. Please contact <a href="mailto:santanu@prominic.net">Administrator</a>!
+    Oops! Something went wrong.. Please contact <a href="mailto:santanu@prominic.net">support</a>!
   </div>
 
   <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.5rem; font-size: 1rem; color: #c8c8d8;">
@@ -1711,11 +1711,11 @@ body.ns-launching-active #marketing-view ~ h2 {
       schedule(function() {
         if (prepBar) prepBar.style.width = '40%';
         if (prepSub) prepSub.textContent = 'Verifying file integrity…';
-      }, 300);
+      }, 450);
       schedule(function() {
         if (prepBar) prepBar.style.width = '85%';
         if (prepSub) prepSub.textContent = 'Almost ready…';
-      }, 1000);
+      }, 1500);
       schedule(function() {
         if (prepBar) prepBar.style.width = '100%';
         /* Bar is full but we may still be waiting on the server. The
@@ -1725,7 +1725,7 @@ body.ns-launching-active #marketing-view ~ h2 {
         if (prepSub) prepSub.textContent = 'Finishing upload…';
         if (onDone) onDone();
         resolve();
-      }, 1500);
+      }, 2250);
     });
   }
 
