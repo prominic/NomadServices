@@ -863,6 +863,14 @@ body.ns-launching-active #marketing-view ~ h2 {
         </div>
       </div>
 
+      <!-- Sample-flow back-to-home. The real upload flow exposes its     -->
+      <!-- exit link inside #post-content, which is hidden in sample       -->
+      <!-- mode; this gives the sample report the same way out.            -->
+      <!-- showResultsStage() reveals it only when withPostContent=false.  -->
+      <div id="sample-exit" style="display: none; text-align: center; margin-top: 1.5rem;">
+        <button type="button" class="ns-exit-link" id="sample-exit-link">&larr; Back to home</button>
+      </div>
+
       <!-- Post-content: shown only when a real NSF was dropped (variant-b: email-first) -->
       <div id="post-content" style="display: none;">
 
@@ -1022,6 +1030,8 @@ body.ns-launching-active #marketing-view ~ h2 {
 
   var actionPanel = document.getElementById('action-panel');
   var exitLink = document.getElementById('exit-link');
+  var sampleExit = document.getElementById('sample-exit');
+  var sampleExitLink = document.getElementById('sample-exit-link');
   var emailForm = document.getElementById('email-form');
   var emailInput = document.getElementById('email-input');
   var emailSubmit = document.getElementById('email-submit');
@@ -1151,6 +1161,9 @@ body.ns-launching-active #marketing-view ~ h2 {
   }
   if (exitLink) {
     exitLink.addEventListener('click', function() { history.back(); });
+  }
+  if (sampleExitLink) {
+    sampleExitLink.addEventListener('click', function() { history.back(); });
   }
   if (backHome) {
     backHome.addEventListener('click', function() { history.back(); });
@@ -1283,7 +1296,7 @@ body.ns-launching-active #marketing-view ~ h2 {
     if (reportMetaName) reportMetaName.textContent = file.name;
     if (reportMetaSize) reportMetaSize.textContent = formatSize(file.size);
     if (reportMetaTag)  reportMetaTag.textContent  = 'PREVIEW REPORT';
-    if (prepTitle) prepTitle.textContent = 'Preparing ' + file.name + '…';
+    if (prepTitle) prepTitle.textContent = 'Preparing ' + file.name + '\u2026';
 
     pushStateToLaunching();
     showLaunchingView();
@@ -1421,7 +1434,7 @@ body.ns-launching-active #marketing-view ~ h2 {
     }
 
     /* Both async tracks start in parallel:
-         - upload  (HTTP POST) -> { claim_token, path, … }
+         - upload  (HTTP POST) -> { claim_token, path, \u2026 }
          - prep-stage animation
        Promise.all gates on whichever finishes last — i.e. the
        preparing block stays on screen until BOTH the animation has
@@ -1706,15 +1719,15 @@ body.ns-launching-active #marketing-view ~ h2 {
       stagePreparing.classList.remove('ns-fade-out');
       stagePreparing.classList.add('ns-fade-in');
       if (prepBar) prepBar.style.width = '0%';
-      if (prepSub) prepSub.textContent = 'Securing your upload…';
+      if (prepSub) prepSub.textContent = 'Securing your upload\u2026';
 
       schedule(function() {
         if (prepBar) prepBar.style.width = '40%';
-        if (prepSub) prepSub.textContent = 'Verifying file integrity…';
+        if (prepSub) prepSub.textContent = 'Verifying file integrity\u2026';
       }, 450);
       schedule(function() {
         if (prepBar) prepBar.style.width = '85%';
-        if (prepSub) prepSub.textContent = 'Almost ready…';
+        if (prepSub) prepSub.textContent = 'Almost ready\u2026';
       }, 1500);
       schedule(function() {
         if (prepBar) prepBar.style.width = '100%';
@@ -1722,7 +1735,7 @@ body.ns-launching-active #marketing-view ~ h2 {
            sub-copy stays in-progress so users don't read "Done." while
            nothing visibly happens. hideStage() will be triggered by
            runFullFlow once the upload response actually arrives. */
-        if (prepSub) prepSub.textContent = 'Finishing upload…';
+        if (prepSub) prepSub.textContent = 'Finishing upload\u2026';
         if (onDone) onDone();
         resolve();
       }, 2250);
@@ -1736,23 +1749,23 @@ body.ns-launching-active #marketing-view ~ h2 {
       stageAnalyzing.classList.remove('ns-fade-out');
       stageAnalyzing.classList.add('ns-fade-in');
       if (analyzeBar) analyzeBar.style.width = '0%';
-      if (analyzeTitle) analyzeTitle.textContent = 'Reading database structure…';
-      if (analyzeSub) analyzeSub.textContent = 'Parsing forms, views, agents…';
+      if (analyzeTitle) analyzeTitle.textContent = 'Reading database structure\u2026';
+      if (analyzeSub) analyzeSub.textContent = 'Parsing forms, views, agents\u2026';
 
       schedule(function() {
         if (analyzeBar) analyzeBar.style.width = '35%';
-        if (analyzeSub) analyzeSub.textContent = 'Parsing forms, views, agents…';
+        if (analyzeSub) analyzeSub.textContent = 'Parsing forms, views, agents\u2026';
       }, 300);
       schedule(function() {
         if (analyzeBar) analyzeBar.style.width = '70%';
-        if (analyzeSub) analyzeSub.textContent = 'Checking migration blockers…';
+        if (analyzeSub) analyzeSub.textContent = 'Checking migration blockers\u2026';
       }, 1100);
       schedule(function() {
         if (analyzeBar) analyzeBar.style.width = '100%';
         /* Same pattern as runPreparingStage — bar full, but if the
-           backend isn't finished yet we sit with "Scoring viability…"
+           backend isn't finished yet we sit with "Scoring viability\u2026"
            rather than a misleading "Done." */
-        if (analyzeSub) analyzeSub.textContent = 'Scoring viability…';
+        if (analyzeSub) analyzeSub.textContent = 'Scoring viability\u2026';
         if (onDone) onDone();
         resolve();
       }, 1900);
@@ -1790,6 +1803,11 @@ body.ns-launching-active #marketing-view ~ h2 {
     if (postContent) {
       postContent.style.display = withPostContent ? 'block' : 'none';
     }
+    /* Sample-only flow hides #post-content (and its exit link), so show
+       the standalone back-to-home control in that mode instead. */
+    if (sampleExit) {
+      sampleExit.style.display = withPostContent ? 'none' : 'block';
+    }
     /* Sample-DB-only mode: stretch results stage so the analytical
        block fills the available page height. */
     stageResults.classList.toggle('ns-mode-results-only', !withPostContent);
@@ -1819,7 +1837,7 @@ body.ns-launching-active #marketing-view ~ h2 {
     }
     emailInput.classList.remove('is-invalid');
     emailSubmit.disabled = true;
-    emailSubmit.textContent = 'Sending…';
+    emailSubmit.textContent = 'Sending\u2026';
 
     var tag = '[magic-link]';
     var claimToken = pendingUploadResult ? pendingUploadResult.claim_token : null;
