@@ -1951,9 +1951,13 @@ body.ns-launching-active #marketing-view ~ h2 {
 <!-- ============================================================ -->
 <!-- TEMP: shared config for the test scripts below.               -->
 <!--                                                               -->
-<!-- NS_BACKEND comes from `backend_url` in _config.yml (single    -->
-<!-- source of truth used by both HTML hrefs and JS code). The WS  -->
-<!-- base is derived from it by swapping the scheme to wss://.     -->
+<!-- NS_BACKEND resolution (primary -> override):                  -->
+<!--   1. Default: the browser's own origin (window.location), so   -->
+<!--      the page talks to whatever host served it.                -->
+<!--   2. Override: if `backend_url` in _config.yml is a non-empty   -->
+<!--      value, that wins and is used verbatim.                    -->
+<!-- The WS base is derived from NS_BACKEND by swapping the scheme  -->
+<!-- to wss://.                                                     -->
 <!--                                                               -->
 <!-- The WS server uses a self-signed cert. If the browser rejects -->
 <!-- the WSS connection, visit https://<host>/ once and            -->
@@ -1964,7 +1968,14 @@ body.ns-launching-active #marketing-view ~ h2 {
 <!--   NOT a per-user identifier.                                  -->
 <!-- ============================================================ -->
 <script>
-  window.NS_BACKEND         = '{{ site.backend_url }}';
+  /* Optional override from _config.yml; blank/whitespace falls back to
+     the browser's own origin (scheme + host + port). */
+  var NS_CONFIGURED_BACKEND = '{{ site.backend_url }}';
+  var NS_BROWSER_ORIGIN = window.location.origin ||
+    (window.location.protocol + '//' + window.location.host);
+  window.NS_BACKEND = (NS_CONFIGURED_BACKEND && NS_CONFIGURED_BACKEND.trim())
+    ? NS_CONFIGURED_BACKEND.trim()
+    : NS_BROWSER_ORIGIN;
   window.NS_WEBSOCKET_BASE  = window.NS_BACKEND.replace(/^http/, 'ws') + '/ws/anonymous';
   window.NS_ANALYZE_SERVER  = 'ANALYZEx9pVRTzQ5sbK1wMnHd7Yfg2Lj';
 </script>

@@ -4,10 +4,12 @@ description: Upload your NSF and test it in HCL Nomad — powered by Moonshine.d
 baseurl: ''
 url: 'https://nomad.services'
 # Backend host for public file serve / upload / WebSocket routes.
-# Referenced in templates as {{ site.backend_url }} and mirrored
-# at runtime into window.NS_BACKEND. Override per-environment by
-# editing this single line and rebuilding.
-backend_url: 'https://beta.moonshine.dev'
+# OPTIONAL OVERRIDE. Leave blank to use the browser's own origin
+# (window.location) as the backend host — this is the default. Set this
+# to a full origin (e.g. 'https://staging.startcloud.com') only to force
+# every backend call at a specific host regardless of where the page is
+# served from. When non-empty, this value takes precedence.
+backend_url: ''
 repository: prominic/NomadServices
 
 permalink: pretty
