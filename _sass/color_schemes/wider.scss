@@ -107,6 +107,32 @@ a[href*="just-the-docs"] {
   border-bottom: 3px solid;
   -webkit-border-image: linear-gradient(90deg, #6c5ce7, #a855f7, #6c5ce7) 1;
   border-image: linear-gradient(90deg, #6c5ce7, #a855f7, #6c5ce7) 1;
+  align-items: center; // vertically center the logo + aux-nav links
+}
+
+// Header height. Uses the #main-header id (the same element) so it beats
+// the theme's `.main-header { height: $header-height }` rule, which is
+// emitted later in source order inside an mq(md) block and would
+// otherwise win at desktop width. Raise this value to make it taller.
+#main-header {
+  height: 65px; // <-- header bar height (theme default is 60px)
+}
+
+// --- Brand logo on the left of the top header bar ---
+// header_custom.html (project root) renders the logo; order:-1 pins it
+// ahead of the (empty) search slot so it sits at the far-left edge,
+// with the aux-nav links remaining at the right via space-between.
+.ns-header-logo {
+  order: -1;
+  display: inline-flex;
+  align-items: center;
+  padding-left: 1.3rem; // <-- left gap before the logo; increase to push it right
+
+  img {
+    height: 48px; // full/natural height of the logo (258x48); header is 60px tall
+    width: auto;
+    display: block;
+  }
 }
 
 // --- Fix nav active/hover gradient (the white gradient issue) ---
@@ -220,6 +246,14 @@ table {
 // --- Aux links (header right) ---
 .aux-nav .aux-nav-list-item a {
   color: #9d8df1;
+  font-size: 16px;       // link text size
+
+  // Horizontal padding sets the gap between the two links (theme default
+  // is $gutter-spacing-sm on every side). Lower these to tighten the gap;
+  // vertical padding is left to the theme's .site-button so click height
+  // and vertical centering are unchanged.
+  padding-left: 0.6rem;
+  padding-right: 0.6rem;
 
   &:hover {
     color: #ffffff;
