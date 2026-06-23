@@ -1079,14 +1079,34 @@ body.ns-launching-active #marketing-view ~ h2 {
 
   if (!dropzone || !fileInput || !marketingView || !launchingView) return;
 
+  /* The app can be served from an arbitrary sub-path (e.g.
+     /public/file/serve/nomad.services/), so the /launching/ URL must be
+     resolved relative to the CURRENT document, not the domain root. A
+     build-time absolute path ('/launching/') would push the browser to
+     <domain>/launching/ — outside the app's mount — which 404s on refresh. */
+  function appDir() {
+    /* directory of the current document (strips the trailing file segment) */
+    return window.location.pathname.replace(/[^\/]*$/, '');
+  }
+  function launchingUrl() {
+    /* An explicit .html file, NOT a /launching/ directory: this host serves
+       exact file paths (note the index.html in the served URL) and may not
+       auto-resolve a directory index, so a refresh must land on a real file. */
+    return appDir() + 'launching.html';
+  }
+  function homeUrl() {
+    /* Explicit index.html for the same reason. */
+    return appDir() + 'index.html';
+  }
+
   /* On page load: if URL is /launching/ but we have no active mode
-     (refresh, deep link), correct the URL to / and show marketing. */
+     (refresh, deep link), correct the URL to home and show marketing. */
   (function bootstrapView() {
     var path = window.location.pathname;
-    var atLaunching = /\/launching\/?$/.test(path);
+    var atLaunching = /\/launching(\.html)?\/?$/.test(path);
     if (atLaunching) {
       try {
-        history.replaceState({ view: 'marketing' }, '', '{{ "/" | relative_url }}');
+        history.replaceState({ view: 'marketing' }, '', homeUrl());
       } catch (_) {}
     } else {
       try {
@@ -1203,8 +1223,8 @@ body.ns-launching-active #marketing-view ~ h2 {
     } else {
       /* If we land on /launching/ with no mode (forward navigation
          after exit), repair the URL to /. */
-      if (/\/launching\/?$/.test(window.location.pathname)) {
-        try { history.replaceState({ view: 'marketing' }, '', '{{ "/" | relative_url }}'); } catch (_) {}
+      if (/\/launching(\.html)?\/?$/.test(window.location.pathname)) {
+        try { history.replaceState({ view: 'marketing' }, '', homeUrl()); } catch (_) {}
       }
       showMarketingView({ scroll: false });
     }
@@ -1261,7 +1281,7 @@ body.ns-launching-active #marketing-view ~ h2 {
   }
 
   function pushStateToLaunching() {
-    var launchingPath = '{{ "/launching/" | relative_url }}';
+    var launchingPath = launchingUrl();
     try {
       history.pushState({ view: 'launching' }, '', launchingPath);
     } catch (_) {}

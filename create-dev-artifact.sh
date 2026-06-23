@@ -19,7 +19,7 @@
 set -euo pipefail
 
 # Items in _site/ to ship. Edit this list to add/remove files.
-INCLUDE=(assets index.html sitemap.xml robots.txt)
+INCLUDE=(assets index.html launching.html sitemap.xml robots.txt)
 
 # Resolve the script's own directory so we run from there regardless
 # of where the user invoked us from.

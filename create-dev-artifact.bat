@@ -55,7 +55,7 @@ REM Push-Location into _site so the paths stored inside the zip are
 REM relative (assets/, index.html, ...) rather than _site/assets/, etc.
 REM Compress-Archive ships with PowerShell 5+, which is standard on
 REM Windows 10+.
-powershell -NoProfile -Command "Push-Location '_site'; $items = @('assets','index.html','sitemap.xml','robots.txt') | Where-Object { Test-Path $_ }; if ($items.Count -eq 0) { Write-Host 'Nothing to archive - _site is empty or items missing.'; Pop-Location; exit 1 }; Compress-Archive -Path $items -DestinationPath '%ZIPPATH%' -Force; Pop-Location"
+powershell -NoProfile -Command "Push-Location '_site'; $items = @('assets','index.html','launching.html','sitemap.xml','robots.txt') | Where-Object { Test-Path $_ }; if ($items.Count -eq 0) { Write-Host 'Nothing to archive - _site is empty or items missing.'; Pop-Location; exit 1 }; Compress-Archive -Path $items -DestinationPath '%ZIPPATH%' -Force; Pop-Location"
 
 if exist "%ZIPNAME%" (
   echo.
