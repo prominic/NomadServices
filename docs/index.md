@@ -633,6 +633,38 @@ body.ns-launching-active #marketing-view ~ h2 {
   filter: brightness(1.15); outline: none;
 }
 
+/* Example-database picker list (inside #sample-db-modal). */
+.ns-sample-list { list-style: none; margin: 0.5rem 0 0; padding: 0; }
+.ns-sample-empty { color: #a0a0b8; padding: 0.75rem 0; }
+.ns-sample-row {
+  display: flex; align-items: center; gap: 0.5rem;
+  margin: 0.45rem 0;
+}
+.ns-sample-item {
+  flex: 1; min-width: 0;
+  text-align: left; font: inherit; cursor: pointer;
+  padding: 0.8rem 1rem;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid #2a2a4a; border-radius: 10px;
+  color: #e0e0f0;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.ns-sample-item:hover,
+.ns-sample-item:focus-visible {
+  background: rgba(108,92,231,0.12); border-color: #6c5ce7; outline: none;
+}
+.ns-sample-item-name {
+  font-weight: 600; color: #fff;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ns-sample-item-meta { font-size: 0.85rem; color: #a0a0b8; margin-top: 0.15rem; }
+.ns-sample-item-link {
+  font-size: 0.8rem; color: #9d8df1; text-decoration: none; white-space: nowrap;
+  padding: 0.25rem 0.35rem; border-radius: 6px;
+}
+.ns-sample-item-link:hover,
+.ns-sample-item-link:focus-visible { color: #c4b5fd; text-decoration: underline; outline: none; }
+
 /* ============================================================ */
 /* Viability + callout variants. Default is the existing green  */
 /* "good" styling. B = yellow caveats, C = red blockers.        */
@@ -734,6 +766,23 @@ body.ns-launching-active #marketing-view ~ h2 {
         <p style="text-align: center; margin-top: 1.25rem;">
           <a class="ns-modal-cta" href="{{ site.backend_url }}/public/file/serve/domino-integration/index.html?brand=nomad.services" target="_blank" rel="noopener">Open the authenticated environment &rarr;</a>
         </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Example-database picker modal. Populated at runtime from          -->
+  <!-- assets/data/example-database.json by the script at the foot of    -->
+  <!-- the page. Mirrors the disclaimer modal (role/aria, data-close).   -->
+  <div id="sample-db-modal" class="ns-modal" role="dialog" aria-modal="true" aria-labelledby="sample-db-modal-title" hidden>
+    <div class="ns-modal-backdrop" data-close></div>
+    <div class="ns-modal-card" role="document">
+      <button type="button" class="ns-modal-close" data-close aria-label="Close">&times;</button>
+      <h2 id="sample-db-modal-title" class="ns-modal-title">Choose an example database</h2>
+      <div class="ns-modal-body">
+        <p>Pick a sample Domino application to analyze.</p>
+        <ul id="sample-db-list" class="ns-sample-list" aria-busy="true">
+          <li class="ns-sample-empty" id="sample-db-status">Loading examples&hellip;</li>
+        </ul>
       </div>
     </div>
   </div>
@@ -1174,11 +1223,17 @@ body.ns-launching-active #marketing-view ~ h2 {
     }
   });
   if (sampleLink) {
-    sampleLink.addEventListener('click', function(e) {
-      e.preventDefault();
-      runSampleAnalysis();
-    });
+    sampleLink.addEventListener('click', openSampleDbModal);
   }
+  /* Wire the example-DB modal's dismiss controls once (backdrop + X). */
+  (function wireSampleDbModal() {
+    var modal = document.getElementById('sample-db-modal');
+    if (!modal) return;
+    modal.addEventListener('click', function(e) {
+      var t = e.target;
+      if (t && t.hasAttribute && t.hasAttribute('data-close')) closeSampleDbModal();
+    });
+  })();
   if (exitLink) {
     exitLink.addEventListener('click', function() { history.back(); });
   }
@@ -1494,6 +1549,129 @@ body.ns-launching-active #marketing-view ~ h2 {
         var msg = (err && err.message) ? err.message : String(err);
         showErrorStage(msg);
       });
+  }
+
+  /* ----- Example-database picker (modal) -------------------------------
+     Loads assets/data/example-database.json and lists the predefined
+     sample databases. Phase 1: clicking a row just logs the item to the
+     console. The JSON is fetched with a path relative to the current
+     document (no leading slash) so it resolves under the app's arbitrary
+     mount point, the same way the launching redirect does. */
+  var exampleDbCache = null;
+
+  function formatFileSize(bytes) {
+    if (typeof bytes !== 'number' || !isFinite(bytes) || bytes < 0) return '';
+    if (bytes < 1024) return bytes + ' B';
+    var kb = bytes / 1024;
+    if (kb < 1024) return kb.toFixed(1) + ' KB';
+    return (kb / 1024).toFixed(1) + ' MB';
+  }
+
+  function baseName(path) {
+    return String(path || '').replace(/\/+$/, '').split('/').pop() || '';
+  }
+
+  function onSampleDbKey(e) {
+    if (e.key === 'Escape' || e.keyCode === 27) closeSampleDbModal();
+  }
+
+  function openSampleDbModal(e) {
+    if (e) e.preventDefault();
+    var modal = document.getElementById('sample-db-modal');
+    if (!modal) return;
+    modal.hidden = false;
+    var closeBtn = modal.querySelector('.ns-modal-close');
+    if (closeBtn) { try { closeBtn.focus(); } catch (_) {} }
+    document.addEventListener('keydown', onSampleDbKey);
+    loadExampleDbList();
+  }
+
+  function closeSampleDbModal() {
+    var modal = document.getElementById('sample-db-modal');
+    if (modal) modal.hidden = true;
+    document.removeEventListener('keydown', onSampleDbKey);
+    if (sampleLink && typeof sampleLink.focus === 'function') {
+      try { sampleLink.focus(); } catch (_) {}
+    }
+  }
+
+  function loadExampleDbList() {
+    var statusEl = document.getElementById('sample-db-status');
+    if (exampleDbCache) { renderExampleDbList(exampleDbCache); return; }
+    if (statusEl) statusEl.textContent = 'Loading examples\u2026';
+    fetch('assets/data/example-database.json')
+      .then(function(res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      })
+      .then(function(items) {
+        exampleDbCache = Array.isArray(items) ? items : [];
+        renderExampleDbList(exampleDbCache);
+      })
+      .catch(function(err) {
+        console.error('[example-db] failed to load list:', err);
+        if (statusEl) statusEl.textContent = 'Could not load examples. Please try again.';
+      });
+  }
+
+  function renderExampleDbList(items) {
+    var listEl = document.getElementById('sample-db-list');
+    if (!listEl) return;
+    listEl.innerHTML = '';
+    listEl.setAttribute('aria-busy', 'false');
+
+    if (!items.length) {
+      var empty = document.createElement('li');
+      empty.className = 'ns-sample-empty';
+      empty.textContent = 'No example databases available.';
+      listEl.appendChild(empty);
+      return;
+    }
+
+    items.forEach(function(item) {
+      var row = document.createElement('li');
+      row.className = 'ns-sample-row';
+
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'ns-sample-item';
+
+      var nameEl = document.createElement('div');
+      nameEl.className = 'ns-sample-item-name';
+      nameEl.textContent = baseName(item.path);
+
+      var metaEl = document.createElement('div');
+      metaEl.className = 'ns-sample-item-meta';
+      var bits = [];
+      if (item.source) bits.push(item.source);
+      var sz = formatFileSize(item.size);
+      if (sz) bits.push(sz);
+      metaEl.textContent = bits.join(' \u00b7 ');
+
+      btn.appendChild(nameEl);
+      btn.appendChild(metaEl);
+
+      /* Phase 1: just log the selected item. Phase 2 will start the
+         upload-skipping analyze flow from item.path here. */
+      btn.addEventListener('click', function() {
+        console.log('[example-db] selected:', item);
+      });
+      row.appendChild(btn);
+
+      /* Reference link to the source project (separate from the row's
+         select action). Sibling of the button to keep markup valid. */
+      if (item.url) {
+        var a = document.createElement('a');
+        a.className = 'ns-sample-item-link';
+        a.href = item.url;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.textContent = 'Source \u2197';
+        row.appendChild(a);
+      }
+
+      listEl.appendChild(row);
+    });
   }
 
   /* --- Sample-DB path. Inject mock report so the visual flow matches

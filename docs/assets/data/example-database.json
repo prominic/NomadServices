@@ -1,0 +1,20 @@
+[
+  {
+    "path": "/opt/restinterface/public/uploads/nomad/Webber_1.4.0.ntf",
+    "source": "OpenNTF",
+    "size": 5888000,
+    "url": "https://www.openntf.org/main.nsf/project.xsp?r=project/Webber"
+  },
+  {
+    "path": "/opt/restinterface/public/uploads/nomad/app_devtemplate_opnntf-v3.ntf",
+    "source": "OpenNTF",
+    "size": 1872000,
+    "url": "https://www.openntf.org/main.nsf/project.xsp?r=project/AppDev%20Template"
+  },
+  {
+    "path": "/opt/restinterface/public/uploads/nomad/mconverter.ntf",
+    "source": "OpenNTF",
+    "size": 756000,
+    "url": "https://www.openntf.org/main.nsf/project.xsp?r=project/MConverter"
+  }
+]
