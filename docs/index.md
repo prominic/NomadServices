@@ -1273,6 +1273,8 @@ body.ns-launching-active #marketing-view ~ h2 {
     var state = (e && e.state) || {};
     if (state.view === 'launching' && pendingMode === 'file' && pendingFile) {
       runFullFlow();
+    } else if (state.view === 'launching' && pendingMode === 'example' && pendingUploadResult) {
+      runAnalyzeOnly(pendingUploadResult.path, true);
     } else if (state.view === 'launching' && pendingMode === 'sample') {
       runAnalyzingThenResults(false);
     } else {
@@ -1559,14 +1561,6 @@ body.ns-launching-active #marketing-view ~ h2 {
      mount point, the same way the launching redirect does. */
   var exampleDbCache = null;
 
-  function formatFileSize(bytes) {
-    if (typeof bytes !== 'number' || !isFinite(bytes) || bytes < 0) return '';
-    if (bytes < 1024) return bytes + ' B';
-    var kb = bytes / 1024;
-    if (kb < 1024) return kb.toFixed(1) + ' KB';
-    return (kb / 1024).toFixed(1) + ' MB';
-  }
-
   function baseName(path) {
     return String(path || '').replace(/\/+$/, '').split('/').pop() || '';
   }
@@ -1644,17 +1638,16 @@ body.ns-launching-active #marketing-view ~ h2 {
       metaEl.className = 'ns-sample-item-meta';
       var bits = [];
       if (item.source) bits.push(item.source);
-      var sz = formatFileSize(item.size);
-      if (sz) bits.push(sz);
+      if (typeof item.size === 'number') bits.push(formatSize(item.size));
       metaEl.textContent = bits.join(' \u00b7 ');
 
       btn.appendChild(nameEl);
       btn.appendChild(metaEl);
 
-      /* Phase 1: just log the selected item. Phase 2 will start the
-         upload-skipping analyze flow from item.path here. */
+      /* Start the upload-skipping analyze flow for this predefined file. */
       btn.addEventListener('click', function() {
         console.log('[example-db] selected:', item);
+        runExampleAnalysis(item);
       });
       row.appendChild(btn);
 
@@ -1672,6 +1665,63 @@ body.ns-launching-active #marketing-view ~ h2 {
 
       listEl.appendChild(row);
     });
+  }
+
+  /* --- Example-database path: REAL analysis of a predefined server-side
+         file. Identical to the upload flow but with NO upload/preparing
+         stage, since the file already exists on the server at item.path.
+         The email -> magic-link step needs a claim_token; per spec it is
+         the file name without its .nsf/.ntf extension, stashed on a
+         synthetic pendingUploadResult so handleEmailSubmit() is unchanged. */
+  function runExampleAnalysis(item) {
+    if (!item || !item.path) return;
+    var fname = baseName(item.path);
+    var claim = fname.replace(/\.(nsf|ntf)$/i, '');
+
+    pendingFile = null;
+    pendingMode = 'example';
+    pendingUploadResult = { claim_token: claim, path: item.path };
+
+    /* Report header + meta strip reflect the chosen example. */
+    if (analysisReportStatus) analysisReportStatus.textContent = 'Example analysis';
+    if (analysisReportTitle)  analysisReportTitle.textContent  = fname + ' - analysis report';
+    if (confidenceFilename)   confidenceFilename.textContent   = fname;
+    if (reportMetaName) reportMetaName.textContent = fname;
+    if (reportMetaSize) reportMetaSize.textContent = (typeof item.size === 'number') ? formatSize(item.size) : '';
+    if (reportMetaTag)  reportMetaTag.textContent  = 'EXAMPLE DATABASE';
+
+    closeSampleDbModal();
+    pushStateToLaunching();
+    showLaunchingView();
+    runAnalyzeOnly(item.path, true);
+  }
+
+  /* Analyze without the upload/preparing stage: only the "Analyzing your
+     NSF" animation runs, gated against the real analyzeDatabase response,
+     then the report + email view. Mirrors the second half of runFullFlow. */
+  function runAnalyzeOnly(nsfPath, withPostContent) {
+    resetStages();
+    var analyzeP = startAnalyze(nsfPath);
+    var animP    = runAnalyzingStage();
+    Promise.all([analyzeP, animP])
+      .then(function(results) {
+        var report = results[0];
+        return hideStage(stageAnalyzing).then(function() { return report; });
+      })
+      .then(function(report) {
+        populateReport(report);
+        showResultsStage(withPostContent);
+        if (withPostContent) {
+          schedule(function() {
+            try { emailInput.focus({ preventScroll: true }); } catch (_) {}
+          }, 300);
+        }
+      })
+      .catch(function(err) {
+        console.error('[flow] example analyze failed:', err);
+        var msg = (err && err.message) ? err.message : String(err);
+        showErrorStage(msg);
+      });
   }
 
   /* --- Sample-DB path. Inject mock report so the visual flow matches
