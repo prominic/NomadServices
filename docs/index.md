@@ -633,17 +633,15 @@ body.ns-launching-active #marketing-view ~ h2 {
   filter: brightness(1.15); outline: none;
 }
 
-/* Example-database picker list (inside #sample-db-modal). */
+/* Example-database picker (inside #sample-db-modal). */
+#sample-db-modal .ns-modal-card { max-width: 680px; }
 .ns-sample-list { list-style: none; margin: 0.5rem 0 0; padding: 0; }
 .ns-sample-empty { color: #a0a0b8; padding: 0.75rem 0; }
-.ns-sample-row {
-  display: flex; align-items: center; gap: 0.5rem;
-  margin: 0.45rem 0;
-}
+.ns-sample-row { margin: 0.5rem 0; }
 .ns-sample-item {
-  flex: 1; min-width: 0;
-  text-align: left; font: inherit; cursor: pointer;
-  padding: 0.8rem 1rem;
+  display: flex; align-items: center; gap: 1rem;
+  cursor: pointer;
+  padding: 0.85rem 1.1rem;
   background: rgba(255,255,255,0.03);
   border: 1px solid #2a2a4a; border-radius: 10px;
   color: #e0e0f0;
@@ -653,14 +651,15 @@ body.ns-launching-active #marketing-view ~ h2 {
 .ns-sample-item:focus-visible {
   background: rgba(108,92,231,0.12); border-color: #6c5ce7; outline: none;
 }
+.ns-sample-item-main { flex: 1 1 auto; min-width: 0; }
 .ns-sample-item-name {
   font-weight: 600; color: #fff;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .ns-sample-item-meta { font-size: 0.85rem; color: #a0a0b8; margin-top: 0.15rem; }
 .ns-sample-item-link {
-  font-size: 0.8rem; color: #9d8df1; text-decoration: none; white-space: nowrap;
-  padding: 0.25rem 0.35rem; border-radius: 6px;
+  flex: 0 0 auto; white-space: nowrap;
+  font-size: 0.85rem; color: #9d8df1; text-decoration: none;
 }
 .ns-sample-item-link:hover,
 .ns-sample-item-link:focus-visible { color: #c4b5fd; text-decoration: underline; outline: none; }
@@ -833,6 +832,18 @@ body.ns-launching-active #marketing-view ~ h2 {
 <!-- ============================================================ -->
 <div id="launching-view" style="display: none;" markdown="0">
   <div class="ns-launching-wrap">
+
+    <!-- Stage 0: Requesting from server (example-DB path only) -->
+    <div class="ns-stage ns-stage-centered" id="stage-requesting" style="display: none;">
+      <div class="ns-progress-strip">
+        <div class="ns-progress-status">Requesting with server</div>
+        <div class="ns-progress-title" id="request-title">Fetching example database&hellip;</div>
+        <div class="ns-progress-track">
+          <div class="ns-progress-bar" id="request-bar"></div>
+        </div>
+        <div class="ns-progress-sub" id="request-sub">Contacting server&hellip;</div>
+      </div>
+    </div>
 
     <!-- Stage 1: Preparing your file (real NSF drop only) -->
     <div class="ns-stage ns-stage-centered" id="stage-preparing" style="display: none;">
@@ -1013,7 +1024,8 @@ body.ns-launching-active #marketing-view ~ h2 {
      Not persisted across reloads - refreshing /launching/ takes the
      user back to the marketing view. */
   var pendingFile = null;
-  var pendingMode = null;  /* 'file' | 'sample' | null */
+  var pendingMode = null;  /* 'file' | 'example' | 'sample' | null */
+  var pendingExampleItem = null;  /* selected example-DB list item (mode 'example') */
 
   /* Full upload response for the current pending file:
        { claim_token, expires_at, path, size }
@@ -1044,9 +1056,14 @@ body.ns-launching-active #marketing-view ~ h2 {
   var launchingView = document.getElementById('launching-view');
 
   /* Launching-view stages */
+  var stageRequesting = document.getElementById('stage-requesting');
   var stagePreparing = document.getElementById('stage-preparing');
   var stageAnalyzing = document.getElementById('stage-analyzing');
   var stageResults = document.getElementById('stage-results');
+
+  /* Requesting-stage elements (example-DB path) */
+  var requestBar = document.getElementById('request-bar');
+  var requestSub = document.getElementById('request-sub');
 
   /* Preparing-stage elements */
   var prepTitle = document.getElementById('prep-title');
@@ -1273,8 +1290,8 @@ body.ns-launching-active #marketing-view ~ h2 {
     var state = (e && e.state) || {};
     if (state.view === 'launching' && pendingMode === 'file' && pendingFile) {
       runFullFlow();
-    } else if (state.view === 'launching' && pendingMode === 'example' && pendingUploadResult) {
-      runAnalyzeOnly(pendingUploadResult.path, true);
+    } else if (state.view === 'launching' && pendingMode === 'example' && pendingExampleItem) {
+      runExampleFlow(pendingExampleItem);
     } else if (state.view === 'launching' && pendingMode === 'sample') {
       runAnalyzingThenResults(false);
     } else {
@@ -1293,6 +1310,7 @@ body.ns-launching-active #marketing-view ~ h2 {
     clearTimers();
     pendingFile = null;
     pendingMode = null;
+    pendingExampleItem = null;
     pendingUploadResult = null;
     document.body.classList.remove('ns-launching-active');
     resetStages();
@@ -1320,12 +1338,13 @@ body.ns-launching-active #marketing-view ~ h2 {
   }
 
   function resetStages() {
-    [stagePreparing, stageAnalyzing, stageResults, stageError].forEach(function(el) {
+    [stageRequesting, stagePreparing, stageAnalyzing, stageResults, stageError].forEach(function(el) {
       if (!el) return;
       el.style.display = 'none';
       el.classList.remove('ns-fade-out', 'ns-fade-in');
     });
     if (stageResults) stageResults.classList.remove('ns-mode-results-only');
+    if (requestBar) requestBar.style.width = '0%';
     if (prepBar) prepBar.style.width = '0%';
     if (analyzeBar) analyzeBar.style.width = '0%';
     if (postContent) postContent.style.display = 'none';
@@ -1561,10 +1580,6 @@ body.ns-launching-active #marketing-view ~ h2 {
      mount point, the same way the launching redirect does. */
   var exampleDbCache = null;
 
-  function baseName(path) {
-    return String(path || '').replace(/\/+$/, '').split('/').pop() || '';
-  }
-
   function onSampleDbKey(e) {
     if (e.key === 'Escape' || e.keyCode === 27) closeSampleDbModal();
   }
@@ -1593,7 +1608,7 @@ body.ns-launching-active #marketing-view ~ h2 {
     var statusEl = document.getElementById('sample-db-status');
     if (exampleDbCache) { renderExampleDbList(exampleDbCache); return; }
     if (statusEl) statusEl.textContent = 'Loading examples\u2026';
-    fetch('assets/data/example-database.json')
+    fetch(window.NS_BACKEND + '/api/nomad/example-dbs')
       .then(function(res) {
         if (!res.ok) throw new Error('HTTP ' + res.status);
         return res.json();
@@ -1626,13 +1641,20 @@ body.ns-launching-active #marketing-view ~ h2 {
       var row = document.createElement('li');
       row.className = 'ns-sample-row';
 
-      var btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'ns-sample-item';
+      /* A div (not a <button>) is the selectable card so the source link
+         can sit inside it as valid markup. role/tabindex/keydown keep it
+         keyboard-accessible. */
+      var card = document.createElement('div');
+      card.className = 'ns-sample-item';
+      card.setAttribute('role', 'button');
+      card.setAttribute('tabindex', '0');
+
+      var main = document.createElement('div');
+      main.className = 'ns-sample-item-main';
 
       var nameEl = document.createElement('div');
       nameEl.className = 'ns-sample-item-name';
-      nameEl.textContent = baseName(item.path);
+      nameEl.textContent = item.name || '(unnamed)';
 
       var metaEl = document.createElement('div');
       metaEl.className = 'ns-sample-item-meta';
@@ -1641,18 +1663,12 @@ body.ns-launching-active #marketing-view ~ h2 {
       if (typeof item.size === 'number') bits.push(formatSize(item.size));
       metaEl.textContent = bits.join(' \u00b7 ');
 
-      btn.appendChild(nameEl);
-      btn.appendChild(metaEl);
+      main.appendChild(nameEl);
+      main.appendChild(metaEl);
+      card.appendChild(main);
 
-      /* Start the upload-skipping analyze flow for this predefined file. */
-      btn.addEventListener('click', function() {
-        console.log('[example-db] selected:', item);
-        runExampleAnalysis(item);
-      });
-      row.appendChild(btn);
-
-      /* Reference link to the source project (separate from the row's
-         select action). Sibling of the button to keep markup valid. */
+      /* Source link sits at the far right of the row; stops propagation so
+         it opens the project page without triggering the card's select. */
       if (item.url) {
         var a = document.createElement('a');
         a.className = 'ns-sample-item-link';
@@ -1660,67 +1676,124 @@ body.ns-launching-active #marketing-view ~ h2 {
         a.target = '_blank';
         a.rel = 'noopener noreferrer';
         a.textContent = 'Source \u2197';
-        row.appendChild(a);
+        a.addEventListener('click', function(ev) { ev.stopPropagation(); });
+        card.appendChild(a);
       }
 
+      function selectItem() {
+        console.log('[example-db] selected:', item);
+        runExampleAnalysis(item);
+      }
+      card.addEventListener('click', selectItem);
+      card.addEventListener('keydown', function(ev) {
+        if (ev.key === 'Enter' || ev.key === ' ' || ev.keyCode === 13 || ev.keyCode === 32) {
+          ev.preventDefault();
+          selectItem();
+        }
+      });
+
+      row.appendChild(card);
       listEl.appendChild(row);
     });
   }
 
   /* --- Example-database path: REAL analysis of a predefined server-side
-         file. Identical to the upload flow but with NO upload/preparing
-         stage, since the file already exists on the server at item.path.
-         The email -> magic-link step needs a claim_token; per spec it is
-         the file name without its .nsf/.ntf extension, stashed on a
-         synthetic pendingUploadResult so handleEmailSubmit() is unchanged. */
+         database. Two server steps replace the upload flow's single one:
+           1. claim-example-db {name} -> { claim_token, expires_at, path, size }
+              (shown behind the "Requesting with server" stage)
+           2. analyzeDatabase using the returned claim_token
+         The claim response is stashed on pendingUploadResult so the email
+         -> magic-link step uses the real claim_token (no longer a synthetic
+         name-without-extension). runExampleAnalysis sets up state + pushes
+         the launching URL; runExampleFlow runs the pipeline (and is what
+         popstate re-invokes, without re-pushing history). ---------------- */
   function runExampleAnalysis(item) {
-    if (!item || !item.path) return;
-    var fname = baseName(item.path);
-    var claim = fname.replace(/\.(nsf|ntf)$/i, '');
+    if (!item || !item.name) return;
 
     pendingFile = null;
     pendingMode = 'example';
-    pendingUploadResult = { claim_token: claim, path: item.path };
+    pendingExampleItem = item;
+    pendingUploadResult = null;  /* filled in once claim-example-db returns */
 
     /* Report header + meta strip reflect the chosen example. */
     if (analysisReportStatus) analysisReportStatus.textContent = 'Example analysis';
-    if (analysisReportTitle)  analysisReportTitle.textContent  = fname + ' - analysis report';
-    if (confidenceFilename)   confidenceFilename.textContent   = fname;
-    if (reportMetaName) reportMetaName.textContent = fname;
+    if (analysisReportTitle)  analysisReportTitle.textContent  = item.name + ' - analysis report';
+    if (confidenceFilename)   confidenceFilename.textContent   = item.name;
+    if (reportMetaName) reportMetaName.textContent = item.name;
     if (reportMetaSize) reportMetaSize.textContent = (typeof item.size === 'number') ? formatSize(item.size) : '';
     if (reportMetaTag)  reportMetaTag.textContent  = 'EXAMPLE DATABASE';
 
     closeSampleDbModal();
     pushStateToLaunching();
     showLaunchingView();
-    runAnalyzeOnly(item.path, true);
+    runExampleFlow(item);
   }
 
-  /* Analyze without the upload/preparing stage: only the "Analyzing your
-     NSF" animation runs, gated against the real analyzeDatabase response,
-     then the report + email view. Mirrors the second half of runFullFlow. */
-  function runAnalyzeOnly(nsfPath, withPostContent) {
+  function runExampleFlow(item) {
     resetStages();
-    var analyzeP = startAnalyze(nsfPath);
-    var animP    = runAnalyzingStage();
-    Promise.all([analyzeP, animP])
+
+    /* Track 1: claim the example DB on the server (the upload analogue).
+       Track 2: the "Requesting with server" animation. Promise.all gates
+       on whichever finishes last, so the stage stays until BOTH the
+       animation has completed AND the claim call has returned. */
+    var claimP   = claimExampleDb(item.name);
+    var reqAnimP = runRequestingStage();
+
+    Promise.all([claimP, reqAnimP])
+      .then(function(results) {
+        var claim = results[0];
+        pendingUploadResult = claim;  /* { claim_token, expires_at, path, size } */
+        return hideStage(stageRequesting).then(function() { return claim; });
+      })
+      .then(function(claim) {
+        /* Analyze using the claim_token returned by claim-example-db. */
+        var analyzeP = startAnalyze(claim.claim_token);
+        var animP    = runAnalyzingStage();
+        return Promise.all([analyzeP, animP]);
+      })
       .then(function(results) {
         var report = results[0];
         return hideStage(stageAnalyzing).then(function() { return report; });
       })
       .then(function(report) {
         populateReport(report);
-        showResultsStage(withPostContent);
-        if (withPostContent) {
-          schedule(function() {
-            try { emailInput.focus({ preventScroll: true }); } catch (_) {}
-          }, 300);
-        }
+        showResultsStage(true);
+        schedule(function() {
+          try { emailInput.focus({ preventScroll: true }); } catch (_) {}
+        }, 300);
       })
       .catch(function(err) {
         console.error('[flow] example analyze failed:', err);
         var msg = (err && err.message) ? err.message : String(err);
         showErrorStage(msg);
+      });
+  }
+
+  /* POST /api/nomad/claim-example-db { name } -> resolves with the parsed
+     { claim_token, expires_at, path, size }. Same response shape as the
+     upload endpoint, so it slots straight into pendingUploadResult. */
+  function claimExampleDb(name) {
+    var tag = '[claim-example-db]';
+    var url = window.NS_BACKEND + '/api/nomad/claim-example-db';
+    console.log(tag, 'POST', url, { name: name });
+    return fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: name })
+    })
+      .then(function(res) {
+        if (!res.ok) throw new Error('claim-example-db failed: HTTP ' + res.status + ' ' + res.statusText);
+        return res.text();
+      })
+      .then(function(body) {
+        var parsed;
+        try { parsed = JSON.parse(body); }
+        catch (e) { throw new Error('claim-example-db response was not JSON: ' + body.substring(0, 200)); }
+        if (!parsed || typeof parsed.claim_token !== 'string' || !parsed.claim_token) {
+          throw new Error('claim-example-db response is missing .claim_token');
+        }
+        console.log(tag, 'claim_token =', parsed.claim_token, '| path =', parsed.path);
+        return parsed;
       });
   }
 
@@ -1910,7 +1983,7 @@ body.ns-launching-active #marketing-view ~ h2 {
   /* --- Error stage: hide other stages, show the red error card. ---- */
   function showErrorStage(message) {
     clearTimers();
-    [stagePreparing, stageAnalyzing, stageResults].forEach(function(el) {
+    [stageRequesting, stagePreparing, stageAnalyzing, stageResults].forEach(function(el) {
       if (el) el.style.display = 'none';
     });
     if (stageError) {
@@ -1960,6 +2033,32 @@ body.ns-launching-active #marketing-view ~ h2 {
          disappearance on the actual server response and avoid the
          "blank screen while we wait" gap. onDone fires at the same
          point as resolve for any legacy callers. ----------------- */
+  /* Example-DB path: "Requesting with server" animation. Like the
+     preparing stage, the bar fills to 100% then waits — the caller
+     (runExampleFlow) keeps it on screen until the claim-example-db call
+     resolves, gating on whichever of (animation, network) finishes last. */
+  function runRequestingStage(onDone) {
+    return new Promise(function(resolve) {
+      if (!stageRequesting) { if (onDone) onDone(); resolve(); return; }
+      stageRequesting.style.display = '';
+      stageRequesting.classList.remove('ns-fade-out');
+      stageRequesting.classList.add('ns-fade-in');
+      if (requestBar) requestBar.style.width = '0%';
+      if (requestSub) requestSub.textContent = 'Contacting server\u2026';
+
+      schedule(function() {
+        if (requestBar) requestBar.style.width = '45%';
+        if (requestSub) requestSub.textContent = 'Claiming your copy\u2026';
+      }, 400);
+      schedule(function() {
+        if (requestBar) requestBar.style.width = '100%';
+        if (requestSub) requestSub.textContent = 'Preparing analysis\u2026';
+        if (onDone) onDone();
+        resolve();
+      }, 1200);
+    });
+  }
+
   function runPreparingStage(onDone) {
     return new Promise(function(resolve) {
       if (!stagePreparing) { if (onDone) onDone(); resolve(); return; }
