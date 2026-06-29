@@ -1746,8 +1746,10 @@ body.ns-launching-active #marketing-view ~ h2 {
         return hideStage(stageRequesting).then(function() { return claim; });
       })
       .then(function(claim) {
-        /* Analyze using the claim_token returned by claim-example-db. */
-        var analyzeP = startAnalyze(claim.claim_token);
+        /* Analyze using the path returned by claim-example-db (same as the
+           upload flow, which analyzes uploadResult.path). The claim_token
+           stays on pendingUploadResult for the email -> magic-link step. */
+        var analyzeP = startAnalyze(claim.path);
         var animP    = runAnalyzingStage();
         return Promise.all([analyzeP, animP]);
       })
@@ -1789,7 +1791,10 @@ body.ns-launching-active #marketing-view ~ h2 {
         var parsed;
         try { parsed = JSON.parse(body); }
         catch (e) { throw new Error('claim-example-db response was not JSON: ' + body.substring(0, 200)); }
-        if (!parsed || typeof parsed.claim_token !== 'string' || !parsed.claim_token) {
+        if (!parsed || typeof parsed.path !== 'string' || !parsed.path) {
+          throw new Error('claim-example-db response is missing .path');
+        }
+        if (typeof parsed.claim_token !== 'string' || !parsed.claim_token) {
           throw new Error('claim-example-db response is missing .claim_token');
         }
         console.log(tag, 'claim_token =', parsed.claim_token, '| path =', parsed.path);
