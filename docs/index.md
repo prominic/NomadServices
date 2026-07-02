@@ -532,9 +532,21 @@ body.ns-launching-active #marketing-view ~ h2 {
 /* the dropzone's file-picker click.                            */
 /* ============================================================ */
 .ns-disclaimer-row {
-  margin-top: 0.85rem;
+  margin-top: 1.1rem;
   font-size: 0.85rem;
   color: #6a6a7c;
+  /* Bounded "please note" group for the Disclaimer + Browser-support
+     links. inline-flex shrinks the box to its content; the centered
+     dropzone text-align centers it. Switch flex-direction to `row` for a
+     horizontal layout (add align-items: center then). */
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid rgba(108, 92, 231, 0.35);
+  border-radius: 10px;
+  background: rgba(108, 92, 231, 0.06);
 }
 .ns-disclaimer-trigger {
   background: none;
@@ -618,6 +630,8 @@ body.ns-launching-active #marketing-view ~ h2 {
 .ns-modal-body p { margin: 0 0 1rem; line-height: 1.55; color: #c8c8d8; }
 .ns-modal-body p:last-child { margin-bottom: 0; }
 .ns-modal-body strong { color: #fff; }
+.ns-modal-body ul { margin: 0.35rem 0 1rem; padding-left: 1.35rem; color: #c8c8d8; }
+.ns-modal-body li { margin-bottom: 0.25rem; line-height: 1.5; }
 .ns-modal-cta {
   display: inline-block;
   padding: 0.65rem 1.4rem;
@@ -746,6 +760,10 @@ body.ns-launching-active #marketing-view ~ h2 {
         <span class="ns-disclaimer-icon" aria-hidden="true">?</span>
         <span class="ns-disclaimer-label">Disclaimer</span>
       </button>
+      <button type="button" id="browser-support-trigger" class="ns-disclaimer-trigger" aria-haspopup="dialog" aria-controls="browser-support-modal">
+        <span class="ns-disclaimer-icon" aria-hidden="true" style="border: none; font-size: 0.95rem;">&#127760;</span>
+        <span class="ns-disclaimer-label">Browser support</span>
+      </button>
     </div>
     <input type="file" id="nsf-file-input" accept=".nsf,.ntf" style="display: none;" aria-hidden="true">
   </div>
@@ -765,6 +783,33 @@ body.ns-launching-active #marketing-view ~ h2 {
         <p style="text-align: center; margin-top: 1.25rem;">
           <a class="ns-modal-cta" href="{{ site.backend_url }}/public/file/serve/domino-integration/index.html?brand=nomad.services" target="_blank" rel="noopener">Open the authenticated environment &rarr;</a>
         </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Browser-support modal. Same pattern as the disclaimer modal;      -->
+  <!-- opened by #browser-support-trigger. Notes which browsers the live  -->
+  <!-- HCL Nomad preview is known to work / not work in.                  -->
+  <div id="browser-support-modal" class="ns-modal" role="dialog" aria-modal="true" aria-labelledby="browser-support-modal-title" hidden>
+    <div class="ns-modal-backdrop" data-close></div>
+    <div class="ns-modal-card" role="document">
+      <button type="button" class="ns-modal-close" data-close aria-label="Close">&times;</button>
+      <h2 id="browser-support-modal-title" class="ns-modal-title">Browser support for HCL Nomad</h2>
+      <div class="ns-modal-body">
+        <p>The live HCL Nomad preview behaves differently across browsers. For the most reliable experience we recommend one of these:</p>
+        <p><strong style="color: #66bb6a;">&check; Works well</strong></p>
+        <ul>
+          <li>Mozilla Firefox</li>
+          <li>Microsoft Edge</li>
+          <li>Google Chrome</li>
+        </ul>
+        <p><strong style="color: #e57373;">&times; Not expected to work</strong></p>
+        <ul>
+          <li>Brave</li>
+          <li>Opera</li>
+          <li>DuckDuckGo</li>
+        </ul>
+        <p>Privacy-hardened browsers block some capabilities the preview relies on, so Nomad may not load correctly there.</p>
       </div>
     </div>
   </div>
@@ -2254,49 +2299,51 @@ body.ns-launching-active #marketing-view ~ h2 {
 <!-- ============================================================ -->
 <script>
 (function() {
-  var trigger = document.getElementById('disclaimer-trigger');
-  var modal   = document.getElementById('disclaimer-modal');
-  if (!trigger || !modal) return;
+  /* Wire one trigger/modal pair. Both the disclaimer and browser-support
+     triggers live inside the dropzone, so the click is intercepted on the
+     capture phase with stopImmediatePropagation to keep it from reaching
+     the dropzone's file-picker handler. Escape + backdrop/close dismiss;
+     focus moves to the close button on open and back to the trigger. */
+  function wireModal(triggerId, modalId) {
+    var trigger = document.getElementById(triggerId);
+    var modal   = document.getElementById(modalId);
+    if (!trigger || !modal) return;
 
-  var lastFocus = null;
+    var lastFocus = null;
 
-  function openModal(e) {
-    if (e) { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); }
-    lastFocus = document.activeElement;
-    modal.hidden = false;
-    /* Focus the close button so keyboard users can dismiss with Enter. */
-    var closeBtn = modal.querySelector('.ns-modal-close');
-    if (closeBtn) { try { closeBtn.focus(); } catch (_) {} }
-    document.addEventListener('keydown', onKey);
-  }
-
-  function closeModal() {
-    modal.hidden = true;
-    document.removeEventListener('keydown', onKey);
-    if (lastFocus && typeof lastFocus.focus === 'function') {
-      try { lastFocus.focus(); } catch (_) {}
+    function onKey(e) {
+      if (e.key === 'Escape' || e.keyCode === 27) closeModal();
     }
+
+    function openModal(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); }
+      lastFocus = document.activeElement;
+      modal.hidden = false;
+      var closeBtn = modal.querySelector('.ns-modal-close');
+      if (closeBtn) { try { closeBtn.focus(); } catch (_) {} }
+      document.addEventListener('keydown', onKey);
+    }
+
+    function closeModal() {
+      modal.hidden = true;
+      document.removeEventListener('keydown', onKey);
+      if (lastFocus && typeof lastFocus.focus === 'function') {
+        try { lastFocus.focus(); } catch (_) {}
+      }
+    }
+
+    trigger.addEventListener('click', openModal, true);
+    trigger.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); }
+    });
+    modal.addEventListener('click', function(e) {
+      var t = e.target;
+      if (t && t.hasAttribute && t.hasAttribute('data-close')) closeModal();
+    });
   }
 
-  function onKey(e) {
-    if (e.key === 'Escape' || e.keyCode === 27) closeModal();
-  }
-
-  /* Capture phase: ensures we intercept the click before the dropzone's
-     bubble-phase listener runs (some browsers serialize handlers in
-     unexpected orders when an ancestor has its own click handler). */
-  trigger.addEventListener('click', openModal, true);
-  /* Also block keyboard activation (Enter/Space) from reaching the
-     dropzone, since the dropzone itself responds to those keys. */
-  trigger.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); }
-  });
-
-  /* Any element with data-close (backdrop, X button) dismisses. */
-  modal.addEventListener('click', function(e) {
-    var t = e.target;
-    if (t && t.hasAttribute && t.hasAttribute('data-close')) closeModal();
-  });
+  wireModal('disclaimer-trigger', 'disclaimer-modal');
+  wireModal('browser-support-trigger', 'browser-support-modal');
 })();
 </script>
 
