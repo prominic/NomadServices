@@ -653,7 +653,7 @@ body.ns-launching-active #marketing-view ~ h2 {
 .ns-sample-empty { color: #a0a0b8; padding: 0.75rem 0; }
 .ns-sample-row { margin: 0.5rem 0; }
 .ns-sample-item {
-  display: flex; align-items: center; gap: 1rem;
+  display: flex; align-items: flex-start; gap: 1rem;
   cursor: pointer;
   padding: 0.85rem 1.1rem;
   background: rgba(255,255,255,0.03);
@@ -671,6 +671,9 @@ body.ns-launching-active #marketing-view ~ h2 {
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .ns-sample-item-meta { font-size: 0.85rem; color: #a0a0b8; margin-top: 0.15rem; }
+.ns-sample-item-desc {
+  font-size: 0.85rem; color: #c8c8d8; margin-top: 0.35rem; line-height: 1.45;
+}
 .ns-sample-item-link {
   flex: 0 0 auto; white-space: nowrap;
   font-size: 0.85rem; color: #9d8df1; text-decoration: none;
@@ -1712,6 +1715,14 @@ body.ns-launching-active #marketing-view ~ h2 {
 
       main.appendChild(nameEl);
       main.appendChild(metaEl);
+
+      if (item.description) {
+        var descEl = document.createElement('div');
+        descEl.className = 'ns-sample-item-desc';
+        descEl.textContent = item.description;
+        main.appendChild(descEl);
+      }
+
       card.appendChild(main);
 
       /* Source link sits at the far right of the row; stops propagation so
