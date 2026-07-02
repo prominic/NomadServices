@@ -942,10 +942,12 @@ body.ns-launching-active #marketing-view ~ h2 {
             <div class="ns-stat-label">Views</div>
           </div>
           <div class="ns-stat">
-            <div class="ns-stat-num">
-              <span id="report-stat-java-agents">-</span><span class="ns-stat-num-sep">/</span><span id="report-stat-ls-agents">-</span>
-            </div>
-            <div class="ns-stat-label">Java / LotusScript Agents</div>
+            <div class="ns-stat-num" id="report-stat-java-agents">-</div>
+            <div class="ns-stat-label">Java Agents</div>
+          </div>
+          <div class="ns-stat">
+            <div class="ns-stat-num" id="report-stat-ls-agents">-</div>
+            <div class="ns-stat-label">LotusScript Agents</div>
           </div>
           <div class="ns-stat">
             <div class="ns-stat-num ns-stat-num-good" id="report-stat-viability">-</div>
